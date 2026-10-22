@@ -36,3 +36,7 @@ server/.env
 _backup_*
 *.ps1
 kv_build_check
+
+_backup_*
+.env.*
+*.env

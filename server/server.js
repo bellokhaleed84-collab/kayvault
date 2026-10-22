@@ -38,7 +38,7 @@ app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 50 }));
 const limit = (windowMs, max, message, extra = {}) =>
   rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, message: { error: message }, ...extra });
 app.use('/api', limit(60 * 1000, 300, 'Too many requests. Slow down and try again in a minute.'));
-app.use('/api/auth/login', limit(15 * 60 * 1000, 20, 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
+app.use('/api/auth/login', limit(15 * 60 * 1000, 5, 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
 app.use('/api/auth/signup', limit(60 * 60 * 1000, 10, 'Too many sign-ups from this network. Try again later.'));
 app.use('/api/auth/forgot-password', limit(60 * 60 * 1000, 5, 'Too many reset requests. Try again later.'));
 app.use('/api/auth/reset-password', limit(60 * 60 * 1000, 10, 'Too many attempts. Try again later.'));

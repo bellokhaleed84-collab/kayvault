@@ -7,6 +7,7 @@ import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
 import { sendPasswordReset, sendPasswordChanged, sendWelcome } from '../lib/mailer.js';
 import { cleanName, cleanEmail, passwordError, isStr } from '../lib/validate.js';
+import { COUNTRIES, SELLER_COUNTRY } from '../lib/regions.js';
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router.post('/signup', async (req, res, next) => {
     if (!name) return res.status(400).json({ error: 'Enter your full name (2 to 80 characters)' });
     if (!email) return res.status(400).json({ error: 'Enter a valid email address' });
     if (!country) return res.status(400).json({ error: 'Choose your country' });
+    if (!COUNTRIES.includes(country)) return res.status(400).json({ error: 'Choose one of the listed countries' }); // KV-AUTH-COUNTRY
+    if (b.role === 'seller' && country !== SELLER_COUNTRY) return res.status(400).json({ error: 'Sellers must be in Nigeria for now. Buyers can join from the listed countries.' });
     if (!['buyer', 'seller'].includes(b.role)) return res.status(400).json({ error: 'Invalid role' });
     const pwErr = passwordError(b.password);
     if (pwErr) return res.status(400).json({ error: pwErr });

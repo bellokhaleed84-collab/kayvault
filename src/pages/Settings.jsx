@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User, KeyRound, Bell, Building2, Globe, BadgeCheck } from 'lucide-react';
 import KycPanel from '../components/KycPanel';
 import DashHeader from '../components/DashHeader';
 import { PasswordField } from '../components/AuthFields';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/AuthContext';
-import { COUNTRIES, flag } from '../lib/countries';
+import { COUNTRIES, SELLER_COUNTRY, flag } from '../lib/countries';
 
 const BANKS = [
   'Access Bank', 'Fidelity Bank', 'First Bank', 'FCMB', 'GTBank', 'Kuda', 'Moniepoint',
@@ -42,6 +42,13 @@ export default function Settings() {
 
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [bankList, setBankList] = useState(BANKS); // KV-SET-BANKS
+  useEffect(() => {
+    if (!isSeller) return;
+    api.get('/profile/banks')
+      .then((r) => { if (Array.isArray(r.banks) && r.banks.length) setBankList(r.banks); })
+      .catch(() => {});
+  }, [isSeller]);
 
   const tabs = [
     ['profile', 'Profile', User],
@@ -130,7 +137,7 @@ export default function Settings() {
                     <Globe size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" />
                     <select value={country} onChange={(e) => setCountry(e.target.value)} className={`${input} pl-10 appearance-none`}>
                       <option value="" disabled>Select your country</option>
-                      {COUNTRIES.map(([n, code]) => <option key={code} value={n}>{flag(code)} {n}</option>)}
+                      {COUNTRIES.filter(([n]) => !isSeller || n === SELLER_COUNTRY).map(([n, code]) => <option key={code} value={n}>{flag(code)} {n}</option>)}
                     </select>
                   </div>
                 </div>
@@ -186,7 +193,7 @@ export default function Settings() {
                 <div>
                   <label className={label}>BANK NAME</label>
                   <input list="kv-banks" value={bankName} onChange={(e) => setBankName(e.target.value)} className={input} placeholder="e.g. GTBank" />
-                  <datalist id="kv-banks">{BANKS.map((b) => <option key={b} value={b} />)}</datalist>
+                  <datalist id="kv-banks">{bankList.map((b) => <option key={b} value={b} />)}</datalist>
                 </div>
                 <div>
                   <label className={label}>ACCOUNT NUMBER</label>

@@ -24,6 +24,30 @@ async function call(method, path, body) {
 export const secretConfigured = () => Boolean(process.env.PAYSTACK_SECRET_KEY);
 // Full or partial refund. transaction = the payment reference, amount in kobo.
 export const createRefund = (body) => call('POST', '/refund', body);
+
+// KV-PS-BANKS: Nigerian bank list from Paystack, cached for 6 hours
+let bankCache = { at: 0, list: [] };
+export async function nigerianBanks() {
+  const fresh = bankCache.list.length > 0 && Date.now() - bankCache.at < 6 * 60 * 60 * 1000;
+  if (fresh) return bankCache.list;
+  try {
+    const rows = await call('GET', '/bank?country=nigeria&perPage=200&use_cursor=false');
+    const seen = new Set();
+    const list = [];
+    for (const r of Array.isArray(rows) ? rows : []) {
+      const name = typeof r.name === 'string' ? r.name.trim() : '';
+      if (!name || r.active === false || r.is_deleted === true || seen.has(name.toLowerCase())) continue;
+      seen.add(name.toLowerCase());
+      list.push({ name, code: String(r.code || '') });
+    }
+    list.sort((x, y) => x.name.localeCompare(y.name));
+    if (list.length) bankCache = { at: Date.now(), list };
+  } catch (e) {
+    if (!bankCache.list.length) throw e;
+  }
+  if (!bankCache.list.length) throw new Error('Bank list is empty');
+  return bankCache.list;
+}
 export const initTransaction = (body) => call('POST', '/transaction/initialize', body);
 export const verifyTransaction = (reference) =>
   call('GET', `/transaction/verify/${encodeURIComponent(reference)}`);

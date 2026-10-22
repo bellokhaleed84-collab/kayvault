@@ -8,6 +8,7 @@ import { notify, notifyAdmins } from '../lib/notify.js';
 import { encryptJson } from '../lib/crypto.js';
 import { storeListingImages, removeListingImages } from '../lib/listingImages.js';
 import { requireAuth, requireRole, requireAdmin } from '../middleware/auth.js';
+import { SELLER_COUNTRY } from '../lib/regions.js';
 
 const router = Router();
 
@@ -283,6 +284,7 @@ router.get('/stats', requireRole('seller'), async (req, res, next) => {
 router.post('/', requireRole('seller'), async (req, res, next) => {
   try {
     const b = req.body;
+    if (req.user.country !== SELLER_COUNTRY) return res.status(403).json({ error: 'Only sellers in Nigeria can create listings for now.' }); // KV-LIST-NG
     const game = str(b.game, 80);
     const tier = str(b.tier, 200);
     const price = Number(b.price);

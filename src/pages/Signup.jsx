@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { User, Mail, Globe, Gamepad2, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
-import { COUNTRIES, flag } from '../lib/countries';
+import { COUNTRIES, SELLER_COUNTRY, flag } from '../lib/countries';
 import AuthShell from '../components/AuthShell';
 import { Field, PasswordField, GoldButton } from '../components/AuthFields';
 import signupBg from '../assets/signup-bg.jpg';
@@ -22,6 +22,7 @@ export default function Signup() {
     setError('');
     if (form.password !== form.confirm) return setError("Passwords don't match");
     if (form.password.length < 8) return setError('Password must be at least 8 characters');
+    if (role === 'seller' && form.country !== SELLER_COUNTRY) return setError('Sellers must be in Nigeria. Switch to Buyer to join from another country.'); // KV-SIGNUP-NG
 
     setLoading(true);
     try {
@@ -97,6 +98,7 @@ export default function Signup() {
           </div>
         </div>
 
+        {role === 'seller' && <p className="text-xs text-slate-500">Sellers must be in Nigeria. Buyers can join from Nigeria, Ghana, Kenya, South Africa and C&ocirc;te d&#39;Ivoire.</p>} {/* KV-SIGNUP-HINT */}
         {error && <p className="text-red-400 text-xs">{error}</p>}
 
         <GoldButton type="submit" loading={loading}>

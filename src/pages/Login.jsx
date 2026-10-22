@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { safeFrom } from '../lib/redirect'; // KV-LOGIN-IMPORT
 import { useAuth } from '../lib/AuthContext';
 import AuthShell from '../components/AuthShell';
 import { Field, PasswordField, GoldButton } from '../components/AuthFields';
@@ -12,6 +13,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // KV-LOGIN-FROM
   const { login } = useAuth();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +24,9 @@ export default function Login() {
     setLoading(true);
     try {
       const u = await login(form.email, form.password, remember);
-      if (u.is_admin) navigate('/admin');
+      const back = safeFrom(location.state && location.state.from); // KV-LOGIN-GO
+      if (back) navigate(back, { replace: true });
+      else if (u.is_admin) navigate('/admin');
       else navigate('/home');
     } catch (err) {
       setError(err.message);

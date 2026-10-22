@@ -28,11 +28,24 @@ if (!MONGODB_URI || !JWT_SECRET) {
 }
 
 const app = express();
+app.set('trust proxy', 1); // KV-TRUST-PROXY: Render sits behind one proxy, so rate limits see the real visitor IP
 app.use(helmet());
 app.use(cors({ origin: (CLIENT_ORIGIN || 'http://localhost:5173').split(',') }));
 app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { req.rawBody = buf; } }));
 
 app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 50 }));
+// KV-RATE-LIMITS: tighter limits on the sensitive routes
+const limit = (windowMs, max, message, extra = {}) =>
+  rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, message: { error: message }, ...extra });
+app.use('/api', limit(60 * 1000, 300, 'Too many requests. Slow down and try again in a minute.'));
+app.use('/api/auth/login', limit(15 * 60 * 1000, 20, 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
+app.use('/api/auth/signup', limit(60 * 60 * 1000, 10, 'Too many sign-ups from this network. Try again later.'));
+app.use('/api/auth/forgot-password', limit(60 * 60 * 1000, 5, 'Too many reset requests. Try again later.'));
+app.use('/api/auth/reset-password', limit(60 * 60 * 1000, 10, 'Too many attempts. Try again later.'));
+app.use('/api/profile/password', limit(15 * 60 * 1000, 10, 'Too many password attempts. Try again in 15 minutes.'));
+app.use('/api/listings', limit(60 * 60 * 1000, 40, 'Too many listing changes. Try again later.', {
+  skip: (req) => !(req.method === 'PATCH' || (req.method === 'POST' && req.path === '/')),
+}));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);

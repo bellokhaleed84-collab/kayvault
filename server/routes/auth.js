@@ -33,6 +33,7 @@ router.post('/signup', async (req, res, next) => {
     if (!COUNTRIES.includes(country)) return res.status(400).json({ error: 'Choose one of the listed countries' }); // KV-AUTH-COUNTRY
     if (b.role === 'seller' && country !== SELLER_COUNTRY) return res.status(400).json({ error: 'Sellers must be in Nigeria for now. Buyers can join from the listed countries.' });
     if (!['buyer', 'seller'].includes(b.role)) return res.status(400).json({ error: 'Invalid role' });
+    if (b.accepted_terms !== true) return res.status(400).json({ error: 'You must accept the Terms of Service and Privacy Policy' }); // KV-P17B-SERVER
     const pwErr = passwordError(b.password);
     if (pwErr) return res.status(400).json({ error: pwErr });
 
@@ -44,6 +45,7 @@ router.post('/signup', async (req, res, next) => {
       country,
       role: b.role,
       password_hash: await bcrypt.hash(b.password, 12),
+      terms_accepted_at: new Date(), // KV-P17B-USER
     });
     sendWelcome(user.email, user.full_name, user.role);
     res.status(201).json({ token: sign(user, true), user });

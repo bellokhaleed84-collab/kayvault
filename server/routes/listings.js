@@ -182,6 +182,7 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
     const cur = await Listing.findOne({ _id: req.params.id, seller: req.user._id }).select('+credentials_enc');
     if (!cur) return res.status(404).json({ error: 'Listing not found' });
     if (cur.status === 'sold') return res.status(409).json({ error: 'A sold listing cannot be edited' });
+    if (req.user.kyc_status !== 'verified') return res.status(403).json({ error: 'Only verified sellers can edit listings.' }); // KV-P17E-EDIT
     if (cur.reserved_until && cur.reserved_until > new Date()) {
       return res.status(409).json({ error: 'A buyer is paying for this account right now. Try again in a few minutes.' });
     }
@@ -285,6 +286,7 @@ router.post('/', requireRole('seller'), async (req, res, next) => {
   try {
     const b = req.body;
     if (req.user.country !== SELLER_COUNTRY) return res.status(403).json({ error: 'Only sellers in Nigeria can create listings for now.' }); // KV-LIST-NG
+    if (req.user.kyc_status !== 'verified') return res.status(403).json({ error: 'Only verified sellers can create listings. Submit your ID in Settings and wait for approval.' }); // KV-P17E-CREATE
     const game = str(b.game, 80);
     const tier = str(b.tier, 200);
     const price = Number(b.price);
@@ -332,6 +334,9 @@ router.get('/pending', requireAdmin, async (_req, res, next) => {
 
 router.post('/:id/approve', requireAdmin, async (req, res, next) => {
   try {
+    const pend = await Listing.findOne({ _id: req.params.id, status: 'pending' }).select('seller'); // KV-P17C-APPROVE
+    const sel = pend ? await User.findById(pend.seller).select('kyc_status') : null;
+    if (pend && (!sel || sel.kyc_status !== 'verified')) return res.status(409).json({ error: 'This seller is not verified yet. Approve their verification first, then approve the listing.' });
     const l = await Listing.findOneAndUpdate({ _id: req.params.id, status: 'pending' }, { status: 'live' }, { new: true }).select(LIGHT);
     if (l) notify(l.seller, { type: 'listing', title: 'Listing approved', body: `${l.game} is now live.`, link: `/listing/${l.id}` });
     if (!l) return res.status(404).json({ error: 'Pending listing not found' });

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import Listing from '../models/Listing.js';
 import Purchase from '../models/Purchase.js';
 import Payment from '../models/Payment.js';
+import User from '../models/User.js'; // KV-P17E-IMP
 import { notify, notifyAdmins } from '../lib/notify.js';
 import { initTransaction, verifyTransaction, validSignature, feePercent, secretConfigured } from '../lib/paystack.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
@@ -150,6 +151,33 @@ async function fulfill(reference) {
   }
 }
 
+// KV-PAY-SWEEP: finds payments Paystack confirmed but the webhook and the buyer's page both missed
+export async function sweepPayments() {
+  const now = Date.now();
+  const rows = await Payment.find({
+    purchase: { $exists: false },
+    status: { $in: ['pending', 'processing'] },
+    created_at: { $lt: new Date(now - 3 * 60 * 1000), $gt: new Date(now - 6 * 60 * 60 * 1000) },
+  }).select('reference created_at').limit(25).lean();
+
+  let done = 0;
+  for (const p of rows) {
+    try {
+      const young = now - new Date(p.created_at).getTime() < 35 * 60 * 1000;
+      // A buyer may still be typing their card, so a young payment is only picked up once Paystack says it succeeded
+      if (young) {
+        const tx = await verifyTransaction(p.reference);
+        if (tx.status !== 'success') continue;
+      }
+      const r = await fulfill(p.reference);
+      if (r.ok && r.purchase_id) done++;
+    } catch (e) {
+      console.error('payment sweep skipped', p.reference, e.message);
+    }
+  }
+  return done;
+}
+
 /* ------------------------------------------------ WEBHOOK (Paystack calls this; no login) */
 router.post('/webhook', async (req, res) => {
   try {
@@ -200,6 +228,11 @@ router.post('/initialize', requireRole('buyer'), async (req, res, next) => {
       return res.status(409).json({ error: 'The seller has not added delivery details for this account yet' });
     }
 
+    const sellerKyc = await User.findById(listing.seller).select('kyc_status'); // KV-P17E-PAY
+    if (!sellerKyc || sellerKyc.kyc_status !== 'verified') {
+      await release();
+      return res.status(409).json({ error: 'This seller is not verified, so this account cannot be bought right now.' });
+    }
     const amount_kobo = Math.round(listing.price * 100);
     const feeKobo = Math.round((amount_kobo * feePercent()) / 100);
     const reference = 'kv_' + crypto.randomBytes(12).toString('hex');

@@ -15,6 +15,7 @@ import BrowseListings from './pages/BrowseListings';
 import ListingDetail from './pages/ListingDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import Settings from './pages/Settings';
+import { Terms, Privacy, Help } from './pages/InfoPages'; // KV-P17-APPIMP
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -58,6 +59,10 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/browse" element={<BrowseListings />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/faq" element={<Help />} />
       <Route path="/listing/:id" element={<ListingDetail />} />
       <Route
         path="/orders/:id"

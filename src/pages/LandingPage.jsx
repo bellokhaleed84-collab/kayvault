@@ -200,7 +200,15 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-        <Newsletter />
+        <div className="rounded-2xl bg-[#131B2E] border border-slate-800 p-8 flex flex-col justify-between">
+          <div>
+            <h3 className="font-display text-xl font-semibold text-slate-100">Have questions?</h3>
+            <p className="text-slate-500 text-sm mt-1">Read how escrow, refunds and payouts work before you buy or sell.</p>
+          </div>
+          <div className="mt-6">
+            <Link to="/help" className="inline-block border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 font-semibold rounded-lg px-6 py-3 text-sm transition-colors">Visit the Help Center</Link>
+          </div>
+        </div>
       </section>
 
       <Footer />

@@ -19,6 +19,7 @@ import proofRoutes from './routes/proofs.js';
 import disputeRoutes from './routes/disputes.js';
 import { sweepProofs } from './lib/proofSweep.js';
 import { sweepKyc } from './lib/kycSweep.js';
+import { sweepPayments } from './routes/payments.js';
 import caseRoutes from './routes/cases.js';
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
@@ -33,12 +34,13 @@ app.use(helmet());
 app.use(cors({ origin: (CLIENT_ORIGIN || 'http://localhost:5173').split(',') }));
 app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { req.rawBody = buf; } }));
 
-app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 50 }));
+// KV-P17-NOAUTHLIMIT: the old blanket /api/auth limit was removed (it counted /auth/me on every page load)
 // KV-RATE-LIMITS: tighter limits on the sensitive routes
 const limit = (windowMs, max, message, extra = {}) =>
   rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, message: { error: message }, ...extra });
 app.use('/api', limit(60 * 1000, 300, 'Too many requests. Slow down and try again in a minute.'));
-app.use('/api/auth/login', limit(15 * 60 * 1000, 5, 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
+app.use('/api/auth/login', limit(15 * 60 * 1000, 10, /* KV-P17-LOGIN10 */ 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
+app.use('/api/auth/login', limit(15 * 60 * 1000, 8, 'Too many attempts for this account. Try again in 15 minutes.', { skipSuccessfulRequests: true, keyGenerator: (req) => 'e:' + String((req.body && req.body.email) || '').toLowerCase().slice(0, 254) })); // KV-P17-EMAILLIMIT
 app.use('/api/auth/signup', limit(60 * 60 * 1000, 10, 'Too many sign-ups from this network. Try again later.'));
 app.use('/api/auth/forgot-password', limit(60 * 60 * 1000, 5, 'Too many reset requests. Try again later.'));
 app.use('/api/auth/reset-password', limit(60 * 60 * 1000, 10, 'Too many attempts. Try again later.'));
@@ -84,6 +86,10 @@ mongoose
     const sweepK = () => sweepKyc().then((n) => n && console.log('Deleted ' + n + ' old verification record(s)')).catch((e) => console.error('KYC sweep failed:', e.message));
     setTimeout(sweepK, 45 * 1000);
     setInterval(sweepK, 60 * 60 * 1000);
+    // KV-PAY-SWEEP-TIMER: deliver paid orders the webhook or callback missed
+    const sweepPay = () => sweepPayments().then((n) => n && console.log('Recovered ' + n + ' payment(s)')).catch((e) => console.error('Payment sweep failed:', e.message));
+    setTimeout(sweepPay, 60 * 1000);
+    setInterval(sweepPay, 5 * 60 * 1000);
     app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
   })
   .catch((e) => {

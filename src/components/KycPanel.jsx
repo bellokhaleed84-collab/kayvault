@@ -13,7 +13,7 @@ const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-5';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 // Shrinks a photo to a JPEG data URL under the server limit
-function fileToJpeg(file, maxDim = 1400) {
+export function fileToJpeg(file, maxDim = 1400) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -122,7 +122,7 @@ export default function KycPanel() {
       )}
 
       <div>
-        <p className="text-slate-100 font-medium">Get the Verified seller badge</p>
+        <p className="text-slate-100 font-medium">Verify your identity to sell on KayVault</p>
         <p className="text-sm text-slate-500 mt-1">
           Upload a government ID and a selfie. We only use them to confirm who you are. We never ask for your NIN or BVN number.
         </p>

@@ -153,7 +153,8 @@ router.post('/seller/:id/mark-paid', requireAdmin, async (req, res, next) => {
     if (!validId(req.params.id)) return res.status(404).json({ error: 'Seller not found' });
     const ids = Array.isArray(req.body.order_ids) ? req.body.order_ids.filter(validId).slice(0, 1000) : [];
     if (ids.length === 0) return res.status(400).json({ error: 'No orders selected' });
-    const holder = await User.findById(req.params.id).select('suspended');
+    const holder = await User.findById(req.params.id).select('suspended kyc_status'); // KV-P17C-PAYHOLD
+    if (holder && holder.kyc_status !== 'verified') return res.status(409).json({ error: 'This seller has not been verified yet, so their payout is on hold. Ask them to verify in Settings.' });
     if (holder?.suspended) return res.status(409).json({ error: 'This seller is suspended, so their payout is on hold. Restore the seller first.' });
     const note = typeof req.body.note === 'string' ? req.body.note.trim().slice(0, 120) : '';
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // KV-P17-NAVIMP
 import { Search, Menu, X } from 'lucide-react';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
@@ -23,7 +23,7 @@ function NavLink({ to, children, className }) {
 
 export default function PublicNavbar({ overlay = false }) {
   const { profile } = useAuth();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); const navigate = useNavigate(); // KV-P17-NAVHOOK
 
   const dash = profile?.is_admin
     ? '/admin'
@@ -50,7 +50,7 @@ export default function PublicNavbar({ overlay = false }) {
 
         <div className="hidden md:flex items-center gap-3">
           {profile && <NotificationBell />}
-          <button aria-label="Search" className="text-slate-400 hover:text-slate-100 p-2">
+          <button aria-label="Search" onClick={() => navigate('/browse')} className="text-slate-400 hover:text-slate-100 p-2">
             <Search size={17} />
           </button>
           {profile ? (

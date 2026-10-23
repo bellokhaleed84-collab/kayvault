@@ -23,15 +23,15 @@ export default function Footer() {
         </div>
         <div>
           <p className={h}>SUPPORT</p>
-          <a href="#" className={a}>Help Center</a>
-          <a href="#" className={a}>Terms of Service</a>
-          <a href="#" className={a}>Privacy Policy</a>
-          <a href="#" className={a}>FAQ</a>
+          <Link to="/help" className={a}>Help Center</Link>
+          <Link to="/terms" className={a}>Terms of Service</Link>
+          <Link to="/privacy" className={a}>Privacy Policy</Link>
+          <Link to="/faq" className={a}>FAQ</Link>
         </div>
         <div>
-          <p className={h}>FOLLOW US</p>
+          {/* KV-P17-NOFOLLOW */}
           <div className="flex gap-3 mb-6">
-            {[Mail, MessageCircle, Globe].map((Icon, i) => (
+            {[/* KV-P17-NOICONS */].map((Icon, i) => (
               <a key={i} href="#" className="w-8 h-8 rounded-full border border-slate-800 flex items-center justify-center text-slate-400 hover:text-[#D4A94B] hover:border-[#D4A94B]/50 transition-colors">
                 <Icon size={14} />
               </a>

@@ -5,6 +5,7 @@ import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
 import { PasswordField } from '../components/AuthFields';
 import { api } from '../lib/api';
+import { useAuth } from '../lib/AuthContext'; // KV-P17C-AUTHIMP
 import { resizeToDataUrl } from '../lib/images';
 import { money } from '../lib/orders';
 
@@ -18,6 +19,8 @@ const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 export default function CreateListing() {
   const navigate = useNavigate();
+  const { profile } = useAuth(); // KV-P17C-HOOK
+  const needsId = Boolean(profile && profile.role === 'seller' && profile.kyc_status !== 'verified'); // KV-P17E-NEEDS
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
     game: '', tier: '', level: '', platform: 'PC', account_type: 'standard',
@@ -31,6 +34,7 @@ export default function CreateListing() {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   function problem(s) {
+    if (needsId) return 'Only verified sellers can create listings.'; // KV-P17E-PROB
     if (s === 0) {
       if (!form.game.trim()) return 'Enter the game name.';
       if (!form.tier.trim()) return 'Add a headline buyers will see, for example "Galaxy Skin, 150+ skins".';
@@ -91,6 +95,13 @@ export default function CreateListing() {
           <ArrowLeft size={14} /> Back to dashboard
         </Link>
         <h1 className="font-display text-3xl font-semibold text-slate-100 mb-8">Create a listing</h1>
+        {/* KV-P17C-CREATEBANNER */}
+        {needsId && (
+          <div className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-slate-300">{profile && profile.kyc_status === 'pending' ? 'Your ID is being reviewed. You can create listings once you are verified.' : 'Only verified sellers can create listings. Verify your identity first.'}</p>
+            <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">Verify now</Link>
+          </div>
+        )}
 
         <ol className="flex items-center mb-8">
           {STEPS.map((name, i) => (

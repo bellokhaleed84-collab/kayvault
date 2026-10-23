@@ -28,7 +28,7 @@ function Msg({ m }) {
 export default function Settings() {
   const { user, profile, refreshProfile } = useAuth();
   const isSeller = profile?.role === 'seller';
-  const [tab, setTab] = useState('profile');
+  const [tab, setTab] = useState(new URLSearchParams(window.location.search).get('tab') === 'verification' ? 'verification' : 'profile'); // KV-P17C-TAB
 
   const [name, setName] = useState(profile?.full_name || '');
   const [country, setCountry] = useState(profile?.country || '');
@@ -168,7 +168,7 @@ export default function Settings() {
                   <div>
                     <p className="text-sm text-slate-200">Email me about order updates</p>
                     <p className="text-xs text-slate-500 mt-1">
-                      Email delivery is not switched on yet. Your choice is saved and will apply when it is.
+                      Order updates are also sent to your email. Security emails are always sent.
                     </p>
                   </div>
                   <button type="button" onClick={toggleEmail} aria-pressed={notifyEmail} aria-label="Email notifications"

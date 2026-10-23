@@ -250,6 +250,19 @@ export default function SellerDashboard() {
               <CheckCircle2 size={16} /> Listing submitted. It goes live once our team approves it.
             </div>
           )}
+          {/* KV-P17C-BANNER */}
+          {profile && profile.kyc_status !== 'verified' && (
+            <div className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-slate-300">
+                {profile.kyc_status === 'pending'
+                  ? 'Your ID is being reviewed. Your listings and payouts are released once you are verified.'
+                  : "Verify your identity (National ID, driver's licence or passport) before your listings can go live and you can be paid."}
+              </p>
+              {profile.kyc_status !== 'pending' && (
+                <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">Verify now</Link>
+              )}
+            </div>
+          )}
           {error && <p className="text-red-400 text-sm mb-6">{error}</p>}
           {!loading && <SellerDisputes sales={sales} onDone={reloadSales} />}
 

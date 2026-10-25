@@ -8,6 +8,7 @@ import User from '../models/User.js'; // KV-P17E-IMP
 import { notify, notifyAdmins } from '../lib/notify.js';
 import { initTransaction, verifyTransaction, validSignature, feePercent, secretConfigured } from '../lib/paystack.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
+import { handleTransferEvent } from '../lib/withdrawals.js'; // KV-WD-IMP
 
 const router = Router();
 const RESERVE_MS = 30 * 60 * 1000;    // listing is held for the paying buyer
@@ -183,6 +184,7 @@ router.post('/webhook', async (req, res) => {
   try {
     if (!validSignature(req.rawBody, req.headers['x-paystack-signature'])) return res.status(401).end();
     const ev = req.body;
+    if (String(ev?.event || '').startsWith('transfer.')) await handleTransferEvent(ev); // KV-WD-HOOK
     if (ev?.event === 'charge.success' && ev.data?.reference) {
       const r = await fulfill(String(ev.data.reference));
       if (r.status === 500 || r.status === 502) return res.status(500).end(); // Paystack will retry

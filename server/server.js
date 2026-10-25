@@ -21,6 +21,8 @@ import { sweepProofs } from './lib/proofSweep.js';
 import { sweepKyc } from './lib/kycSweep.js';
 import { sweepPayments } from './routes/payments.js';
 import caseRoutes from './routes/cases.js';
+import withdrawalRoutes from './routes/withdrawals.js';
+import { sweepWithdrawals } from './lib/withdrawals.js'; // KV-WD-SIMP
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) {
@@ -63,6 +65,7 @@ app.use('/api/kyc', kycRoutes);
 app.use('/api/proofs', proofRoutes);
 app.use('/api/disputes', disputeRoutes);
 app.use('/api/cases', caseRoutes);
+app.use('/api/withdrawals', withdrawalRoutes); // KV-WD-SROUTE
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use((err, _req, res, _next) => {
@@ -90,6 +93,10 @@ mongoose
     const sweepPay = () => sweepPayments().then((n) => n && console.log('Recovered ' + n + ' payment(s)')).catch((e) => console.error('Payment sweep failed:', e.message));
     setTimeout(sweepPay, 60 * 1000);
     setInterval(sweepPay, 5 * 60 * 1000);
+    // KV-WD-SWEEP-TIMER: settle withdrawals that Paystack confirmed but the webhook missed
+    const sweepW = () => sweepWithdrawals().then((n) => n && console.log('Settled ' + n + ' withdrawal(s)')).catch((e) => console.error('Withdrawal sweep failed:', e.message));
+    setTimeout(sweepW, 75 * 1000);
+    setInterval(sweepW, 5 * 60 * 1000);
     app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
   })
   .catch((e) => {

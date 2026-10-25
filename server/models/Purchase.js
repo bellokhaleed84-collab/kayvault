@@ -34,7 +34,8 @@ const purchaseSchema = new mongoose.Schema(
     refund_reference: { type: String, default: '' },
     refund_error: { type: String, default: '' },
     refunded_at: Date,
-    payout_status: { type: String, enum: ['unpaid', 'paid'], default: 'unpaid' },
+    payout_status: { type: String, enum: ['unpaid', 'requested', 'paid'], default: 'unpaid' }, // KV-WD-PURCHASE
+    withdrawal: { type: mongoose.Schema.Types.ObjectId, ref: 'Withdrawal', index: true },
     payout_paid_at: Date,
     payout_note: { type: String, default: '' },
     payout_batch: { type: String, default: '', index: true },

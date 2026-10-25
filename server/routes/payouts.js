@@ -38,7 +38,7 @@ router.get('/mine', requireRole('seller'), async (req, res, next) => {
     await sweepExpired().catch(() => {});
     const rows = await Purchase.find({ ...REAL, seller: req.user._id }).lean();
     const released = rows.filter((p) => p.escrow_status === 'released').sort((a, b) => when(b) - when(a));
-    const awaiting = released.filter((p) => p.payout_status !== 'paid');
+    const awaiting = released.filter((p) => p.payout_status !== 'paid' && p.payout_status !== 'requested') /* KV-WD-P1 */;
     const paid = released.filter((p) => p.payout_status === 'paid');
     const held = rows.filter((p) => p.escrow_status === 'held' || p.escrow_status === 'refund_requested');
     res.json({
@@ -55,7 +55,7 @@ router.get('/mine', requireRole('seller'), async (req, res, next) => {
         platform_fee: p.platform_fee || 0,
         seller_amount: p.seller_amount || 0,
         released_at: p.released_at,
-        paid: p.payout_status === 'paid',
+        paid: p.payout_status === 'paid', requested: p.payout_status === 'requested', // KV-WD-P2
         payout_paid_at: p.payout_paid_at || null,
       })),
     });
@@ -68,7 +68,7 @@ router.get('/summary', requireAdmin, async (_req, res, next) => {
     await sweepExpired().catch(() => {});
 
     const owedRows = await Purchase.find({
-      ...REAL, escrow_status: 'released', payout_status: { $ne: 'paid' },
+      ...REAL, escrow_status: 'released', payout_status: { $nin: ['paid', 'requested'] }, // KV-WD-P3
     }).sort({ released_at: 1 }).lean();
 
     const bySeller = new Map();
@@ -160,7 +160,7 @@ router.post('/seller/:id/mark-paid', requireAdmin, async (req, res, next) => {
 
     const batch = new mongoose.Types.ObjectId().toString();
     await Purchase.updateMany(
-      { ...REAL, _id: { $in: ids }, seller: req.params.id, escrow_status: 'released', payout_status: { $ne: 'paid' } },
+      { ...REAL, _id: { $in: ids }, seller: req.params.id, escrow_status: 'released', payout_status: { $nin: ['paid', 'requested'] } /* KV-WD-P4 */ },
       { payout_status: 'paid', payout_paid_at: new Date(), payout_note: note, payout_batch: batch }
     );
     const done = await Purchase.find({ payout_batch: batch }).select('seller_amount').lean();

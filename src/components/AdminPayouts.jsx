@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Clock, CheckCircle2, Wallet, RotateCcw, AlertTriangle } from 'lucide-react';
 import { api } from '../lib/api';
 import { money, shortDate } from '../lib/orders';
+import AdminWithdrawals from './AdminWithdrawals'; // KV-WD-ADMINIMP
 
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
@@ -105,6 +106,9 @@ export default function AdminPayouts() {
           </div>
         ))}
       </div>
+
+      {/* KV-WD-ADMINUI */}
+      <AdminWithdrawals onChange={load} />
 
       <Block title="Sellers to pay" hint="Send each seller their share from your bank, then press Mark as paid. Amounts are already after the platform fee.">
         {data.sellers.length === 0 ? (

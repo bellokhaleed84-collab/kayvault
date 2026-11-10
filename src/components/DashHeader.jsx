@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Search, Settings } from 'lucide-react';
+import { LogOut, Search, Settings, Gamepad2, Coins } from 'lucide-react';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../lib/AuthContext';
@@ -16,6 +16,8 @@ export default function DashHeader() {
         <Link to="/"><Logo /></Link>
         <div className="flex items-center gap-5">
           <Link to="/browse" className={link}><Search size={14} /> Browse</Link>
+          {profile?.role === 'buyer' && <Link to="/topup" className={link}><Gamepad2 size={14} /> Top-up</Link>}
+          {profile?.is_admin && <Link to="/admin/topups" className={link}><Coins size={14} /> Top-ups</Link>}
           <NotificationBell />
           <Link to="/settings" className={link}><Settings size={14} /> Settings</Link>
           <span className="hidden sm:inline text-sm text-slate-500">Hi, {profile?.full_name?.split(' ')[0]}</span>

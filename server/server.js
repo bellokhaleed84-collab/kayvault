@@ -23,6 +23,7 @@ import { sweepPayments } from './routes/payments.js';
 import caseRoutes from './routes/cases.js';
 import withdrawalRoutes from './routes/withdrawals.js';
 import { sweepWithdrawals } from './lib/withdrawals.js'; // KV-WD-SIMP
+import topupRoutes, { sweepTopups } from './routes/topups.js'; // KV-TOPUP-IMP
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) {
@@ -66,6 +67,7 @@ app.use('/api/proofs', proofRoutes);
 app.use('/api/disputes', disputeRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/withdrawals', withdrawalRoutes); // KV-WD-SROUTE
+app.use('/api/topups', topupRoutes); // KV-TOPUP-ROUTE
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use((err, _req, res, _next) => {
@@ -97,6 +99,10 @@ mongoose
     const sweepW = () => sweepWithdrawals().then((n) => n && console.log('Settled ' + n + ' withdrawal(s)')).catch((e) => console.error('Withdrawal sweep failed:', e.message));
     setTimeout(sweepW, 75 * 1000);
     setInterval(sweepW, 5 * 60 * 1000);
+    // KV-TOPUP-SWEEP-TIMER: finish paid top-ups the page or webhook missed, and poll GamesDrop for delivery
+    const sweepT = () => sweepTopups().then((n) => n && console.log('Top-up sweep handled ' + n + ' order(s)')).catch((e) => console.error('Top-up sweep failed:', e.message));
+    setTimeout(sweepT, 90 * 1000);
+    setInterval(sweepT, 2 * 60 * 1000);
     app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
   })
   .catch((e) => {

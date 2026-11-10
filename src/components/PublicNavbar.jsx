@@ -8,6 +8,7 @@ import { useAuth } from '../lib/AuthContext';
 const BASE_LINKS = [
   { label: 'Home', to: '/' },
   { label: 'Browse', to: '/browse' },
+  { label: 'Top-Up', to: '/topup' },
   { label: 'How It Works', to: '/#how-it-works' },
   { label: 'Sell', to: '/signup' },
   { label: 'About', to: '/#about' },
@@ -33,6 +34,7 @@ export default function PublicNavbar({ overlay = false }) {
 
   const link = 'text-sm text-slate-400 hover:text-slate-100 transition-colors';
   const LINKS = BASE_LINKS
+    .filter((l) => l.label !== 'Top-Up' || !profile || profile.role === 'buyer') // KV-EYAD: top-up is for buyers
     .filter((l) => !profile || (!l.to.startsWith('/#') && l.label !== 'Sell'))
     .map((l) => (profile && l.label === 'Home' ? { ...l, to: '/home' } : l));
 

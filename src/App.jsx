@@ -15,6 +15,10 @@ import BrowseListings from './pages/BrowseListings';
 import ListingDetail from './pages/ListingDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import Settings from './pages/Settings';
+import TopupPage from './pages/TopupPage'; // KV-EYAD
+import TopupCallback from './pages/TopupCallback'; // KV-EYAD
+import TopupOrders from './pages/TopupOrders'; // KV-EYAD
+import AdminTopupsPage from './pages/AdminTopupsPage'; // KV-EYAD
 import { Terms, Privacy, Help } from './pages/InfoPages'; // KV-P17-APPIMP
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -44,6 +48,38 @@ export default function App() {
         element={
           <ProtectedRoute role="buyer">
             <PaymentCallback />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/topup"
+        element={
+          <ProtectedRoute role="buyer">
+            <TopupPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/topup/callback"
+        element={
+          <ProtectedRoute role="buyer">
+            <TopupCallback />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/topup/orders"
+        element={
+          <ProtectedRoute role="buyer">
+            <TopupOrders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/topups"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminTopupsPage />
           </ProtectedRoute>
         }
       />

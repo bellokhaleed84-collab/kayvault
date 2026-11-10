@@ -22,7 +22,8 @@ function NavLink({ to, children, className }) {
   );
 }
 
-export default function PublicNavbar({ overlay = false }) {
+// minimal hides the Browse and Top-Up links (used on the logged-in home page, which has its own sections for them)
+export default function PublicNavbar({ overlay = false, minimal = false }) {
   const { profile } = useAuth();
   const [open, setOpen] = useState(false); const navigate = useNavigate(); // KV-P17-NAVHOOK
 
@@ -35,6 +36,7 @@ export default function PublicNavbar({ overlay = false }) {
   const link = 'text-sm text-slate-400 hover:text-slate-100 transition-colors';
   const LINKS = BASE_LINKS
     .filter((l) => l.label !== 'Top-Up' || !profile || profile.role === 'buyer') // KV-EYAD: top-up is for buyers
+    .filter((l) => !minimal || (l.label !== 'Browse' && l.label !== 'Top-Up'))
     .filter((l) => !profile || (!l.to.startsWith('/#') && l.label !== 'Sell'))
     .map((l) => (profile && l.label === 'Home' ? { ...l, to: '/home' } : l));
 

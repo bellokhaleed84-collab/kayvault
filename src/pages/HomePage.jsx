@@ -1,13 +1,20 @@
-// KV-HOME v1
+// KV-HOME v2: accounts for sale + top-ups
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, Plus, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-react';
 import PublicNavbar from '../components/PublicNavbar';
 import Footer from '../components/Footer';
 import GameArt from '../components/GameArt';
-import AccountCard from '../components/AccountCard';
+import TopupGameImage from '../components/TopupGameImage';
 import { api, assetUrl } from '../lib/api';
 import { useAuth } from '../lib/AuthContext';
+
+// Popular top-up games are shown first
+const POPULAR = ['genshin', 'hsr', 'zzz', 'mlbb', 'pubgm', 'freefire_global', 'codm_id', 'wuthering', 'hok', 'deltaforce', 'bloodstrike', 'marvel_rivals'];
+const rank = (id) => {
+  const i = POPULAR.indexOf(id);
+  return i === -1 ? 999 : i;
+};
 
 function SectionTitle({ children, sub, to, toLabel = 'View all' }) {
   return (
@@ -25,13 +32,24 @@ export default function HomePage() {
   const { profile } = useAuth();
   const navigate = useNavigate();
   const [games, setGames] = useState(null);
-  const [latest, setLatest] = useState(null);
+  const [topups, setTopups] = useState(null); // null = loading, 'off' = not available, otherwise a list of games
   const [q, setQ] = useState('');
+
+  const isBuyer = profile?.role === 'buyer';
 
   useEffect(() => {
     api.get('/listings/games?limit=12').then(setGames).catch(() => setGames([]));
-    api.get('/listings/featured').then(setLatest).catch(() => setLatest([]));
   }, []);
+
+  useEffect(() => {
+    if (!isBuyer) return;
+    api.get('/topups/catalog')
+      .then((r) => {
+        const list = (r.games || []).slice().sort((a, b) => rank(a.id) - rank(b.id) || a.name.localeCompare(b.name));
+        setTopups(list.slice(0, 12));
+      })
+      .catch(() => setTopups('off'));
+  }, [isBuyer]);
 
   const first = profile?.full_name?.split(' ')[0] || '';
   const isSeller = profile?.role === 'seller';
@@ -55,7 +73,7 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen bg-[#0B1120] text-slate-200">
-      <PublicNavbar overlay />
+      <PublicNavbar overlay minimal />
 
       <section className="relative overflow-hidden bg-[#0B1120]">
         <div
@@ -113,8 +131,8 @@ export default function HomePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 py-12">
-        <SectionTitle sub="The games with the most accounts available right now." to="/browse" toLabel="Browse all games">
-          Top Games
+        <SectionTitle sub="Buy gaming accounts from verified sellers, protected by escrow." to="/browse" toLabel="Browse all games">
+          Accounts for sale
         </SectionTitle>
         {games === null ? (
           <p className="text-slate-500 text-sm">Loading...</p>
@@ -141,26 +159,36 @@ export default function HomePage() {
         )}
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <SectionTitle sub="The newest accounts approved by our team." to="/browse">
-          Latest Accounts
-        </SectionTitle>
-        {latest === null ? (
-          <p className="text-slate-500 text-sm">Loading...</p>
-        ) : latest.length === 0 ? (
-          <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-10 text-center">
-            <p className="text-slate-500 text-sm">Nothing here yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {latest.map((l) => (
-              <Link key={l.id} to={`/listing/${l.id}`} className="block">
-                <AccountCard game={l.game} tier={l.tier} price={l.price} status={l.status} image={assetUrl(l.image_urls?.[0])} />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      {isBuyer && (
+        <section className="max-w-6xl mx-auto px-6 py-12">
+          <SectionTitle sub="Pay in Naira and the coins are sent straight to your game account." to="/topup" toLabel="Browse top-ups">
+            Game top-ups
+          </SectionTitle>
+          {topups === null ? (
+            <p className="text-slate-500 text-sm">Loading...</p>
+          ) : topups === 'off' || topups.length === 0 ? (
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-10 text-center">
+              <p className="text-slate-500 text-sm">Top-ups are not available right now. Check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              {topups.map((g) => (
+                <Link
+                  to="/topup"
+                  key={g.id}
+                  className="group rounded-xl overflow-hidden border border-slate-800 hover:border-[#D4A94B]/50 transition-colors bg-[#131B2E]"
+                >
+                  <TopupGameImage key={g.id} game={g} className="h-28 w-full" />
+                  <div className="px-3 py-2.5">
+                    <p className="text-sm text-slate-200 font-medium truncate">{g.name}</p>
+                    <p className="text-xs text-slate-500">Top-up</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <section className="max-w-6xl mx-auto px-6 pb-16">
         <div className="rounded-2xl bg-[#131B2E] border border-slate-800 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

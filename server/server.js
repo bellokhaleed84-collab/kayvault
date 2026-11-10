@@ -24,6 +24,8 @@ import caseRoutes from './routes/cases.js';
 import withdrawalRoutes from './routes/withdrawals.js';
 import { sweepWithdrawals } from './lib/withdrawals.js'; // KV-WD-SIMP
 import topupRoutes, { sweepTopups } from './routes/topups.js'; // KV-TOPUP-IMP
+import orderChatRoutes from './routes/orderChat.js'; // KV-ORDERCHAT
+import twofaRoutes from './routes/twofa.js'; // KV-TWOFA
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) {
@@ -68,6 +70,8 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/withdrawals', withdrawalRoutes); // KV-WD-SROUTE
 app.use('/api/topups', topupRoutes); // KV-TOPUP-ROUTE
+app.use('/api/order-chat', orderChatRoutes); // KV-ORDERCHAT
+app.use('/api/twofa', twofaRoutes); // KV-TWOFA
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use((err, _req, res, _next) => {

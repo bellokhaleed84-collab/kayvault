@@ -19,6 +19,8 @@ const listingSchema = new mongoose.Schema(
     images: { type: [imageSchema], default: [] },
     price: { type: Number, required: true, min: 1 },
     credentials_enc: { type: String, select: false }, // AES-256-GCM login details. Never sent to clients.
+    twofa_mode: { type: String, enum: ['authenticator', 'message', 'none'], default: 'none' }, // KV-TOTP: how login codes reach the buyer
+    twofa_enc: { type: String, select: false }, // KV-TOTP: AES-256-GCM authenticator key. Never sent to clients.
     status: { type: String, enum: ['pending', 'live', 'sold'], default: 'pending', index: true },
     reserved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     reserved_until: { type: Date, default: null },
@@ -34,6 +36,7 @@ const listingSchema = new mongoose.Schema(
         ret.image_urls = (ret.images || []).map((_, i) => `/api/listings/${ret.id}/image/${i}`);
         delete ret.images;
         delete ret.credentials_enc;
+        delete ret.twofa_enc;
         delete ret.reserved_by;
         delete ret.reserved_until;
         delete ret.seller_suspended;

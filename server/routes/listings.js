@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
 import Listing from '../models/Listing.js';
 import Purchase from '../models/Purchase.js';
 import User from '../models/User.js';
 import Review from '../models/Review.js';
 import { notify, notifyAdmins } from '../lib/notify.js';
 import { encryptJson } from '../lib/crypto.js';
+import { isValidSecret, normalizeSecret, current } from '../lib/totp.js'; // KV-TOTP
 import { storeListingImages, removeListingImages } from '../lib/listingImages.js';
 import { requireAuth, requireRole, requireAdmin } from '../middleware/auth.js';
 import { SELLER_COUNTRY } from '../lib/regions.js';
@@ -15,6 +17,7 @@ const router = Router();
 const LIGHT = '-images.data'; // never load image bytes in list queries
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = ['standard', 'modded', 'smurf', 'fresh', 'other'];
+const TWOFA_MODES = ['authenticator', 'message', 'none']; // KV-TOTP
 const SORTS = {
   newest: { created_at: -1 },
   price_asc: { price: 1 },
@@ -24,6 +27,17 @@ const SORTS = {
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const badRequest = (msg) => Object.assign(new Error(msg), { status: 400 });
+const BAD_KEY = 'That authenticator key does not look right. Copy it again from the game.';
+
+// KV-TOTP: lets a seller check a pasted key against the code in their own authenticator app
+const previewLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 60,
+  keyGenerator: (req) => String(req.user._id),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many checks. Please try again later.' },
+});
 
 function parseImages(arr) {
   if (!Array.isArray(arr)) return [];
@@ -154,6 +168,14 @@ router.get('/:id/image/:n', async (req, res, next) => {
 /* ----------------------------------------------------- LOGGED IN */
 router.use(requireAuth);
 
+// KV-TOTP: seller pastes the authenticator key and sees the code it makes, to compare with their own app
+router.post('/twofa-preview', requireRole('seller'), previewLimiter, (req, res) => {
+  const key = req.body && req.body.twofa_secret;
+  res.set('Cache-Control', 'no-store');
+  if (!isValidSecret(key)) return res.json({ valid: false });
+  res.json({ valid: true, ...current(key) });
+});
+
 // Seller: own listings
 router.get('/mine', requireRole('seller'), async (req, res, next) => {
   try {
@@ -165,10 +187,11 @@ router.get('/mine', requireRole('seller'), async (req, res, next) => {
 router.get('/mine/:id', requireRole('seller'), async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: 'Listing not found' });
-    const l = await Listing.findOne({ _id: req.params.id, seller: req.user._id }).select('-images.data +credentials_enc');
+    const l = await Listing.findOne({ _id: req.params.id, seller: req.user._id }).select('-images.data +credentials_enc +twofa_enc');
     if (!l) return res.status(404).json({ error: 'Listing not found' });
     const out = l.toJSON();
     out.has_credentials = Boolean(l.credentials_enc);
+    out.has_twofa_secret = Boolean(l.twofa_enc); // KV-TOTP: only says whether a key is saved, never the key
     out.locked = Boolean(l.reserved_until && l.reserved_until > new Date());
     res.json(out);
   } catch (e) { next(e); }
@@ -179,7 +202,7 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: 'Listing not found' });
     const b = req.body || {};
-    const cur = await Listing.findOne({ _id: req.params.id, seller: req.user._id }).select('+credentials_enc');
+    const cur = await Listing.findOne({ _id: req.params.id, seller: req.user._id }).select('+credentials_enc +twofa_enc');
     if (!cur) return res.status(404).json({ error: 'Listing not found' });
     if (cur.status === 'sold') return res.status(409).json({ error: 'A sold listing cannot be edited' });
     if (req.user.kyc_status !== 'verified') return res.status(403).json({ error: 'Only verified sellers can edit listings.' }); // KV-P17E-EDIT
@@ -206,6 +229,20 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
       return res.status(400).json({ error: 'Enter both the login and the password, or leave both empty to keep the saved ones' });
     }
 
+    // KV-TOTP: how login codes reach the buyer. Not sent = keep what is saved.
+    const twofaMode = TWOFA_MODES.includes(b.twofa_mode) ? b.twofa_mode : cur.twofa_mode || 'none';
+    const rawKey = typeof b.twofa_secret === 'string' ? b.twofa_secret : '';
+    let twofaEnc = null; // a new encrypted key, or null to keep the saved one
+    if (twofaMode === 'authenticator') {
+      if (rawKey.trim()) {
+        if (!isValidSecret(rawKey)) return res.status(400).json({ error: BAD_KEY });
+        twofaEnc = encryptJson({ secret: normalizeSecret(rawKey) });
+      } else if (!cur.twofa_enc) {
+        return res.status(400).json({ error: 'Enter the authenticator key, or choose a different 2FA option.' });
+      }
+    }
+    const dropKey = twofaMode !== 'authenticator' && Boolean(cur.twofa_enc);
+
     const keepIdx = Array.isArray(b.keep_images)
       ? [...new Set(b.keep_images.map(Number).filter((i) => Number.isInteger(i) && i >= 0 && i < cur.images.length))]
       : cur.images.map((_, i) => i);
@@ -223,8 +260,9 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
     const removed = cur.images.filter((_, i) => !keepIdx.includes(i));
     const added = await storeListingImages(newParsed);
 
-    const set = { game, tier, price, level, platform, account_type, description, features, images: [...kept, ...added] };
+    const set = { game, tier, price, level, platform, account_type, description, features, images: [...kept, ...added], twofa_mode: twofaMode };
     if (wantsCreds) set.credentials_enc = encryptJson({ login, password, notes: str(b.account_notes, 500) });
+    if (twofaEnc) set.twofa_enc = twofaEnc;
     if (needsReview) set.status = 'pending';
 
     const upd = await Listing.findOneAndUpdate(
@@ -234,7 +272,7 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
         status: cur.status,
         $or: [{ reserved_until: null }, { reserved_until: { $lte: new Date() } }],
       },
-      { $set: set },
+      { $set: set, ...(dropKey ? { $unset: { twofa_enc: '' } } : {}) },
       { new: true, runValidators: true }
     ).select(LIGHT);
     if (!upd) {
@@ -298,6 +336,14 @@ router.post('/', requireRole('seller'), async (req, res, next) => {
     if (!game || !tier || !Number.isFinite(price) || price <= 0 || price > 100000000)
       return res.status(400).json({ error: 'Invalid listing details' });
 
+    // KV-TOTP: a request that says nothing about 2FA is saved as "no 2FA"
+    const twofaMode = TWOFA_MODES.includes(b.twofa_mode) ? b.twofa_mode : 'none';
+    let twofaEnc = null;
+    if (twofaMode === 'authenticator') {
+      if (!isValidSecret(b.twofa_secret)) return res.status(400).json({ error: BAD_KEY });
+      twofaEnc = encryptJson({ secret: normalizeSecret(b.twofa_secret) });
+    }
+
     const features = Array.isArray(b.features)
       ? b.features.map((f) => str(f, 40)).filter(Boolean).slice(0, 8)
       : [];
@@ -315,6 +361,8 @@ router.post('/', requireRole('seller'), async (req, res, next) => {
       features,
       images: await storeListingImages(parseImages(b.images)), // KV-LIST-CREATE
       credentials_enc: encryptJson(creds),
+      twofa_mode: twofaMode,
+      ...(twofaEnc ? { twofa_enc: twofaEnc } : {}),
       status: 'pending',
     });
     notifyAdmins({ type: 'listing', title: 'New listing to review', body: `${game} by ${req.user.full_name}`, link: '/admin' }).catch(() => {});

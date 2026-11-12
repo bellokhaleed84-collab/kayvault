@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, ImagePlus, Trash2, Lock } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
+import TwoFactorSetup from '../components/TwoFactorSetup'; // KV-TWOFA
 import { PasswordField } from '../components/AuthFields';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/AuthContext'; // KV-P17C-AUTHIMP
@@ -12,6 +13,7 @@ import { money } from '../lib/orders';
 const STEPS = ['Details', 'Images', 'Delivery', 'Review'];
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'], ['fresh', 'Fresh'], ['other', 'Other']];
+const TWOFA_LABEL = { authenticator: 'Authenticator app (buyer gets the code instantly)', message: 'Codes go to email or phone (buyer asks in the chat)', none: 'No 2FA' };
 
 const input =
   'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
@@ -26,12 +28,14 @@ export default function CreateListing() {
     game: '', tier: '', level: '', platform: 'PC', account_type: 'standard',
     price: '', description: '', features: '',
     account_login: '', account_password: '', account_notes: '',
+    twofa_mode: '', twofa_secret: '', twofa_confirmed: false,
   });
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const patch = (p) => setForm((f) => ({ ...f, ...p }));
 
   function problem(s) {
     if (needsId) return 'Only verified sellers can create listings.'; // KV-P17E-PROB
@@ -43,6 +47,11 @@ export default function CreateListing() {
     if (s === 2) {
       if (!form.account_login.trim()) return 'Enter the login or email for the account.';
       if (!form.account_password) return 'Enter the account password.';
+      if (!form.twofa_mode) return 'Choose how login codes (2FA) reach the buyer.';
+      if (form.twofa_mode === 'authenticator') {
+        if (!form.twofa_secret.trim()) return 'Paste the authenticator key, or choose a different 2FA option.';
+        if (!form.twofa_confirmed) return 'Tap "Check key" and confirm the code matches your authenticator app.';
+      }
     }
     return '';
   }
@@ -72,11 +81,14 @@ export default function CreateListing() {
     setSaving(true);
     setError('');
     try {
-      await api.post('/listings', {
+      const body = {
         ...form,
         features: form.features.split(',').map((f) => f.trim()).filter(Boolean),
         images,
-      });
+      };
+      delete body.twofa_confirmed;
+      if (form.twofa_mode !== 'authenticator') body.twofa_secret = '';
+      await api.post('/listings', body);
       navigate('/dashboard/seller', { state: { created: true } });
     } catch (err) {
       setError(err.message);
@@ -211,10 +223,11 @@ export default function CreateListing() {
               </div>
               <PasswordField label="ACCOUNT PASSWORD" value={form.account_password} onChange={set('account_password')}
                 placeholder="Password for this game account" autoComplete="new-password" />
+              <TwoFactorSetup value={form} onChange={patch} />
               <div>
                 <label className={label}>NOTES FOR THE BUYER (optional)</label>
                 <textarea rows={3} value={form.account_notes} onChange={set('account_notes')} className={input}
-                  placeholder="Recovery email access, 2FA steps, anything the buyer needs..." />
+                  placeholder="Recovery email access, anything else the buyer needs..." />
               </div>
             </>
           )}
@@ -257,9 +270,10 @@ export default function CreateListing() {
                 </div>
               )}
 
-              <div className="rounded-lg border border-slate-800 bg-[#0D1524]/50 p-4 text-sm text-slate-400">
+              <div className="rounded-lg border border-slate-800 bg-[#0D1524]/50 p-4 text-sm text-slate-400 space-y-1">
                 <p className="flex items-center gap-2 text-slate-300 mb-1"><Lock size={14} className="text-[#34D399]" /> Delivery details saved</p>
-                Login: <span className="font-mono text-slate-300">{form.account_login}</span> &middot; Password hidden
+                <p>Login: <span className="font-mono text-slate-300">{form.account_login}</span> &middot; Password hidden</p>
+                <p>2FA: <span className="text-slate-300">{TWOFA_LABEL[form.twofa_mode] || '-'}</span></p>
               </div>
 
               <p className="text-xs text-slate-500">
@@ -273,18 +287,18 @@ export default function CreateListing() {
           <div className="flex items-center justify-between pt-2">
             {step > 0 ? (
               <button type="button" onClick={() => { setError(''); setStep(step - 1); }}
-                className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+                className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
                 Back
               </button>
             ) : <span />}
             {step < STEPS.length - 1 ? (
               <button type="button" onClick={next}
-                className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-2.5 text-sm transition-colors">
+                className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {step === 1 && images.length === 0 ? 'Skip for now' : 'Continue'}
               </button>
             ) : (
               <button type="button" onClick={submit} disabled={saving}
-                className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-2.5 text-sm transition-colors">
+                className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {saving ? 'Submitting...' : 'Submit for review'}
               </button>
             )}

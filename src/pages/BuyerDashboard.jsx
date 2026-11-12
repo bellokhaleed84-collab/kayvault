@@ -4,6 +4,7 @@ import { Wallet, Clock, PackageCheck, ChevronRight } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
 import StatusPill from '../components/StatusPill';
+import Skel from '../components/Skeleton';
 import { api, assetUrl } from '../lib/api';
 import { useAuth } from '../lib/AuthContext';
 import { TABS, inTab, timeLeft, money, shortDate } from '../lib/orders';
@@ -11,6 +12,7 @@ import { TABS, inTab, timeLeft, money, shortDate } from '../lib/orders';
 export default function BuyerDashboard() {
   const { profile } = useAuth();
   const [purchases, setPurchases] = useState([]);
+  const [unread, setUnread] = useState({}); // KV-ORDERCHAT: unread messages per order
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('all');
@@ -22,6 +24,13 @@ export default function BuyerDashboard() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
     const t = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const load = () => api.get('/order-chat/unread').then((r) => setUnread(r.counts || {})).catch(() => {});
+    load();
+    const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -57,7 +66,7 @@ export default function BuyerDashboard() {
             <div key={label} className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
               <Icon size={18} style={{ color }} className="mb-3" />
               <p className="text-slate-500 text-xs font-mono mb-1">{label.toUpperCase()}</p>
-              <p className="font-display text-2xl font-semibold text-slate-100">{value}</p>
+              {loading ? <Skel className="h-8 w-24" /> : <p className="font-display text-2xl font-semibold text-slate-100">{value}</p>}
             </div>
           ))}
         </div>
@@ -69,7 +78,7 @@ export default function BuyerDashboard() {
               <button
                 key={v}
                 onClick={() => setTab(v)}
-                className={`rounded-full px-4 py-1.5 text-xs font-medium border transition-colors ${
+                className={`rounded-full px-4 py-2 text-xs font-medium border transition-colors ${
                   tab === v
                     ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120]'
                     : 'border-slate-800 text-slate-400 hover:text-slate-200'
@@ -84,7 +93,9 @@ export default function BuyerDashboard() {
         {error && <p className="text-red-400 text-sm mb-6">{error}</p>}
 
         {loading ? (
-          <p className="text-slate-500 text-sm">Loading your orders...</p>
+          <div className="space-y-3">
+            {[0, 1, 2].map((i) => <Skel key={i} className="h-28 w-full rounded-xl" />)}
+          </div>
         ) : shown.length === 0 ? (
           <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-10 text-center">
             <p className="text-slate-500 text-sm mb-4">
@@ -93,7 +104,7 @@ export default function BuyerDashboard() {
             {purchases.length === 0 && (
               <Link
                 to="/browse"
-                className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors"
+                className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
               >
                 Browse listings
               </Link>
@@ -104,6 +115,7 @@ export default function BuyerDashboard() {
             {shown.map((p) => {
               const t = p.escrow_status === 'held' ? timeLeft(p.confirm_deadline, now) : null;
               const image = p.has_image ? assetUrl(`/api/listings/${p.listing}/image/0`) : null;
+              const newMsgs = unread[p.id] || 0;
               return (
                 <Link
                   key={p.id}
@@ -122,6 +134,11 @@ export default function BuyerDashboard() {
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <p className="font-mono text-[#D4A94B] font-semibold">{money(p.price)}</p>
                     <StatusPill status={p.escrow_status} />
+                    {newMsgs > 0 && (
+                      <span className="rounded-full bg-[#F87171] text-[#0B1120] text-[11px] font-bold px-2.5 py-1 whitespace-nowrap">
+                        {newMsgs === 1 ? '1 new message' : newMsgs + ' new messages'}
+                      </span>
+                    )}
                     {t && (
                       <p className={`text-xs ${t.expired ? 'text-slate-500' : 'text-slate-400'}`}>{t.text}</p>
                     )}

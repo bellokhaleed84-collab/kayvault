@@ -1,8 +1,10 @@
-// KV-EDITLISTING v1
+// KV-EDITLISTING v2
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ImagePlus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
+import Skel from '../components/Skeleton';
+import TwoFactorSetup from '../components/TwoFactorSetup'; // KV-TWOFA
 import { PasswordField } from '../components/AuthFields';
 import { api, assetUrl } from '../lib/api';
 import { resizeToDataUrl } from '../lib/images';
@@ -44,6 +46,7 @@ export default function EditListing() {
           price: String(l.price || ''), description: l.description || '',
           features: (l.features || []).join(', '),
           account_login: '', account_password: '', account_notes: '',
+          twofa_mode: l.twofa_mode || 'none', twofa_secret: '', twofa_confirmed: false,
         });
         setKeep((l.image_urls || []).map((_, i) => i));
       })
@@ -63,12 +66,17 @@ export default function EditListing() {
   if (!data || !form) {
     return (
       <Shell>
-        <p className="max-w-3xl mx-auto px-6 py-24 text-slate-500 text-sm">Loading...</p>
+        <div className="max-w-3xl mx-auto px-6 py-10 space-y-4">
+          <Skel className="h-5 w-40" />
+          <Skel className="h-9 w-56" />
+          <Skel className="h-96 w-full" />
+        </div>
       </Shell>
     );
   }
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const patch = (p) => setForm((f) => ({ ...f, ...p }));
   const urls = data.image_urls || [];
   const total = keep.length + added.length;
   const blocked = data.status === 'sold' || data.locked;
@@ -95,6 +103,11 @@ export default function EditListing() {
     const hasLogin = form.account_login.trim().length > 0;
     const hasPw = form.account_password.length > 0;
     if (hasLogin !== hasPw) return setError('Enter both the login and the password, or leave both empty to keep the saved ones.');
+    const typedKey = form.twofa_secret.trim().length > 0;
+    if (form.twofa_mode === 'authenticator') {
+      if (!typedKey && !data.has_twofa_secret) return setError('Paste the authenticator key, or choose a different 2FA option.');
+      if (typedKey && !form.twofa_confirmed) return setError('Tap "Check key" and confirm the code matches your authenticator app.');
+    }
     setSaving(true);
     try {
       const res = await api.patch(`/listings/${id}`, {
@@ -103,13 +116,21 @@ export default function EditListing() {
         features: form.features.split(',').map((f) => f.trim()).filter(Boolean),
         keep_images: keep, new_images: added,
         account_login: form.account_login, account_password: form.account_password, account_notes: form.account_notes,
+        twofa_mode: form.twofa_mode, twofa_secret: form.twofa_mode === 'authenticator' ? form.twofa_secret : '',
       });
       const l = res.listing;
-      setData((d) => ({ ...d, status: l.status, image_urls: l.image_urls || [], has_credentials: d.has_credentials || hasLogin }));
+      setData((d) => ({
+        ...d,
+        status: l.status,
+        image_urls: l.image_urls || [],
+        has_credentials: d.has_credentials || hasLogin,
+        twofa_mode: form.twofa_mode,
+        has_twofa_secret: form.twofa_mode === 'authenticator' && (d.has_twofa_secret || typedKey),
+      }));
       setKeep((l.image_urls || []).map((_, i) => i));
       setAdded([]);
       setVer(Date.now());
-      setForm((f) => ({ ...f, account_login: '', account_password: '', account_notes: '' }));
+      setForm((f) => ({ ...f, account_login: '', account_password: '', account_notes: '', twofa_secret: '', twofa_confirmed: false }));
       setDone(res.needs_review ? 'review' : 'saved');
     } catch (err) {
       setError(err.message);
@@ -126,7 +147,7 @@ export default function EditListing() {
         <h1 className="font-display text-3xl font-semibold text-slate-100 mb-2">Edit listing</h1>
         <p className="text-sm text-slate-500 mb-8">
           {data.status === 'live'
-            ? 'This listing is live. Changing the price, details or pictures sends it back to our team for review. Changing only the login details does not.'
+            ? 'This listing is live. Changing the price, details or pictures sends it back to our team for review. Changing only the login details or 2FA does not.'
             : 'This listing is waiting for review. Your changes are saved right away.'}
         </p>
 
@@ -224,7 +245,7 @@ export default function EditListing() {
               <Lock size={15} className="text-[#34D399] mt-0.5 shrink-0" />
               <p className="text-xs text-slate-500 leading-relaxed">
                 {data.has_credentials
-                  ? 'Delivery details are saved and encrypted. Leave the three boxes below empty to keep them, or fill all to replace them.'
+                  ? 'Delivery details are saved and encrypted. Leave the login boxes below empty to keep them, or fill both to replace them.'
                   : 'This listing has no delivery details yet, so buyers cannot purchase it. Add the login and password below.'}
               </p>
             </div>
@@ -235,6 +256,7 @@ export default function EditListing() {
             </div>
             <PasswordField label="ACCOUNT PASSWORD" value={form.account_password} onChange={set('account_password')}
               placeholder={data.has_credentials ? 'Leave empty to keep the saved password' : 'Password for this game account'} autoComplete="new-password" />
+            <TwoFactorSetup value={form} onChange={patch} hasSaved={Boolean(data.has_twofa_secret)} />
             <div>
               <label className={label}>NOTES FOR THE BUYER (optional)</label>
               <textarea rows={3} value={form.account_notes} onChange={set('account_notes')} className={input}
@@ -245,11 +267,11 @@ export default function EditListing() {
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
           <div className="flex items-center justify-end gap-3 pt-2">
-            <Link to="/dashboard/seller" className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+            <Link to="/dashboard/seller" className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
               Back
             </Link>
             <button type="button" onClick={submit} disabled={saving || blocked}
-              className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-2.5 text-sm transition-colors">
+              className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
               {saving ? 'Saving...' : 'Save changes'}
             </button>
           </div>

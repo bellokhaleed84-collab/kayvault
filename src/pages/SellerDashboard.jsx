@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Package, ShoppingBag, Settings, Plus, Wallet, Clock, PackageCheck, CheckCircle2, Banknote, Star, Pencil, Trash2,
+  LayoutDashboard, Package, ShoppingBag, Settings, Plus, Wallet, Clock, PackageCheck, CheckCircle2, Banknote, Star, Pencil, Trash2, MessageSquare,
 } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
 import StatusPill from '../components/StatusPill';
+import Skel from '../components/Skeleton';
+import OrderChat from '../components/OrderChat'; // KV-ORDERCHAT
 import { EarningsChart, StatusDonut } from '../components/charts';
 import { Stars } from '../components/Stars';
 import SellerDisputes from '../components/SellerDisputes';
@@ -100,7 +102,9 @@ function ListingsTable({ rows, empty, onDelete }) {
   );
 }
 
-function OrdersTable({ rows, empty, now }) {
+// KV-ORDERCHAT: every order has a Chat button. Opening it shows the chat with the buyer right under the order.
+function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
+  const [open, setOpen] = useState(null);
   if (rows.length === 0) {
     return <p className="text-slate-500 text-sm p-8 text-center">{empty}</p>;
   }
@@ -113,24 +117,49 @@ function OrdersTable({ rows, empty, now }) {
             <th className={th}>AMOUNT</th>
             <th className={th}>STATUS</th>
             <th className={th}>DATE</th>
+            <th className={th}>CHAT</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((p) => {
             const t = p.escrow_status === 'held' ? timeLeft(p.confirm_deadline, now) : null;
+            const n = unread[p.id] || 0;
             return (
-              <tr key={p.id} className="border-b border-slate-800 last:border-0">
-                <td className="px-5 py-3">
-                  <p className="text-slate-200 font-medium">{p.game}</p>
-                  <p className="text-xs text-slate-500 truncate max-w-[220px]">{p.tier}</p>
-                </td>
-                <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(p.price)}</td>
-                <td className="px-5 py-3">
-                  <StatusPill status={p.escrow_status} />
-                  {t && <p className="text-xs text-slate-500 mt-1">{t.text}</p>}
-                </td>
-                <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(p.created_at)}</td>
-              </tr>
+              <Fragment key={p.id}>
+                <tr className="border-b border-slate-800 last:border-0">
+                  <td className="px-5 py-3">
+                    <p className="text-slate-200 font-medium">{p.game}</p>
+                    <p className="text-xs text-slate-500 truncate max-w-[220px]">{p.tier}</p>
+                  </td>
+                  <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(p.price)}</td>
+                  <td className="px-5 py-3">
+                    <StatusPill status={p.escrow_status} />
+                    {t && <p className="text-xs text-slate-500 mt-1">{t.text}</p>}
+                  </td>
+                  <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(p.created_at)}</td>
+                  <td className="px-5 py-3 whitespace-nowrap">
+                    <button type="button"
+                      onClick={() => {
+                        const next = open === p.id ? null : p.id;
+                        setOpen(next);
+                        if (next && onOpened) onOpened(p.id);
+                      }}
+                      className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-4 py-2.5 text-xs transition-colors">
+                      <MessageSquare size={14} /> Chat
+                      {n > 0 && open !== p.id && (
+                        <span className="ml-1 min-w-[18px] h-[18px] rounded-full bg-[#F87171] text-[#0B1120] text-[10px] font-bold flex items-center justify-center px-1">{n}</span>
+                      )}
+                    </button>
+                  </td>
+                </tr>
+                {open === p.id && (
+                  <tr className="border-b border-slate-800">
+                    <td colSpan={5} className="px-5 pb-5">
+                      <OrderChat purchaseId={p.id} who="seller" />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             );
           })}
         </tbody>
@@ -146,6 +175,7 @@ export default function SellerDashboard() {
   const [listings, setListings] = useState([]);
   const [sales, setSales] = useState([]);
   const [reviewData, setReviewData] = useState({ reviews: [], avg: null, count: 0 });
+  const [unread, setUnread] = useState({ counts: {}, total: 0 }); // KV-ORDERCHAT
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [now, setNow] = useState(Date.now());
@@ -161,6 +191,13 @@ export default function SellerDashboard() {
       setError(e.message);
     }
   };
+  const clearUnread = (orderId) =>
+    setUnread((u) => {
+      const counts = { ...u.counts };
+      const n = counts[orderId] || 0;
+      delete counts[orderId];
+      return { counts, total: Math.max(0, u.total - n) };
+    });
 
   useEffect(() => {
     Promise.all([api.get('/listings/mine'), api.get('/purchases/sales'), api.get('/reviews/mine')])
@@ -168,6 +205,13 @@ export default function SellerDashboard() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
     const t = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const load = () => api.get('/order-chat/unread').then((r) => setUnread({ counts: r.counts || {}, total: r.total || 0 })).catch(() => {});
+    load();
+    const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -225,6 +269,9 @@ export default function SellerDashboard() {
             {NAV.map(([v, l, Icon]) => (
               <button key={v} onClick={() => setView(v)} className={navBtn(view === v)}>
                 <Icon size={16} /> {l}
+                {v === 'orders' && unread.total > 0 && (
+                  <span className="min-w-[18px] h-[18px] rounded-full bg-[#F87171] text-[#0B1120] text-[10px] font-bold flex items-center justify-center px-1">{unread.total}</span>
+                )}
               </button>
             ))}
             <Link to="/settings" className={navBtn(false)}><Settings size={16} /> Settings</Link>
@@ -240,7 +287,7 @@ export default function SellerDashboard() {
               </p>
             </div>
             <Link to="/dashboard/seller/new"
-              className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 text-sm transition-colors">
+              className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-3 text-sm transition-colors">
               <Plus size={16} /> New listing
             </Link>
           </div>
@@ -267,7 +314,13 @@ export default function SellerDashboard() {
           {!loading && <SellerDisputes sales={sales} onDone={reloadSales} />}
 
           {loading ? (
-            <p className="text-slate-500 text-sm">Loading your dashboard...</p>
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[0, 1, 2, 3].map((i) => <Skel key={i} className="h-28 w-full rounded-xl" />)}
+              </div>
+              <Skel className="h-64 w-full rounded-xl" />
+              <Skel className="h-48 w-full rounded-xl" />
+            </div>
           ) : (
             <>
               {view === 'overview' && (
@@ -309,7 +362,7 @@ export default function SellerDashboard() {
                       <h2 className="font-display text-slate-100 font-semibold">Recent orders</h2>
                       <button onClick={() => setView('orders')} className="text-sm text-[#D4A94B] hover:underline">View all</button>
                     </div>
-                    <OrdersTable rows={sales.slice(0, 5)} now={now} empty="No orders yet. They show up here when a buyer purchases." />
+                    <OrdersTable rows={sales.slice(0, 5)} now={now} unread={unread.counts} onOpened={clearUnread} empty="No orders yet. They show up here when a buyer purchases." />
                   </div>
                 </div>
               )}
@@ -395,7 +448,7 @@ export default function SellerDashboard() {
 
               {view === 'orders' && (
                 <div className={card}>
-                  <OrdersTable rows={sales} now={now} empty="No orders yet. They show up here when a buyer purchases." />
+                  <OrdersTable rows={sales} now={now} unread={unread.counts} onOpened={clearUnread} empty="No orders yet. They show up here when a buyer purchases." />
                 </div>
               )}
             </>

@@ -10,6 +10,9 @@ import StatusPill from '../components/StatusPill';
 import ReviewBox from '../components/ReviewBox';
 import ProofUploader from '../components/ProofUploader';
 import CaseChat from '../components/CaseChat';
+import OrderChat from '../components/OrderChat'; // KV-ORDERCHAT
+import TwoFactorCode from '../components/TwoFactorCode'; // KV-TWOFA
+import Skel from '../components/Skeleton';
 import { api, assetUrl } from '../lib/api';
 import { timeLeft, money, shortDate } from '../lib/orders';
 
@@ -38,13 +41,13 @@ function CopyRow({ label, value, secret }) {
         </span>
         {secret && (
           <button type="button" onClick={() => setShow(!show)} aria-label={show ? 'Hide' : 'Show'}
-            className="text-slate-500 hover:text-slate-300">
-            {show ? <EyeOff size={15} /> : <Eye size={15} />}
+            className="text-slate-500 hover:text-slate-300 p-1">
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         )}
         <button type="button" onClick={copy} aria-label={`Copy ${label}`}
-          className="text-slate-500 hover:text-[#D4A94B]">
-          {copied ? <Check size={15} className="text-[#34D399]" /> : <Copy size={15} />}
+          className="text-slate-500 hover:text-[#D4A94B] p-1">
+          {copied ? <Check size={16} className="text-[#34D399]" /> : <Copy size={16} />}
         </button>
       </div>
     </div>
@@ -120,7 +123,17 @@ export default function AccountDelivery() {
     return (
       <div className="min-h-screen bg-[#0B1120] text-slate-200">
         <DashHeader />
-        <p className="max-w-3xl mx-auto px-6 py-24 text-slate-500 text-sm">Loading your order...</p>
+        <div className="max-w-6xl mx-auto px-6 py-10 space-y-6">
+          <Skel className="h-5 w-40" />
+          <Skel className="h-9 w-64" />
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <Skel className="h-40 w-full" />
+              <Skel className="h-48 w-full" />
+            </div>
+            <Skel className="h-64 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -203,13 +216,17 @@ export default function AccountDelivery() {
                     Your payment is held in escrow. The login details are hidden until you choose to reveal them.
                   </p>
                   <button onClick={reveal} disabled={credsLoading}
-                    className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+                    className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
                     <Eye size={15} /> {credsLoading ? 'Decrypting...' : 'Reveal login details'}
                   </button>
                   {credsError && <p className="text-red-400 text-xs mt-3">{credsError}</p>}
                 </div>
               )}
             </div>
+
+            {/* 2FA code and chat with the seller */}
+            {status !== 'refunded' && <TwoFactorCode orderId={p.id} />}
+            {status !== 'refunded' && <OrderChat purchaseId={p.id} who="buyer" />}
 
             {/* safety tips */}
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">
@@ -219,7 +236,7 @@ export default function AccountDelivery() {
               </div>
               <ul className="space-y-2 text-sm text-slate-400 list-disc pl-5">
                 <li>Log in and check the level, skins and items match the listing.</li>
-                <li>Change the password and recovery email right away.</li>
+                <li>Change the password, recovery email and 2FA right away.</li>
                 <li>Only confirm once everything works. Confirming releases the money to the seller.</li>
               </ul>
             </div>
@@ -270,10 +287,10 @@ export default function AccountDelivery() {
                     <div className="space-y-3">
                       <p className="text-sm text-slate-300">Release {money(p.price)} to the seller? This cannot be undone.</p>
                       <button onClick={() => act(`/purchases/${p.id}/confirm`)} disabled={busy}
-                        className="w-full bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-2.5 text-sm transition-colors">
+                        className="w-full bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
                         {busy ? 'Releasing...' : 'Yes, release payment'}
                       </button>
-                      <button onClick={() => setPanel(null)} className="w-full text-sm text-slate-500 hover:text-slate-300">Cancel</button>
+                      <button onClick={() => setPanel(null)} className="w-full text-sm text-slate-500 hover:text-slate-300 py-2">Cancel</button>
                     </div>
                   )}
 
@@ -285,10 +302,10 @@ export default function AccountDelivery() {
                         className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
                       <ProofUploader purchaseId={p.id} onCount={setProofCount} />
                       <button onClick={() => act(`/purchases/${p.id}/refund-request`, { reason })} disabled={busy || reason.trim().length < 5 || proofCount < 1}
-                        className="w-full bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-2.5 text-sm transition-colors">
+                        className="w-full bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
                         {busy ? 'Sending...' : 'Send refund request'}
                       </button>
-                      <button onClick={() => setPanel(null)} className="w-full text-sm text-slate-500 hover:text-slate-300">Cancel</button>
+                      <button onClick={() => setPanel(null)} className="w-full text-sm text-slate-500 hover:text-slate-300 py-2">Cancel</button>
                     </div>
                   )}
 

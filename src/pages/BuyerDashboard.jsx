@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Wallet, Clock, PackageCheck, ChevronRight } from 'lucide-react';
+import { Wallet, Clock, PackageCheck, ChevronRight, Zap } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
 import StatusPill from '../components/StatusPill';
@@ -9,10 +9,40 @@ import { api, assetUrl } from '../lib/api';
 import { useAuth } from '../lib/AuthContext';
 import { TABS, inTab, timeLeft, money, shortDate } from '../lib/orders';
 
+// KV-TOPUPLIST v1: what the buyer sees for each top-up status
+const TOPUP_STATUS = {
+  pending: { label: 'Awaiting payment', color: '#D4A94B' },
+  paid: { label: 'Delivering', color: '#5B8DEF' },
+  processing: { label: 'Delivering', color: '#5B8DEF' },
+  completed: { label: 'Delivered', color: '#34D399' },
+  failed: { label: 'Payment not completed', color: '#F87171' },
+  refund_needed: { label: 'Refund on its way', color: '#5B8DEF' },
+  refunding: { label: 'Refund on its way', color: '#5B8DEF' },
+  refunded: { label: 'Refunded', color: '#F87171' },
+  refund_failed: { label: 'Under review', color: '#D4A94B' },
+  check_needed: { label: 'Under review', color: '#D4A94B' },
+  error: { label: 'Under review', color: '#D4A94B' },
+};
+const TOPUP_SHOW_REASON = ['failed', 'refund_needed', 'refunding', 'refunded'];
+
+function TopupPill({ status }) {
+  const s = TOPUP_STATUS[status] || TOPUP_STATUS.error;
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap"
+      style={{ color: s.color, backgroundColor: s.color + '1A' }}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current" /> {s.label}
+    </span>
+  );
+}
+
 export default function BuyerDashboard() {
   const { profile } = useAuth();
   const [purchases, setPurchases] = useState([]);
   const [unread, setUnread] = useState({}); // KV-ORDERCHAT: unread messages per order
+  const [topups, setTopups] = useState([]); // KV-TOPUPLIST
+  const [topupLoading, setTopupLoading] = useState(true);
+  const [topupError, setTopupError] = useState('');
+  const [showAllTopups, setShowAllTopups] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('all');
@@ -34,6 +64,18 @@ export default function BuyerDashboard() {
     return () => clearInterval(t);
   }, []);
 
+  // KV-TOPUPLIST: the buyer's game top-ups, refreshed while the page is open
+  useEffect(() => {
+    const load = () =>
+      api.get('/topups/mine')
+        .then((rows) => { setTopups(Array.isArray(rows) ? rows : []); setTopupError(''); })
+        .catch((e) => setTopupError(e.message))
+        .finally(() => setTopupLoading(false));
+    load();
+    const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
+    return () => clearInterval(t);
+  }, []);
+
   const stats = useMemo(() => {
     const sum = (f) => purchases.filter(f).reduce((t, p) => t + (p.price || 0), 0);
     return {
@@ -44,6 +86,7 @@ export default function BuyerDashboard() {
   }, [purchases]);
 
   const shown = purchases.filter((p) => inTab(p, tab));
+  const topupRows = showAllTopups ? topups : topups.slice(0, 5);
   const cards = [
     { icon: PackageCheck, label: 'Total orders', value: stats.orders, color: '#34D399' },
     { icon: Clock, label: 'In escrow', value: money(stats.escrow), color: '#5B8DEF' },
@@ -149,6 +192,66 @@ export default function BuyerDashboard() {
             })}
           </div>
         )}
+
+        {/* KV-TOPUPLIST: game top-ups */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Zap size={18} className="text-[#D4A94B]" />
+              <h2 className="font-display text-2xl font-semibold text-slate-100">Top-ups</h2>
+            </div>
+            <Link to="/topup" className="text-sm text-[#D4A94B] hover:underline">New top-up</Link>
+          </div>
+
+          {topupError && <p className="text-red-400 text-sm mb-4">{topupError}</p>}
+
+          {topupLoading ? (
+            <div className="space-y-3">
+              {[0, 1].map((i) => <Skel key={i} className="h-20 w-full rounded-xl" />)}
+            </div>
+          ) : topups.length === 0 ? (
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-8 text-center">
+              <p className="text-slate-500 text-sm mb-4">You have not made a top-up yet.</p>
+              <Link
+                to="/topup"
+                className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
+              >
+                Top up a game
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {topupRows.map((tp) => (
+                <div key={tp.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#D4A94B]/10 flex items-center justify-center shrink-0">
+                    <Zap size={20} className="text-[#D4A94B]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-slate-100 font-semibold truncate">{tp.product_name || 'Game top-up'}</h3>
+                    <p className="text-sm text-slate-500 truncate">{tp.offer_name}</p>
+                    <p className="text-xs text-slate-600 mt-1">
+                      Ordered {shortDate(tp.created_at)}
+                      {tp.player_name ? ` \u00b7 ${tp.player_name}` : tp.game_user_id ? ` \u00b7 ID ${tp.game_user_id}` : ''}
+                    </p>
+                    {TOPUP_SHOW_REASON.includes(tp.status) && tp.fail_reason && (
+                      <p className="text-xs text-slate-500 mt-1">{tp.fail_reason}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <p className="font-mono text-[#D4A94B] font-semibold">{money(tp.naira_amount)}</p>
+                    <TopupPill status={tp.status} />
+                  </div>
+                </div>
+              ))}
+              {topups.length > 5 && (
+                <button type="button" onClick={() => setShowAllTopups(!showAllTopups)}
+                  className="w-full border border-slate-800 hover:border-slate-600 text-slate-400 rounded-lg py-3 text-sm transition-colors">
+                  {showAllTopups ? 'Show fewer' : 'Show all ' + topups.length + ' top-ups'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-// KV-PROFILE v2
+// KV-PROFILE v3
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { requireAuth } from '../middleware/auth.js';
@@ -9,6 +9,16 @@ import { nigerianBanks } from '../lib/paystack.js';
 
 const router = Router();
 router.use(requireAuth);
+
+// KV-PHONE: accepts 08031234567, +2348031234567 or 2348031234567 and returns +2348031234567 (or '' if it is not a Nigerian mobile number)
+function ngPhone(raw) {
+  const d = isStr(raw) ? raw.replace(/\D/g, '') : '';
+  let n = '';
+  if (d.length === 13 && d.startsWith('234')) n = d.slice(3);
+  else if (d.length === 11 && d.startsWith('0')) n = d.slice(1);
+  else if (d.length === 10) n = d;
+  return /^[789]\d{9}$/.test(n) ? '+234' + n : '';
+}
 
 // KV-PROF-BANKLIST: live list of Nigerian banks (from Paystack, cached)
 router.get('/banks', async (_req, res) => {
@@ -39,6 +49,16 @@ router.patch('/', async (req, res, next) => {
     }
     if (typeof b.notify_email === 'boolean') u.notify_email = b.notify_email;
     if (u.role === 'seller') {
+      if (b.phone !== undefined) { // KV-PHONE
+        const raw = isStr(b.phone) ? b.phone.trim() : '';
+        if (!raw) {
+          u.phone = '';
+        } else {
+          const p = ngPhone(raw);
+          if (!p) return res.status(400).json({ error: 'Enter a Nigerian mobile number, for example 08031234567' });
+          u.phone = p;
+        }
+      }
       if (b.bank_name !== undefined) { // KV-PROF-BANKCHECK
         const wanted = cleanLine(b.bank_name, 60);
         if (!wanted) {

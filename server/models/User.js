@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     suspended: { type: Boolean, default: false },
     notify_email: { type: Boolean, default: true },
     terms_accepted_at: { type: Date }, // KV-P17B-MODEL
+    phone: { type: String, default: '' }, // KV-PHONE: seller phone, shown to a buyer only through the order contact route
     bank_name: { type: String, default: '' },
     bank_account_number: { type: String, default: '' },
     bank_account_name: { type: String, default: '' },

@@ -13,6 +13,13 @@ const BANKS = [
   'Wema Bank', 'Zenith Bank',
 ];
 
+// KV-PHONE: 08031234567, +2348031234567 and 2348031234567 are all fine
+const ngPhoneOk = (v) => {
+  const d = String(v || '').replace(/\D/g, '');
+  const n = d.length === 13 && d.startsWith('234') ? d.slice(3) : d.length === 11 && d.startsWith('0') ? d.slice(1) : d.length === 10 ? d : '';
+  return /^[789]\d{9}$/.test(n);
+};
+
 const input =
   'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
@@ -32,6 +39,7 @@ export default function Settings() {
 
   const [name, setName] = useState(profile?.full_name || '');
   const [country, setCountry] = useState(profile?.country || '');
+  const [phone, setPhone] = useState(profile?.phone || ''); // KV-PHONE
   const [bankName, setBankName] = useState(profile?.bank_name || '');
   const [acctNo, setAcctNo] = useState(profile?.bank_account_number || '');
   const [acctName, setAcctName] = useState(profile?.bank_account_name || '');
@@ -72,7 +80,12 @@ export default function Settings() {
   const saveProfile = (e) => {
     e.preventDefault();
     if (!name.trim()) return setMsg({ ok: false, text: 'Enter your name.' });
-    save(async () => { await api.patch('/profile', { full_name: name, country }); await refreshProfile(); }, 'Profile saved.');
+    if (isSeller && phone.trim() && !ngPhoneOk(phone)) return setMsg({ ok: false, text: 'Enter a Nigerian mobile number, for example 08031234567.' });
+    save(async () => {
+      const r = await api.patch('/profile', { full_name: name, country, ...(isSeller ? { phone } : {}) });
+      if (r && r.user && typeof r.user.phone === 'string') setPhone(r.user.phone);
+      await refreshProfile();
+    }, 'Profile saved.');
   };
 
   const saveBank = (e) => {
@@ -147,6 +160,16 @@ export default function Settings() {
                     className="w-full bg-[#0D1524]/50 border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-500 text-sm cursor-not-allowed" />
                   <p className="text-xs text-slate-600 mt-2">Your email is your login and cannot be changed here.</p>
                 </div>
+                {isSeller && (
+                  <div>
+                    <label className={label}>PHONE NUMBER</label>
+                    <input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                      className={`${input} font-mono`} placeholder="08031234567" />
+                    <p className="text-xs text-slate-600 mt-2">
+                      Buyers only see this number after they pay for one of your accounts, so they can reach you if you are offline.
+                    </p>
+                  </div>
+                )}
                 <Msg m={msg} />
                 <button type="submit" disabled={busy} className={gold}>{busy ? 'Saving...' : 'Save changes'}</button>
               </form>

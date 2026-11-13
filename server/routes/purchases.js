@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import Listing from '../models/Listing.js';
 import Purchase from '../models/Purchase.js';
 import Review from '../models/Review.js';
+import User from '../models/User.js'; // KV-SELLERCONTACT
 import { notify, notifyAdmins } from '../lib/notify.js';
 import { requireAuth, requireRole, requireAdmin } from '../middleware/auth.js';
 import { decryptJson } from '../lib/crypto.js';
@@ -19,6 +20,15 @@ const credsLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests for login details. Please try again later.' },
+});
+// KV-SELLERCONTACT: the seller's number can be opened a limited number of times per hour
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 30,
+  keyGenerator: (req) => String(req.user._id),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
 });
 const WINDOW_MS = 24 * 60 * 60 * 1000; // buyer confirm window
 const validId = (id) => mongoose.isValidObjectId(id);
@@ -184,6 +194,22 @@ router.get('/:id/credentials', requireRole('buyer'), credsLimiter, async (req, r
     Purchase.updateOne({ _id: p._id, first_revealed_at: { $exists: false } }, { first_revealed_at: new Date() }).catch(() => {});
     res.set('Cache-Control', 'no-store');
     res.json(decryptJson(l.credentials_enc));
+  } catch (e) { next(e); }
+});
+
+// KV-SELLERCONTACT: the seller's phone number. Only the buyer of this order, and only while the order is still open.
+router.get('/:id/seller-contact', requireRole('buyer'), contactLimiter, async (req, res, next) => {
+  try {
+    if (!validId(req.params.id)) return res.status(404).json({ error: 'Purchase not found' });
+    await sweepExpired().catch(() => {});
+    const p = await Purchase.findOne({ _id: req.params.id, buyer: req.user._id });
+    if (!p) return res.status(404).json({ error: 'Purchase not found' });
+    if (!['held', 'refund_requested'].includes(p.escrow_status)) {
+      return res.status(403).json({ error: "The seller's number is only available while the order is open." });
+    }
+    const s = await User.findById(p.seller).select('full_name phone');
+    res.set('Cache-Control', 'no-store');
+    res.json({ name: (s && s.full_name) || p.seller_name || 'the seller', phone: (s && s.phone) || '' });
   } catch (e) { next(e); }
 });
 

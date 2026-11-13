@@ -12,6 +12,7 @@ import ProofUploader from '../components/ProofUploader';
 import CaseChat from '../components/CaseChat';
 import OrderChat from '../components/OrderChat'; // KV-ORDERCHAT
 import TwoFactorCode from '../components/TwoFactorCode'; // KV-TWOFA
+import SellerContact from '../components/SellerContact'; // KV-SELLERCONTACT
 import Skel from '../components/Skeleton';
 import { api, assetUrl } from '../lib/api';
 import { timeLeft, money, shortDate } from '../lib/orders';
@@ -224,9 +225,10 @@ export default function AccountDelivery() {
               )}
             </div>
 
-            {/* 2FA code and chat with the seller */}
+            {/* 2FA code, chat with the seller, and a way to call them while the order is open */}
             {status !== 'refunded' && <TwoFactorCode orderId={p.id} />}
             {status !== 'refunded' && <OrderChat purchaseId={p.id} who="buyer" />}
+            {(status === 'held' || status === 'refund_requested') && <SellerContact purchaseId={p.id} />}
 
             {/* safety tips */}
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">

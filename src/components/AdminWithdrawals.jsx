@@ -1,13 +1,13 @@
-// KV-ADMINWD v1
+// KV-ADMINWD v2
 import { useCallback, useEffect, useState } from 'react';
 import { Banknote, CheckCircle2, XCircle, RefreshCw, Send } from 'lucide-react';
 import { api } from '../lib/api';
 import { money, shortDate } from '../lib/orders';
 
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
-const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
-const ghostBtn = 'flex items-center justify-center gap-1.5 border border-slate-700 hover:border-slate-500 disabled:opacity-60 text-slate-300 rounded-lg px-4 py-2 text-xs transition-colors';
-const redBtn = 'flex items-center justify-center gap-1.5 border border-[#F87171]/50 text-[#F87171] hover:bg-[#F87171]/10 disabled:opacity-60 rounded-lg px-4 py-2 text-xs transition-colors';
+const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors';
+const ghostBtn = 'flex items-center justify-center gap-1.5 border border-slate-700 hover:border-slate-500 disabled:opacity-60 text-slate-300 rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors';
+const redBtn = 'flex items-center justify-center gap-1.5 border border-[#F87171]/50 text-[#F87171] hover:bg-[#F87171]/10 disabled:opacity-60 rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors';
 const STATUS = { pending: ['Waiting to be paid', '#8B5CF6'], processing: ['Sending via Paystack', '#5B8DEF'], paid: ['Paid', '#34D399'], failed: ['Rejected or failed', '#F87171'] };
 
 // Admin: seller withdrawal requests. In automatic mode most of these pay themselves.
@@ -87,7 +87,7 @@ export default function AdminWithdrawals({ onChange }) {
       {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
 
       {data.open.length === 0 ? (
-        <div className={card + ' p-8 text-center'}>
+        <div className={card + ' p-6 sm:p-8 text-center'}>
           <p className="text-slate-500 text-sm">No withdrawals waiting.</p>
         </div>
       ) : (
@@ -95,32 +95,32 @@ export default function AdminWithdrawals({ onChange }) {
           {data.open.map((w) => {
             const s = STATUS[w.status] || STATUS.pending;
             return (
-              <div key={w.id} className={card + ' p-5'}>
+              <div key={w.id} className={card + ' p-4 sm:p-5'}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="font-display text-slate-100 font-semibold">
                       {w.seller_name}
                       {w.suspended && <span className="ml-2 text-[11px] text-[#F87171]">Suspended, payout on hold</span>}
                     </h3>
-                    <p className="text-xs text-slate-500">{w.seller_email} &middot; {w.order_count} {w.order_count === 1 ? 'order' : 'orders'} &middot; {shortDate(w.created_at)}</p>
+                    <p className="text-xs text-slate-500 break-all">{w.seller_email} &middot; {w.order_count} {w.order_count === 1 ? 'order' : 'orders'} &middot; {shortDate(w.created_at)}</p>
                     <p className="text-xs mt-1" style={{ color: s[1] }}>{s[0]}</p>
                   </div>
                   <p className="font-mono text-xl text-[#8B5CF6]">{money(w.amount)}</p>
                 </div>
 
                 <dl className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
-                  <div><dt className="text-[11px] font-mono text-slate-600">BANK</dt><dd className="text-slate-200">{w.bank_name}</dd></div>
-                  <div><dt className="text-[11px] font-mono text-slate-600">ACCOUNT NUMBER</dt><dd className="font-mono text-slate-200">{w.bank_account_number}</dd></div>
-                  <div><dt className="text-[11px] font-mono text-slate-600">ACCOUNT NAME</dt><dd className="text-slate-200">{w.bank_account_name || '-'}</dd></div>
+                  <div className="min-w-0"><dt className="text-[11px] font-mono text-slate-600">BANK</dt><dd className="text-slate-200">{w.bank_name}</dd></div>
+                  <div className="min-w-0"><dt className="text-[11px] font-mono text-slate-600">ACCOUNT NUMBER</dt><dd className="font-mono text-slate-200">{w.bank_account_number}</dd></div>
+                  <div className="min-w-0"><dt className="text-[11px] font-mono text-slate-600">ACCOUNT NAME</dt><dd className="text-slate-200 break-words">{w.bank_account_name || '-'}</dd></div>
                 </dl>
 
-                {w.error && <p className="text-xs text-red-400 mt-3">{w.error}</p>}
+                {w.error && <p className="text-xs text-red-400 mt-3 break-words">{w.error}</p>}
 
                 {w.status === 'pending' && (
-                  <div className="flex flex-col sm:flex-row gap-3 mt-5 pt-4 border-t border-slate-800">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mt-5 pt-4 border-t border-slate-800">
                     <input value={notes[w.id] || ''} onChange={(e) => setNotes({ ...notes, [w.id]: e.target.value })}
                       maxLength={120} placeholder="Transfer reference (optional)"
-                      className="flex-1 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
+                      className="flex-1 min-w-0 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 sm:py-2 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
                     {data.auto && (
                       <button onClick={() => send(w)} disabled={w.suspended || busy === 'send-' + w.id} className={goldBtn}>
                         <Send size={14} /> {busy === 'send-' + w.id ? 'Sending...' : 'Send via Paystack'}
@@ -136,11 +136,11 @@ export default function AdminWithdrawals({ onChange }) {
                 )}
 
                 {w.status === 'processing' && (
-                  <div className="flex gap-2 mt-5 pt-4 border-t border-slate-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-5 pt-4 border-t border-slate-800">
                     <button onClick={() => check(w)} disabled={busy === 'chk-' + w.id} className={ghostBtn}>
                       <RefreshCw size={14} /> {busy === 'chk-' + w.id ? 'Checking...' : 'Check with Paystack'}
                     </button>
-                    <p className="text-xs text-slate-500 self-center">Do not pay this one by hand. Check again in a few minutes.</p>
+                    <p className="text-xs text-slate-500">Do not pay this one by hand. Check again in a few minutes.</p>
                   </div>
                 )}
               </div>
@@ -151,13 +151,13 @@ export default function AdminWithdrawals({ onChange }) {
 
       {data.recent.length > 0 && (
         <div className={card + ' mt-4'}>
-          <p className="text-[11px] font-mono text-slate-500 px-5 pt-4 pb-2">RECENT</p>
+          <p className="text-[11px] font-mono text-slate-500 px-4 sm:px-5 pt-4 pb-2">RECENT</p>
           <ul>
             {data.recent.map((w) => {
               const s = STATUS[w.status] || STATUS.paid;
               return (
-                <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 border-t border-slate-800 text-sm">
-                  <span className="text-slate-300">{w.seller_name} &middot; <span className="font-mono">{money(w.amount)}</span></span>
+                <li key={w.id} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 sm:px-5 py-2.5 border-t border-slate-800 text-sm">
+                  <span className="text-slate-300 min-w-0 break-words">{w.seller_name} &middot; <span className="font-mono">{money(w.amount)}</span></span>
                   <span className="text-xs" style={{ color: s[1] }}>{s[0]} &middot; {shortDate(w.paid_at || w.created_at)}</span>
                 </li>
               );

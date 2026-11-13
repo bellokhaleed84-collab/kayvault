@@ -15,6 +15,7 @@ import { SELLER_COUNTRY } from '../lib/regions.js';
 const router = Router();
 
 const LIGHT = '-images.data'; // never load image bytes in list queries
+const MAX_IMAGES = 5; // KV-MAXIMG
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = ['standard', 'modded', 'smurf', 'fresh', 'other'];
 const TWOFA_MODES = ['authenticator', 'message', 'none']; // KV-TOTP
@@ -41,7 +42,8 @@ const previewLimiter = rateLimit({
 
 function parseImages(arr) {
   if (!Array.isArray(arr)) return [];
-  return arr.slice(0, 4).map((s) => {
+  if (arr.length > MAX_IMAGES) throw badRequest(`A listing can have up to ${MAX_IMAGES} images`); // KV-MAXIMG
+  return arr.map((s) => {
     const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(String(s));
     if (!m) throw badRequest('One of the images is not a valid JPEG, PNG or WebP');
     const data = Buffer.from(m[2], 'base64');
@@ -247,7 +249,7 @@ router.patch('/:id', requireRole('seller'), async (req, res, next) => {
       ? [...new Set(b.keep_images.map(Number).filter((i) => Number.isInteger(i) && i >= 0 && i < cur.images.length))]
       : cur.images.map((_, i) => i);
     const newParsed = parseImages(b.new_images);
-    if (keepIdx.length + newParsed.length > 4) return res.status(400).json({ error: 'A listing can have up to 4 images' });
+    if (keepIdx.length + newParsed.length > MAX_IMAGES) return res.status(400).json({ error: `A listing can have up to ${MAX_IMAGES} images` }); // KV-MAXIMG
 
     const unchangedImages = newParsed.length === 0 && keepIdx.length === cur.images.length && keepIdx.every((v, i) => v === i);
     const same =

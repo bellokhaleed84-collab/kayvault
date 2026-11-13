@@ -1,8 +1,17 @@
-// KV-LISTIMG v1
+// KV-LISTIMG v2
 import { cloudConfigured, uploadBuffer, destroyAsset } from './cloudinary.js';
+import { realImageType } from './imageCheck.js'; // KV-IMGCHECK
 
 // Turns parsed images ({ mime, data }) into Cloudinary records. Without Cloudinary settings the images stay as they are (MongoDB).
 export async function storeListingImages(list) {
+  // KV-IMGCHECK: every file must really be a JPEG, PNG or WebP picture, whatever its label says
+  if (Array.isArray(list)) {
+    for (const img of list) {
+      const real = realImageType(img && img.data);
+      if (!real) throw Object.assign(new Error('One of the images is not a real JPEG, PNG or WebP picture'), { status: 400 });
+      img.mime = real;
+    }
+  }
   if (!cloudConfigured() || !Array.isArray(list) || list.length === 0) return list;
   const done = [];
   try {

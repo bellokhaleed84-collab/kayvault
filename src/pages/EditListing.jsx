@@ -1,4 +1,4 @@
-// KV-EDITLISTING v3
+// KV-EDITLISTING v4
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ImagePlus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
@@ -9,6 +9,7 @@ import { PasswordField } from '../components/AuthFields';
 import { api, assetUrl } from '../lib/api';
 import { resizeToDataUrl } from '../lib/images';
 
+const MAX_IMAGES = 5; // KV-MAXIMG
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'], ['fresh', 'Fresh'], ['other', 'Other']];
 const input =
@@ -85,7 +86,7 @@ export default function EditListing() {
   async function pick(e) {
     setError('');
     try {
-      const files = [...e.target.files].slice(0, 4 - total);
+      const files = [...e.target.files].slice(0, MAX_IMAGES - total);
       const out = await Promise.all(files.map((f) => resizeToDataUrl(f)));
       setAdded([...added, ...out]);
     } catch (err) {
@@ -210,7 +211,7 @@ export default function EditListing() {
           </div>
 
           <div>
-            <label className={label}>SCREENSHOTS (up to 4)</label>
+            <label className={label}>SCREENSHOTS (up to {MAX_IMAGES})</label>
             <div className="flex flex-wrap gap-3">
               {keep.map((idx) => (
                 <div key={'k' + idx} className="relative w-28 h-24 rounded-lg overflow-hidden border border-slate-800">
@@ -230,7 +231,7 @@ export default function EditListing() {
                   </button>
                 </div>
               ))}
-              {total < 4 && (
+              {total < MAX_IMAGES && (
                 <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#8B5CF6] cursor-pointer transition-colors">
                   <ImagePlus size={20} />
                   <span className="text-xs">Add image</span>

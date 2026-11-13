@@ -4,6 +4,7 @@ import User from '../models/User.js';
 import KycSubmission from '../models/KycSubmission.js';
 import { kycCloudConfigured, storeImages, fetchPrivate, destroyPrivate, scheduleDelete } from '../lib/kycStore.js';
 import { notify, notifyAdmins } from '../lib/notify.js';
+import { realImageType } from '../lib/imageCheck.js'; // KV-IMGCHECK
 import { requireAuth, requireRole, requireAdmin } from '../middleware/auth.js';
 
 const router = Router();
@@ -16,7 +17,9 @@ function parseImage(s, label) {
   if (!m) throw badRequest(`${label} must be a JPEG, PNG or WebP image`);
   const data = Buffer.from(m[2], 'base64');
   if (data.length > 600 * 1024) throw badRequest(`${label} must be under 600 KB`);
-  return { mime: m[1], data };
+  const real = realImageType(data); // KV-IMGCHECK: the real file must be a picture, whatever its label says
+  if (!real) throw badRequest(`${label} must be a real JPEG, PNG or WebP picture`);
+  return { mime: real, data };
 }
 
 const toDataUrl = (img) => `data:${img.mime};base64,${img.data.toString('base64')}`;

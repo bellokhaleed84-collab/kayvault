@@ -59,6 +59,11 @@ app.use('/api/profile/password', limit(FIVE_MIN, 5, 'Too many password attempts.
 app.use('/api/listings', limit(60 * 60 * 1000, 40, 'Too many listing changes. Try again later.', {
   skip: (req) => !(req.method === 'PATCH' || (req.method === 'POST' && req.path === '/')),
 }));
+// KV-SEC-UPLOADS: file uploads have their own limits so nobody can fill the storage
+app.use('/api/proofs', limit(60 * 60 * 1000, 40, 'Too many uploads. Try again later.', { skip: (req) => req.method !== 'POST' }));
+app.use('/api/kyc', limit(60 * 60 * 1000, 10, 'Too many verification submissions. Try again later.', {
+  skip: (req) => !(req.method === 'POST' && req.path === '/'),
+}));
 
 // KV-SEC-GATE: checks that run BEFORE the money routes.
 // 1) Email must be confirmed (only when EMAIL_VERIFY_REQUIRED=true).  2) Withdrawals pause for 24 hours after a bank change.

@@ -10,6 +10,7 @@ import { useAuth } from '../lib/AuthContext'; // KV-P17C-AUTHIMP
 import { resizeToDataUrl } from '../lib/images';
 import { money } from '../lib/orders';
 
+const MAX_IMAGES = 5; // KV-MAXIMG
 const STEPS = ['Details', 'Images', 'Delivery', 'Review'];
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'], ['fresh', 'Fresh'], ['other', 'Other']];
@@ -73,7 +74,7 @@ export default function CreateListing() {
   async function pick(e) {
     setError('');
     try {
-      const files = [...e.target.files].slice(0, 4 - images.length);
+      const files = [...e.target.files].slice(0, MAX_IMAGES - images.length);
       const out = await Promise.all(files.map((f) => resizeToDataUrl(f)));
       setImages([...images, ...out]);
     } catch (err) {
@@ -190,7 +191,7 @@ export default function CreateListing() {
 
           {step === 1 && (
             <div>
-              <label className={label}>SCREENSHOTS (up to 4)</label>
+              <label className={label}>SCREENSHOTS (up to {MAX_IMAGES})</label>
               <div className="flex flex-wrap gap-3">
                 {images.map((src, i) => (
                   <div key={i} className="relative w-28 h-24 rounded-lg overflow-hidden border border-slate-800">
@@ -201,7 +202,7 @@ export default function CreateListing() {
                     </button>
                   </div>
                 ))}
-                {images.length < 4 && (
+                {images.length < MAX_IMAGES && (
                   <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#8B5CF6] cursor-pointer transition-colors">
                     <ImagePlus size={20} />
                     <span className="text-xs">Add image</span>

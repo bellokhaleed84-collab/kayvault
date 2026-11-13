@@ -103,3 +103,27 @@ body {
 }
 .font-display { font-family: 'Space Grotesk', sans-serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* KV-MOBILE v1: phone basics */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+/* the page height no longer jumps when the phone's browser bar hides */
+.min-h-screen { min-height: 100vh; min-height: 100dvh; }
+button, a, summary, label { touch-action: manipulation; }
+
+@media (max-width: 639px) {
+  /* 16px text stops iPhones from zooming in when a field is tapped, and taller fields are easier to hit */
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']),
+  select {
+    min-height: 48px;
+  }
+  /* a lighter background so phones stay smooth */
+  .kv-orb { width: 260px; height: 260px; filter: blur(60px); }
+  .kv-scan { display: none; }
+  .kv-bg-base { animation: none; }
+}

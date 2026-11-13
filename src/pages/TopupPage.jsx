@@ -1,14 +1,15 @@
-// KV-EYAD v2: buyer top-up page (pick a game, pick a pack, check the player ID, pay with Paystack)
+// KV-EYAD v3: buyer top-up page (pick a game, pick a pack, check the player ID, pay with Paystack). Phone friendly.
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ArrowLeft, Lock, CheckCircle2, ListOrdered } from 'lucide-react';
 import PublicNavbar from '../components/PublicNavbar';
 import Footer from '../components/Footer';
 import TopupGameImage from '../components/TopupGameImage';
+import Skel from '../components/Skeleton';
 import { api } from '../lib/api';
 import { money } from '../lib/orders';
 
-const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-xl px-3.5 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] focus:ring-2 focus:ring-[#D4A94B]/20 transition-colors';
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 const label = 'block text-xs font-mono text-slate-500 mb-1.5';
 
@@ -48,6 +49,7 @@ export default function TopupPage() {
     setGame(g);
     setPacks([]);
     setLoadingPacks(true);
+    window.scrollTo(0, 0);
     try {
       const r = await api.get(`/topups/packages/${encodeURIComponent(g.id)}`);
       setGame(r.game);
@@ -122,22 +124,39 @@ export default function TopupPage() {
 
   const unsupported = cat && cat.provider && cat.provider !== 'eyad';
 
+  const payButton =
+    locked && pack ? (
+      <button disabled className="flex items-center justify-center gap-2 bg-slate-800 text-slate-500 font-semibold rounded-xl px-6 py-3.5 text-sm cursor-not-allowed">
+        <Lock size={15} /> Temporarily unavailable
+      </button>
+    ) : (
+      <button onClick={pay} disabled={!canPay}
+        className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-40 text-[#0B1120] font-semibold rounded-xl px-6 py-3.5 text-sm transition-colors">
+        {busy === 'pay' ? 'Starting payment...' : 'Pay with Paystack'}
+      </button>
+    );
+
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <PublicNavbar />
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+      <div className={'max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 ' + (game && cat && !unsupported ? 'pb-32 sm:pb-10' : 'pb-10')}>
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="font-display text-3xl font-semibold text-slate-100">Game top-up</h1>
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">Game top-up</h1>
             <p className="text-slate-500 text-sm mt-1">Pay in Naira and the coins are sent straight to your game account.</p>
           </div>
-          <Link to="/topup/orders" className="flex items-center gap-2 text-sm text-[#D4A94B] hover:underline">
+          <Link to="/topup/orders" className="flex items-center gap-2 text-sm text-[#D4A94B] hover:underline py-1">
             <ListOrdered size={15} /> My top-ups
           </Link>
         </div>
 
-        {error && <p className="text-red-400 text-sm mb-6">{error}</p>}
-        {!cat && !error && <p className="text-slate-500 text-sm">Loading...</p>}
+        {error && <p className={'text-red-400 text-sm mb-6 ' + (game ? 'hidden sm:block' : '')}>{error}</p>}
+
+        {!cat && !error && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <Skel key={i} className="h-40 w-full rounded-xl" />)}
+          </div>
+        )}
         {unsupported && <div className={`${card} p-10 text-center`}><p className="text-slate-500 text-sm">Top-ups are being updated. Please check back soon.</p></div>}
 
         {cat && !unsupported && !game && (
@@ -149,13 +168,13 @@ export default function TopupPage() {
               </div>
             )}
             <div className="relative mb-6 max-w-md">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search games" className={`${box} pl-10`} />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search games" className={`${box} pl-10 h-12`} />
             </div>
             {shown.length === 0 ? (
               <div className={`${card} p-10 text-center`}><p className="text-slate-500 text-sm">No games match.</p></div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {shown.map((g) => (
                   <button key={g.id} onClick={() => openGame(g)}
                     className={`${card} overflow-hidden text-left hover:border-[#D4A94B]/50 transition-colors`}>
@@ -173,18 +192,20 @@ export default function TopupPage() {
 
         {cat && !unsupported && game && (
           <div className="space-y-6">
-            <button onClick={() => { setGame(null); setError(''); }} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-100">
+            <button onClick={() => { setGame(null); setError(''); }} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-100 py-1">
               <ArrowLeft size={15} /> All games
             </button>
             <div className="flex items-center gap-4">
               <TopupGameImage key={game.id} game={game} className="w-16 h-16 rounded-xl shrink-0" />
-              <h2 className="font-display text-2xl font-semibold text-slate-100">{game.name}</h2>
+              <h2 className="font-display text-xl sm:text-2xl font-semibold text-slate-100 break-words min-w-0">{game.name}</h2>
             </div>
 
             <div>
               <p className={label}>1. CHOOSE A PACK</p>
               {loadingPacks ? (
-                <p className="text-slate-500 text-sm">Loading packs...</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {[0, 1, 2, 3, 4, 5].map((i) => <Skel key={i} className="h-24 w-full rounded-xl" />)}
+                </div>
               ) : packs.length === 0 ? (
                 <div className={`${card} p-8 text-center`}><p className="text-slate-500 text-sm">No packs are available for this game right now.</p></div>
               ) : (
@@ -203,7 +224,7 @@ export default function TopupPage() {
               )}
             </div>
 
-            <div className={`${card} p-5 space-y-4`}>
+            <div className={`${card} p-4 sm:p-5 space-y-4`}>
               <p className={label}>2. YOUR GAME ACCOUNT</p>
               <div>
                 <label className={label}>{game.id_label.toUpperCase()}</label>
@@ -228,14 +249,14 @@ export default function TopupPage() {
               {game.supports_id_check && (
                 <div className="space-y-3">
                   <button onClick={checkId} disabled={!fieldsReady || busy === 'check'}
-                    className="border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-40 font-semibold rounded-lg px-4 py-2 text-sm transition-colors">
+                    className="w-full sm:w-auto border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-40 font-semibold rounded-xl px-5 py-3 text-sm transition-colors">
                     {busy === 'check' ? 'Checking...' : 'Check player ID'}
                   </button>
                   {check && check.valid === true && (
                     <div className="rounded-lg bg-[#0D1524] border border-slate-800 px-4 py-3">
-                      <p className="flex items-center gap-2 text-sm text-[#34D399]"><CheckCircle2 size={15} /> Player found: <span className="font-semibold">{check.player_name || 'OK'}</span></p>
-                      <label className="flex items-center gap-2.5 text-sm text-slate-400 mt-3 cursor-pointer">
-                        <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="accent-[#D4A94B] w-4 h-4" />
+                      <p className="flex items-center gap-2 text-sm text-[#34D399]"><CheckCircle2 size={15} className="shrink-0" /> <span>Player found: <span className="font-semibold">{check.player_name || 'OK'}</span></span></p>
+                      <label className="flex items-start gap-3 text-sm text-slate-400 mt-3 cursor-pointer">
+                        <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="accent-[#D4A94B] w-5 h-5 mt-0.5 shrink-0" />
                         This is my account. Coins sent to the wrong account cannot be reversed.
                       </label>
                     </div>
@@ -247,26 +268,33 @@ export default function TopupPage() {
               )}
             </div>
 
-            <div className={`${card} p-5 flex flex-wrap items-center justify-between gap-4`}>
+            {/* computer: total and pay button in the page */}
+            <div className={`${card} p-5 hidden sm:flex flex-wrap items-center justify-between gap-4`}>
               <div>
                 <p className="text-xs font-mono text-slate-500">TOTAL</p>
                 <p className="font-display text-2xl font-semibold text-slate-100">{pack ? money(pack.naira) : '-'}</p>
                 {pack && <p className="text-xs text-slate-600 mt-1">{game.name} - {pack.name}</p>}
               </div>
-              {locked && pack ? (
-                <button disabled className="flex items-center gap-2 bg-slate-800 text-slate-500 font-semibold rounded-lg px-6 py-3 text-sm cursor-not-allowed">
-                  <Lock size={15} /> Temporarily unavailable
-                </button>
-              ) : (
-                <button onClick={pay} disabled={!canPay}
-                  className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-40 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
-                  {busy === 'pay' ? 'Starting payment...' : 'Pay with Paystack'}
-                </button>
-              )}
+              {payButton}
             </div>
           </div>
         )}
       </div>
+
+      {/* phone: total and pay button stay at the bottom of the screen */}
+      {cat && !unsupported && game && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-slate-800 bg-[#0B1120]/95 backdrop-blur px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          {error && <p className="text-red-400 text-xs mb-2">{error}</p>}
+          <div className="flex items-center gap-4">
+            <div className="leading-tight shrink-0">
+              <p className="text-[11px] font-mono text-slate-500">TOTAL</p>
+              <p className="font-display text-xl font-semibold text-slate-100">{pack ? money(pack.naira) : '-'}</p>
+            </div>
+            <div className="flex-1 flex [&>button]:w-full">{payButton}</div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

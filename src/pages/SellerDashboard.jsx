@@ -1,3 +1,4 @@
+// KV-SELLERDASH v3 (phone friendly: tables become cards)
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -43,10 +44,72 @@ const NAV = [
 const th = 'px-5 py-3 font-medium text-xs font-mono text-slate-500';
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 
+// true on a phone-sized screen, so only one layout (cards or table) is on the page at a time
+function useIsPhone() {
+  const query = '(max-width: 639px)';
+  const [phone, setPhone] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = (e) => setPhone(e.matches);
+    setPhone(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return phone;
+}
+
 function ListingsTable({ rows, empty, onDelete }) {
+  const phone = useIsPhone();
   if (rows.length === 0) {
     return <p className="text-slate-500 text-sm p-8 text-center">{empty}</p>;
   }
+
+  const actions = (l) =>
+    l.status !== 'sold' && (
+      <span className="inline-flex items-center gap-2">
+        <Link to={`/dashboard/seller/edit/${l.id}`}
+          className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-3 py-2 sm:py-1.5 text-xs transition-colors">
+          <Pencil size={13} /> Edit
+        </Link>
+        {onDelete && (
+          <button type="button" onClick={() => onDelete(l)}
+            className="inline-flex items-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3 py-2 sm:py-1.5 text-xs transition-colors">
+            <Trash2 size={13} /> Delete
+          </button>
+        )}
+      </span>
+    );
+
+  if (phone) {
+    return (
+      <ul className="divide-y divide-slate-800">
+        {rows.map((l) => (
+          <li key={l.id} className="p-4">
+            <div className="flex items-center gap-3">
+              <GameArt game={l.game} image={assetUrl(l.image_urls?.[0])} className="w-16 h-14 rounded-md shrink-0" />
+              <div className="min-w-0 flex-1">
+                {l.status === 'pending' ? (
+                  <p className="text-slate-200 font-medium truncate">{l.game}</p>
+                ) : (
+                  <Link to={`/listing/${l.id}`} className="block text-slate-200 font-medium truncate hover:text-[#D4A94B]">{l.game}</Link>
+                )}
+                <p className="text-xs text-slate-500 truncate">{l.tier}</p>
+                <p className="font-mono text-[#D4A94B] text-sm mt-1">{money(l.price)}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
+              <div className="flex items-center gap-3">
+                <ListingPill status={l.status} />
+                <span className="text-xs text-slate-500">{shortDate(l.created_at)}</span>
+              </div>
+              {actions(l)}
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -78,22 +141,7 @@ function ListingsTable({ rows, empty, onDelete }) {
               <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(l.price)}</td>
               <td className="px-5 py-3"><ListingPill status={l.status} /></td>
               <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(l.created_at)}</td>
-              <td className="px-5 py-3 text-right whitespace-nowrap kv-actions-td">
-                {l.status !== 'sold' && (
-                  <span className="inline-flex items-center gap-2">
-                    <Link to={`/dashboard/seller/edit/${l.id}`}
-                      className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-3 py-1.5 text-xs transition-colors">
-                      <Pencil size={13} /> Edit
-                    </Link>
-                    {onDelete && (
-                      <button type="button" onClick={() => onDelete(l)}
-                        className="inline-flex items-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3 py-1.5 text-xs transition-colors">
-                        <Trash2 size={13} /> Delete
-                      </button>
-                    )}
-                  </span>
-                )}
-              </td>
+              <td className="px-5 py-3 text-right whitespace-nowrap kv-actions-td">{actions(l)}</td>
             </tr>
           ))}
         </tbody>
@@ -105,9 +153,60 @@ function ListingsTable({ rows, empty, onDelete }) {
 // KV-ORDERCHAT: every order has a Chat button. Opening it shows the chat with the buyer right under the order.
 function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
   const [open, setOpen] = useState(null);
+  const phone = useIsPhone();
   if (rows.length === 0) {
     return <p className="text-slate-500 text-sm p-8 text-center">{empty}</p>;
   }
+
+  const toggle = (id) => {
+    const next = open === id ? null : id;
+    setOpen(next);
+    if (next && onOpened) onOpened(id);
+  };
+
+  const chatButton = (p) => {
+    const n = unread[p.id] || 0;
+    return (
+      <button type="button" onClick={() => toggle(p.id)}
+        className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-4 py-2.5 text-xs transition-colors">
+        <MessageSquare size={14} /> Chat
+        {n > 0 && open !== p.id && (
+          <span className="ml-1 min-w-[18px] h-[18px] rounded-full bg-[#F87171] text-[#0B1120] text-[10px] font-bold flex items-center justify-center px-1">{n}</span>
+        )}
+      </button>
+    );
+  };
+
+  if (phone) {
+    return (
+      <ul className="divide-y divide-slate-800">
+        {rows.map((p) => {
+          const t = p.escrow_status === 'held' ? timeLeft(p.confirm_deadline, now) : null;
+          return (
+            <li key={p.id} className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-slate-200 font-medium truncate">{p.game}</p>
+                  <p className="text-xs text-slate-500 truncate">{p.tier}</p>
+                </div>
+                <p className="font-mono text-[#D4A94B] whitespace-nowrap">{money(p.price)}</p>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
+                <div>
+                  <StatusPill status={p.escrow_status} />
+                  {t && <p className="text-xs text-slate-500 mt-1">{t.text}</p>}
+                  <p className="text-xs text-slate-600 mt-1">{shortDate(p.created_at)}</p>
+                </div>
+                {chatButton(p)}
+              </div>
+              {open === p.id && <div className="mt-4"><OrderChat purchaseId={p.id} who="seller" /></div>}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -123,7 +222,6 @@ function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
         <tbody>
           {rows.map((p) => {
             const t = p.escrow_status === 'held' ? timeLeft(p.confirm_deadline, now) : null;
-            const n = unread[p.id] || 0;
             return (
               <Fragment key={p.id}>
                 <tr className="border-b border-slate-800 last:border-0">
@@ -137,20 +235,7 @@ function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
                     {t && <p className="text-xs text-slate-500 mt-1">{t.text}</p>}
                   </td>
                   <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(p.created_at)}</td>
-                  <td className="px-5 py-3 whitespace-nowrap">
-                    <button type="button"
-                      onClick={() => {
-                        const next = open === p.id ? null : p.id;
-                        setOpen(next);
-                        if (next && onOpened) onOpened(p.id);
-                      }}
-                      className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-4 py-2.5 text-xs transition-colors">
-                      <MessageSquare size={14} /> Chat
-                      {n > 0 && open !== p.id && (
-                        <span className="ml-1 min-w-[18px] h-[18px] rounded-full bg-[#F87171] text-[#0B1120] text-[10px] font-bold flex items-center justify-center px-1">{n}</span>
-                      )}
-                    </button>
-                  </td>
+                  <td className="px-5 py-3 whitespace-nowrap">{chatButton(p)}</td>
                 </tr>
                 {open === p.id && (
                   <tr className="border-b border-slate-800">
@@ -255,7 +340,7 @@ export default function SellerDashboard() {
 
   const title = { overview: 'Overview', listings: 'My listings', orders: 'Orders', payouts: 'Payouts', reviews: 'Reviews' }[view];
   const navBtn = (active) =>
-    `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
+    `flex items-center gap-2.5 shrink-0 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
       active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
@@ -263,9 +348,9 @@ export default function SellerDashboard() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-8 grid lg:grid-cols-[210px_1fr] gap-8">
-        <aside>
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 grid lg:grid-cols-[210px_1fr] gap-5 lg:gap-8">
+        <aside className="min-w-0">
+          <nav className="flex lg:flex-col gap-1 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1 lg:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV.map(([v, l, Icon]) => (
               <button key={v} onClick={() => setView(v)} className={navBtn(view === v)}>
                 <Icon size={16} /> {l}
@@ -279,22 +364,22 @@ export default function SellerDashboard() {
         </aside>
 
         <main className="min-w-0">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="font-display text-3xl font-semibold text-slate-100">{title}</h1>
+          <div className="flex items-start justify-between gap-3 mb-6">
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">{title}</h1>
               <p className="text-slate-500 text-sm mt-1">
                 {profile?.full_name ? `${profile.full_name.split(' ')[0]}, ` : ''}track your accounts and escrow payouts.
               </p>
             </div>
             <Link to="/dashboard/seller/new"
-              className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-3 text-sm transition-colors">
-              <Plus size={16} /> New listing
+              className="shrink-0 flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm transition-colors">
+              <Plus size={16} /> <span className="hidden sm:inline">New listing</span><span className="sm:hidden">New</span>
             </Link>
           </div>
 
           {created && (
             <div className="flex items-center gap-2.5 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399] text-sm px-4 py-3 mb-6">
-              <CheckCircle2 size={16} /> Listing submitted. It goes live once our team approves it.
+              <CheckCircle2 size={16} className="shrink-0" /> Listing submitted. It goes live once our team approves it.
             </div>
           )}
           {/* KV-P17C-BANNER */}
@@ -306,7 +391,7 @@ export default function SellerDashboard() {
                   : "Verify your identity (National ID, driver's licence or passport) before your listings can go live and you can be paid."}
               </p>
               {profile.kyc_status !== 'pending' && (
-                <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">Verify now</Link>
+                <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 text-xs transition-colors">Verify now</Link>
               )}
             </div>
           )}
@@ -315,8 +400,8 @@ export default function SellerDashboard() {
 
           {loading ? (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[0, 1, 2, 3].map((i) => <Skel key={i} className="h-28 w-full rounded-xl" />)}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {[0, 1, 2, 3].map((i) => <Skel key={i} className="h-24 sm:h-28 w-full rounded-xl" />)}
               </div>
               <Skel className="h-64 w-full rounded-xl" />
               <Skel className="h-48 w-full rounded-xl" />
@@ -325,42 +410,42 @@ export default function SellerDashboard() {
             <>
               {view === 'overview' && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {cards.map(({ icon: Icon, label, value, color }) => (
-                      <div key={label} className={`${card} p-5`}>
+                      <div key={label} className={`${card} p-4 sm:p-5 min-w-0`}>
                         <Icon size={18} style={{ color }} className="mb-3" />
-                        <p className="text-slate-500 text-xs font-mono mb-1">{label.toUpperCase()}</p>
-                        <p className="font-display text-2xl font-semibold text-slate-100">{value}</p>
+                        <p className="text-slate-500 text-[11px] sm:text-xs font-mono mb-1">{label.toUpperCase()}</p>
+                        <p className="font-display text-xl sm:text-2xl font-semibold text-slate-100 break-words">{value}</p>
                       </div>
                     ))}
                   </div>
 
                   <div className="grid lg:grid-cols-3 gap-6">
-                    <div className={`${card} p-5 lg:col-span-2`}>
+                    <div className={`${card} p-4 sm:p-5 lg:col-span-2`}>
                       <h2 className="font-display text-slate-100 font-semibold mb-1">Earnings</h2>
                       <p className="text-xs text-slate-500 mb-4">
                         Released payments, last 6 months{stats.earnings === 0 ? '. Nothing released yet.' : ''}
                       </p>
                       <EarningsChart data={months} format={money} />
                     </div>
-                    <div className={`${card} p-5`}>
+                    <div className={`${card} p-4 sm:p-5`}>
                       <h2 className="font-display text-slate-100 font-semibold mb-4">Listing status</h2>
                       <StatusDonut parts={parts} />
                     </div>
                   </div>
 
                   <div className={card}>
-                    <div className="flex items-center justify-between px-5 pt-5">
+                    <div className="flex items-center justify-between px-4 sm:px-5 pt-5">
                       <h2 className="font-display text-slate-100 font-semibold">Recent listings</h2>
-                      <button onClick={() => setView('listings')} className="text-sm text-[#D4A94B] hover:underline">View all</button>
+                      <button onClick={() => setView('listings')} className="text-sm text-[#D4A94B] hover:underline py-1">View all</button>
                     </div>
                     <ListingsTable rows={listings.slice(0, 5)} onDelete={deleteListing} empty="No listings yet. Create your first one." />
                   </div>
 
                   <div className={card}>
-                    <div className="flex items-center justify-between px-5 pt-5">
+                    <div className="flex items-center justify-between px-4 sm:px-5 pt-5">
                       <h2 className="font-display text-slate-100 font-semibold">Recent orders</h2>
-                      <button onClick={() => setView('orders')} className="text-sm text-[#D4A94B] hover:underline">View all</button>
+                      <button onClick={() => setView('orders')} className="text-sm text-[#D4A94B] hover:underline py-1">View all</button>
                     </div>
                     <OrdersTable rows={sales.slice(0, 5)} now={now} unread={unread.counts} onOpened={clearUnread} empty="No orders yet. They show up here when a buyer purchases." />
                   </div>
@@ -393,7 +478,7 @@ export default function SellerDashboard() {
                   <div className={`${card} p-5`}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="font-display text-slate-100 font-semibold">Payout account</h2>
-                      <Link to="/settings" className="text-sm text-[#D4A94B] hover:underline">
+                      <Link to="/settings" className="text-sm text-[#D4A94B] hover:underline py-1">
                         {profile?.bank_account_number ? 'Edit' : 'Add bank details'}
                       </Link>
                     </div>
@@ -438,7 +523,7 @@ export default function SellerDashboard() {
                           <Stars value={r.rating} />
                           <span className="text-xs text-slate-600">{shortDate(r.created_at)}</span>
                         </div>
-                        {r.comment && <p className="text-sm text-slate-300 mb-1.5">{r.comment}</p>}
+                        {r.comment && <p className="text-sm text-slate-300 mb-1.5 break-words">{r.comment}</p>}
                         <p className="text-xs text-slate-500">{r.buyer_name}{r.game ? ' \u00b7 ' + r.game : ''}</p>
                       </div>
                     ))

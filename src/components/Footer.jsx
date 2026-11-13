@@ -4,10 +4,10 @@ import Logo from './Logo';
 
 export default function Footer() {
   const h = 'text-xs font-mono text-slate-500 mb-4';
-  const a = 'block text-sm text-slate-400 hover:text-slate-100 transition-colors mb-2.5';
+  const a = 'block text-sm text-slate-400 hover:text-slate-100 transition-colors py-1.5';
   return (
     <footer className="border-t border-slate-800 bg-[#0B1120]">
-      <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-5 gap-10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10 md:py-14 grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-9 md:gap-10">
         <div className="col-span-2">
           <Logo />
           <p className="text-sm text-slate-500 mt-4 max-w-xs">
@@ -28,7 +28,7 @@ export default function Footer() {
           <Link to="/privacy" className={a}>Privacy Policy</Link>
           <Link to="/faq" className={a}>FAQ</Link>
         </div>
-        <div>
+        <div className="col-span-2 md:col-span-1">
           {/* KV-P17-NOFOLLOW */}
           <div className="flex gap-3 mb-6">
             {[/* KV-P17-NOICONS */].map((Icon, i) => (
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-slate-800 py-6 text-center">
+      <div className="border-t border-slate-800 py-5 text-center">
         <p className="font-mono text-xs text-slate-600">&copy; 2026 KayVault. All rights reserved.</p>
       </div>
     </footer>

@@ -11,6 +11,7 @@ function ago(d) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
+// KV-MOBILE v1: on a phone the list opens as a full-width panel under the top bar, so it never runs off the screen
 export default function NotificationBell() {
   const navigate = useNavigate();
   const box = useRef(null);
@@ -35,7 +36,11 @@ export default function NotificationBell() {
     if (!open) return;
     const close = (e) => { if (box.current && !box.current.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    document.addEventListener('touchstart', close);
+    return () => {
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('touchstart', close);
+    };
   }, [open]);
 
   async function openItem(n) {
@@ -51,37 +56,37 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={box}>
-      <button onClick={() => setOpen(!open)} aria-label="Notifications"
-        className="relative p-2 text-slate-400 hover:text-slate-100 transition-colors">
-        <Bell size={17} />
+      <button onClick={() => setOpen(!open)} aria-label="Notifications" aria-expanded={open}
+        className="relative w-11 h-11 md:w-10 md:h-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 transition-colors">
+        <Bell size={18} />
         {data.unread > 0 && (
-          <span className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 rounded-full bg-[#D4A94B] text-[#0B1120] text-[10px] font-semibold flex items-center justify-center">
+          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-[#D4A94B] text-[#0B1120] text-[10px] font-semibold flex items-center justify-center">
             {data.unread > 9 ? '9+' : data.unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl bg-[#131B2E] border border-slate-800 shadow-2xl z-50 overflow-hidden">
+        <div className="fixed inset-x-3 top-[3.75rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 rounded-xl bg-[#131B2E] border border-slate-800 shadow-2xl z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <p className="text-sm font-medium text-slate-100">Notifications</p>
             {data.unread > 0 && (
-              <button onClick={readAll} className="text-xs text-[#D4A94B] hover:underline">Mark all read</button>
+              <button onClick={readAll} className="text-xs text-[#D4A94B] hover:underline py-1">Mark all read</button>
             )}
           </div>
           {data.items.length === 0 ? (
             <p className="text-sm text-slate-500 px-4 py-8 text-center">Nothing yet. Order updates show up here.</p>
           ) : (
-            <ul className="max-h-96 overflow-y-auto">
+            <ul className="max-h-[60vh] sm:max-h-96 overflow-y-auto">
               {data.items.map((n) => (
                 <li key={n.id}>
                   <button onClick={() => openItem(n)}
-                    className={`w-full text-left px-4 py-3 border-b border-slate-800 last:border-0 hover:bg-[#0D1524] transition-colors ${n.read ? '' : 'bg-[#D4A94B]/5'}`}>
+                    className={`w-full text-left px-4 py-3.5 border-b border-slate-800 last:border-0 hover:bg-[#0D1524] transition-colors ${n.read ? '' : 'bg-[#D4A94B]/5'}`}>
                     <div className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${n.read ? 'bg-transparent' : 'bg-[#D4A94B]'}`} />
                       <div className="min-w-0">
                         <p className="text-sm text-slate-200">{n.title}</p>
-                        {n.body && <p className="text-xs text-slate-500 mt-0.5">{n.body}</p>}
+                        {n.body && <p className="text-xs text-slate-500 mt-0.5 break-words">{n.body}</p>}
                         <p className="text-[11px] text-slate-600 mt-1">{ago(n.created_at)}</p>
                       </div>
                     </div>

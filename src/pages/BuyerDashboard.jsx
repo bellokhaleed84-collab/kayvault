@@ -35,6 +35,7 @@ function TopupPill({ status }) {
   );
 }
 
+// KV-MOBILE v1: phone friendly (cards stack, tabs swipe sideways)
 export default function BuyerDashboard() {
   const { profile } = useAuth();
   const [purchases, setPurchases] = useState([]);
@@ -97,31 +98,31 @@ export default function BuyerDashboard() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="font-display text-3xl font-semibold text-slate-100 mb-1">My Purchases</h1>
-        <p className="text-slate-500 text-sm mb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-1">My Purchases</h1>
+        <p className="text-slate-500 text-sm mb-6 sm:mb-8">
           {profile?.full_name ? `Welcome back, ${profile.full_name.split(' ')[0]}. ` : ''}
           Open an order to see your login details and confirm the account.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
-          {cards.map(({ icon: Icon, label, value, color }) => (
-            <div key={label} className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 mb-8 sm:mb-10">
+          {cards.map(({ icon: Icon, label, value, color }, i) => (
+            <div key={label} className={`rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-5 min-w-0 ${i === 2 ? 'col-span-2 sm:col-span-1' : ''}`}>
               <Icon size={18} style={{ color }} className="mb-3" />
-              <p className="text-slate-500 text-xs font-mono mb-1">{label.toUpperCase()}</p>
-              {loading ? <Skel className="h-8 w-24" /> : <p className="font-display text-2xl font-semibold text-slate-100">{value}</p>}
+              <p className="text-slate-500 text-[11px] sm:text-xs font-mono mb-1">{label.toUpperCase()}</p>
+              {loading ? <Skel className="h-8 w-24" /> : <p className="font-display text-xl sm:text-2xl font-semibold text-slate-100 break-words">{value}</p>}
             </div>
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 mb-5 sm:mb-6 sm:flex-wrap sm:mx-0 sm:px-0 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {TABS.map(([v, l]) => {
             const n = purchases.filter((p) => inTab(p, v)).length;
             return (
               <button
                 key={v}
                 onClick={() => setTab(v)}
-                className={`rounded-full px-4 py-2 text-xs font-medium border transition-colors ${
+                className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2.5 sm:py-2 text-xs font-medium border transition-colors ${
                   tab === v
                     ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120]'
                     : 'border-slate-800 text-slate-400 hover:text-slate-200'
@@ -140,7 +141,7 @@ export default function BuyerDashboard() {
             {[0, 1, 2].map((i) => <Skel key={i} className="h-28 w-full rounded-xl" />)}
           </div>
         ) : shown.length === 0 ? (
-          <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-10 text-center">
+          <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-8 sm:p-10 text-center">
             <p className="text-slate-500 text-sm mb-4">
               {purchases.length === 0 ? 'You have not bought an account yet.' : 'No orders in this tab.'}
             </p>
@@ -163,18 +164,20 @@ export default function BuyerDashboard() {
                 <Link
                   key={p.id}
                   to={`/orders/${p.id}`}
-                  className="group rounded-xl bg-[#131B2E] border border-slate-800 hover:border-[#D4A94B]/50 transition-colors p-4 flex items-center gap-4"
+                  className="group rounded-xl bg-[#131B2E] border border-slate-800 hover:border-[#D4A94B]/50 transition-colors p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
                 >
-                  <GameArt game={p.game} image={image} className="w-24 h-20 rounded-lg shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display text-slate-100 font-semibold truncate">{p.game}</h3>
-                    <p className="text-sm text-slate-500 truncate">{p.tier}</p>
-                    <p className="text-xs text-slate-600 mt-1.5">
-                      Ordered {shortDate(p.created_at)}
-                      {p.seller_name ? ` \u00b7 Seller: ${p.seller_name}` : ''}
-                    </p>
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <GameArt game={p.game} image={image} className="w-20 h-16 sm:w-24 sm:h-20 rounded-lg shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display text-slate-100 font-semibold truncate">{p.game}</h3>
+                      <p className="text-sm text-slate-500 truncate">{p.tier}</p>
+                      <p className="text-xs text-slate-600 mt-1.5 truncate">
+                        Ordered {shortDate(p.created_at)}
+                        {p.seller_name ? ` \u00b7 Seller: ${p.seller_name}` : ''}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0">
                     <p className="font-mono text-[#D4A94B] font-semibold">{money(p.price)}</p>
                     <StatusPill status={p.escrow_status} />
                     {newMsgs > 0 && (
@@ -186,7 +189,7 @@ export default function BuyerDashboard() {
                       <p className={`text-xs ${t.expired ? 'text-slate-500' : 'text-slate-400'}`}>{t.text}</p>
                     )}
                   </div>
-                  <ChevronRight size={18} className="text-slate-600 group-hover:text-[#D4A94B] shrink-0" />
+                  <ChevronRight size={18} className="hidden sm:block text-slate-600 group-hover:text-[#D4A94B] shrink-0" />
                 </Link>
               );
             })}
@@ -194,13 +197,13 @@ export default function BuyerDashboard() {
         )}
 
         {/* KV-TOPUPLIST: game top-ups */}
-        <div className="mt-12">
+        <div className="mt-10 sm:mt-12">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Zap size={18} className="text-[#D4A94B]" />
-              <h2 className="font-display text-2xl font-semibold text-slate-100">Top-ups</h2>
+              <h2 className="font-display text-xl sm:text-2xl font-semibold text-slate-100">Top-ups</h2>
             </div>
-            <Link to="/topup" className="text-sm text-[#D4A94B] hover:underline">New top-up</Link>
+            <Link to="/topup" className="text-sm text-[#D4A94B] hover:underline py-1">New top-up</Link>
           </div>
 
           {topupError && <p className="text-red-400 text-sm mb-4">{topupError}</p>}
@@ -222,22 +225,24 @@ export default function BuyerDashboard() {
           ) : (
             <div className="space-y-3">
               {topupRows.map((tp) => (
-                <div key={tp.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#D4A94B]/10 flex items-center justify-center shrink-0">
-                    <Zap size={20} className="text-[#D4A94B]" />
+                <div key={tp.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="w-12 h-12 rounded-lg bg-[#D4A94B]/10 flex items-center justify-center shrink-0">
+                      <Zap size={20} className="text-[#D4A94B]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display text-slate-100 font-semibold truncate">{tp.product_name || 'Game top-up'}</h3>
+                      <p className="text-sm text-slate-500 truncate">{tp.offer_name}</p>
+                      <p className="text-xs text-slate-600 mt-1 truncate">
+                        Ordered {shortDate(tp.created_at)}
+                        {tp.player_name ? ` \u00b7 ${tp.player_name}` : tp.game_user_id ? ` \u00b7 ID ${tp.game_user_id}` : ''}
+                      </p>
+                      {TOPUP_SHOW_REASON.includes(tp.status) && tp.fail_reason && (
+                        <p className="text-xs text-slate-500 mt-1">{tp.fail_reason}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display text-slate-100 font-semibold truncate">{tp.product_name || 'Game top-up'}</h3>
-                    <p className="text-sm text-slate-500 truncate">{tp.offer_name}</p>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Ordered {shortDate(tp.created_at)}
-                      {tp.player_name ? ` \u00b7 ${tp.player_name}` : tp.game_user_id ? ` \u00b7 ID ${tp.game_user_id}` : ''}
-                    </p>
-                    {TOPUP_SHOW_REASON.includes(tp.status) && tp.fail_reason && (
-                      <p className="text-xs text-slate-500 mt-1">{tp.fail_reason}</p>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0">
                     <p className="font-mono text-[#D4A94B] font-semibold">{money(tp.naira_amount)}</p>
                     <TopupPill status={tp.status} />
                   </div>
@@ -245,7 +250,7 @@ export default function BuyerDashboard() {
               ))}
               {topups.length > 5 && (
                 <button type="button" onClick={() => setShowAllTopups(!showAllTopups)}
-                  className="w-full border border-slate-800 hover:border-slate-600 text-slate-400 rounded-lg py-3 text-sm transition-colors">
+                  className="w-full border border-slate-800 hover:border-slate-600 text-slate-400 rounded-lg py-3.5 text-sm transition-colors">
                   {showAllTopups ? 'Show fewer' : 'Show all ' + topups.length + ' top-ups'}
                 </button>
               )}

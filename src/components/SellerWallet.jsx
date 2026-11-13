@@ -1,9 +1,10 @@
-// KV-SELLERWALLET v2
+// KV-SELLERWALLET v3 (phone friendly: payments table becomes cards)
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Banknote, Loader2 } from 'lucide-react';
 import { api } from '../lib/api';
 import { money, shortDate } from '../lib/orders';
+import Skel from './Skeleton';
 
 const th = 'px-5 py-3 font-medium text-xs font-mono text-slate-500';
 const STATUS = {
@@ -12,6 +13,12 @@ const STATUS = {
   paid: ['Paid', '#34D399'],
   failed: ['Not completed', '#F87171'],
 };
+
+function Payout({ o }) {
+  if (o.paid) return <span className="text-xs text-[#34D399]">Paid {shortDate(o.payout_paid_at)}</span>;
+  if (o.requested) return <span className="text-xs text-[#5B8DEF]">Withdrawal in progress</span>;
+  return <span className="text-xs text-[#D4A94B]">Available</span>;
+}
 
 // Seller wallet: money available to withdraw, withdrawals in progress, and the fee on every sale
 export default function SellerWallet() {
@@ -58,7 +65,16 @@ export default function SellerWallet() {
   }
 
   if (error && !data) return <p className="text-red-400 text-sm p-5">{error}</p>;
-  if (!data || !wd) return <p className="text-slate-500 text-sm p-5">Loading...</p>;
+  if (!data || !wd) {
+    return (
+      <div className="p-4 sm:p-5 space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[0, 1, 2, 3].map((i) => <Skel key={i} className="h-20 w-full" />)}
+        </div>
+        <Skel className="h-20 w-full" />
+      </div>
+    );
+  }
 
   const why = !wd.verified
     ? 'Verify your identity in Settings to withdraw.'
@@ -79,16 +95,16 @@ export default function SellerWallet() {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-5">
         {stats.map(([label, value, color]) => (
-          <div key={label} className="rounded-lg bg-[#0D1524] border border-slate-800 p-4">
-            <p className="text-[11px] font-mono text-slate-500 mb-1">{label}</p>
-            <p className="font-display text-xl font-semibold" style={{ color }}>{money(value)}</p>
+          <div key={label} className="rounded-lg bg-[#0D1524] border border-slate-800 p-3.5 sm:p-4 min-w-0">
+            <p className="text-[10px] sm:text-[11px] font-mono text-slate-500 mb-1">{label}</p>
+            <p className="font-display text-lg sm:text-xl font-semibold break-words" style={{ color }}>{money(value)}</p>
           </div>
         ))}
       </div>
 
-      <div className="mx-5 mb-4 rounded-lg bg-[#0D1524] border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="mx-4 sm:mx-5 mb-4 rounded-lg bg-[#0D1524] border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <p className="text-sm text-slate-200">
             {wd.bank ? 'Pays to ' + wd.bank.bank_name + ' \u2022\u2022\u2022\u2022 ' + wd.bank.last4 : 'No bank account saved yet'}
@@ -99,24 +115,24 @@ export default function SellerWallet() {
           {(!wd.bank || !wd.verified) && <Link to="/settings" className="text-xs text-[#D4A94B] hover:underline">Open Settings</Link>}
         </div>
         <button type="button" onClick={withdraw} disabled={busy || Boolean(why)}
-          className="flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-50 text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors shrink-0">
+          className="flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-50 text-[#0B1120] font-semibold rounded-xl sm:rounded-lg px-5 py-3.5 sm:py-2.5 text-sm transition-colors sm:shrink-0 w-full sm:w-auto">
           {busy ? <><Loader2 size={15} className="animate-spin" /> Working...</> : <><Banknote size={15} /> Withdraw</>}
         </button>
       </div>
-      {msg && <p className={'text-sm px-5 pb-3 ' + (msg.ok ? 'text-[#34D399]' : 'text-red-400')}>{msg.text}</p>}
+      {msg && <p className={'text-sm px-4 sm:px-5 pb-3 ' + (msg.ok ? 'text-[#34D399]' : 'text-red-400')}>{msg.text}</p>}
 
-      <p className="text-xs text-slate-500 px-5 pb-4">
+      <p className="text-xs text-slate-500 px-4 sm:px-5 pb-4">
         KayVault keeps {data.fee_percent}% of each sale. Money becomes available after the buyer confirms the account, or after 24 hours with no action.
       </p>
 
       {wd.withdrawals.length > 0 && (
         <div className="border-t border-slate-800">
-          <p className="text-[11px] font-mono text-slate-500 px-5 pt-4 pb-2">YOUR WITHDRAWALS</p>
+          <p className="text-[11px] font-mono text-slate-500 px-4 sm:px-5 pt-4 pb-2">YOUR WITHDRAWALS</p>
           <ul>
             {wd.withdrawals.map((w) => {
               const s = STATUS[w.status] || STATUS.pending;
               return (
-                <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 border-t border-slate-800">
+                <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 border-t border-slate-800">
                   <div>
                     <p className="font-mono text-slate-200">{money(w.amount)}</p>
                     <p className="text-xs text-slate-500">
@@ -135,41 +151,56 @@ export default function SellerWallet() {
       {data.orders.length === 0 ? (
         <p className="text-slate-500 text-sm p-8 text-center border-t border-slate-800">No released payments yet.</p>
       ) : (
-        <div className="overflow-x-auto border-t border-slate-800">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-800">
-                <th className={th}>ORDER</th>
-                <th className={th}>SALE</th>
-                <th className={th}>FEE</th>
-                <th className={th}>YOU RECEIVE</th>
-                <th className={th}>PAYOUT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.orders.map((o) => (
-                <tr key={o.id} className="border-b border-slate-800 last:border-0">
-                  <td className="px-5 py-3">
-                    <p className="text-slate-200 font-medium">{o.game}</p>
-                    <p className="text-xs text-slate-500 truncate max-w-[200px]">{o.tier}</p>
-                  </td>
-                  <td className="px-5 py-3 font-mono text-slate-300 whitespace-nowrap">{money(o.price)}</td>
-                  <td className="px-5 py-3 font-mono text-slate-500 whitespace-nowrap">-{money(o.platform_fee)}</td>
-                  <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(o.seller_amount)}</td>
-                  <td className="px-5 py-3 whitespace-nowrap">
-                    {o.paid ? (
-                      <span className="text-xs text-[#34D399]">Paid {shortDate(o.payout_paid_at)}</span>
-                    ) : o.requested ? (
-                      <span className="text-xs text-[#5B8DEF]">Withdrawal in progress</span>
-                    ) : (
-                      <span className="text-xs text-[#D4A94B]">Available</span>
-                    )}
-                  </td>
+        <>
+          <ul className="sm:hidden border-t border-slate-800 divide-y divide-slate-800">
+            {data.orders.map((o) => (
+              <li key={o.id} className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-slate-200 font-medium truncate">{o.game}</p>
+                    <p className="text-xs text-slate-500 truncate">{o.tier}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-[#D4A94B] whitespace-nowrap">{money(o.seller_amount)}</p>
+                    <p className="text-[10px] font-mono text-slate-600">YOU RECEIVE</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+                  <span className="text-xs text-slate-500">Sale {money(o.price)} &middot; fee -{money(o.platform_fee)}</span>
+                  <Payout o={o} />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="hidden sm:block overflow-x-auto border-t border-slate-800">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-800">
+                  <th className={th}>ORDER</th>
+                  <th className={th}>SALE</th>
+                  <th className={th}>FEE</th>
+                  <th className={th}>YOU RECEIVE</th>
+                  <th className={th}>PAYOUT</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {data.orders.map((o) => (
+                  <tr key={o.id} className="border-b border-slate-800 last:border-0">
+                    <td className="px-5 py-3">
+                      <p className="text-slate-200 font-medium">{o.game}</p>
+                      <p className="text-xs text-slate-500 truncate max-w-[200px]">{o.tier}</p>
+                    </td>
+                    <td className="px-5 py-3 font-mono text-slate-300 whitespace-nowrap">{money(o.price)}</td>
+                    <td className="px-5 py-3 font-mono text-slate-500 whitespace-nowrap">-{money(o.platform_fee)}</td>
+                    <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(o.seller_amount)}</td>
+                    <td className="px-5 py-3 whitespace-nowrap"><Payout o={o} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

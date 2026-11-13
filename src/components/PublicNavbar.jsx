@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // KV-P17-NAVIMP
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // KV-P17-NAVIMP
 import { Search, Menu, X } from 'lucide-react';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
@@ -14,18 +14,22 @@ const BASE_LINKS = [
   { label: 'About', to: '/#about' },
 ];
 
-function NavLink({ to, children, className }) {
+function NavLink({ to, children, className, onClick }) {
   return to.startsWith('/#') ? (
-    <a href={to} className={className}>{children}</a>
+    <a href={to} className={className} onClick={onClick}>{children}</a>
   ) : (
-    <Link to={to} className={className}>{children}</Link>
+    <Link to={to} className={className} onClick={onClick}>{children}</Link>
   );
 }
 
 // minimal hides the Browse and Top-Up links (used on the logged-in home page, which has its own sections for them)
+// KV-MOBILE v1: on a phone the links sit in a menu with big tap targets
 export default function PublicNavbar({ overlay = false, minimal = false }) {
   const { profile } = useAuth();
+  const location = useLocation();
   const [open, setOpen] = useState(false); const navigate = useNavigate(); // KV-P17-NAVHOOK
+
+  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   const dash = profile?.is_admin
     ? '/admin'
@@ -41,9 +45,9 @@ export default function PublicNavbar({ overlay = false, minimal = false }) {
     .map((l) => (profile && l.label === 'Home' ? { ...l, to: '/home' } : l));
 
   return (
-    <header className={overlay ? 'absolute inset-x-0 top-0 z-40 bg-gradient-to-b from-[#0B1120]/85 to-transparent' : 'border-b border-slate-800/80 bg-[#0B1120]/80 backdrop-blur sticky top-0 z-40'}>
+    <header className={overlay ? 'absolute inset-x-0 top-0 z-40 bg-gradient-to-b from-[#0B1120]/85 to-transparent' : 'border-b border-slate-800/80 bg-[#0B1120]/90 backdrop-blur sticky top-0 z-40'}>
       {/* KV-NAV-OVERLAY */}
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 md:h-16 flex items-center justify-between">
         <Link to="/"><Logo /></Link>
 
         <nav className="hidden md:flex items-center gap-7">
@@ -73,27 +77,49 @@ export default function PublicNavbar({ overlay = false, minimal = false }) {
           )}
         </div>
 
-        <button className="md:hidden text-slate-300" onClick={() => setOpen(!open)} aria-label="Menu">
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          {profile && <NotificationBell />}
+          <button
+            className="w-11 h-11 flex items-center justify-center rounded-lg text-slate-300 hover:bg-slate-800/60"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-slate-800 px-6 py-4 space-y-3 bg-[#0B1120]">
-          {LINKS.map((l) => (
-            <NavLink key={l.label} to={l.to} className={`block ${link}`}>{l.label}</NavLink>
-          ))}
-          <div className="flex gap-3 pt-2">
-            {profile ? (
-              <Link to={dash} className="flex-1 text-center text-sm bg-[#D4A94B] text-[#0B1120] font-semibold rounded-lg py-2">Dashboard</Link>
-            ) : (
-              <>
-                <Link to="/login" className="flex-1 text-center text-sm border border-[#D4A94B]/60 text-[#D4A94B] font-semibold rounded-lg py-2">Login</Link>
-                <Link to="/signup" className="flex-1 text-center text-sm bg-[#D4A94B] text-[#0B1120] font-semibold rounded-lg py-2">Sign Up</Link>
-              </>
-            )}
+        <>
+          <div className="md:hidden fixed inset-x-0 bottom-0 top-14 bg-black/50" onClick={() => setOpen(false)} />
+          <div className="md:hidden absolute top-full inset-x-0 bg-[#0B1120] border-b border-slate-800 shadow-2xl px-4 pt-3 pb-4">
+            <nav className="space-y-1">
+              {LINKS.map((l) => (
+                <NavLink
+                  key={l.label}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className={`block rounded-lg px-3 py-3.5 text-[15px] transition-colors ${
+                    location.pathname === l.to ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </nav>
+            <div className="flex gap-3 pt-4">
+              {profile ? (
+                <Link to={dash} className="flex-1 text-center bg-[#D4A94B] text-[#0B1120] font-semibold rounded-xl py-3.5 text-[15px]">Dashboard</Link>
+              ) : (
+                <>
+                  <Link to="/login" className="flex-1 text-center border border-[#D4A94B]/60 text-[#D4A94B] font-semibold rounded-xl py-3.5 text-[15px]">Login</Link>
+                  <Link to="/signup" className="flex-1 text-center bg-[#D4A94B] text-[#0B1120] font-semibold rounded-xl py-3.5 text-[15px]">Sign Up</Link>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

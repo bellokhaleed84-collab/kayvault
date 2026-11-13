@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutDashboard, Package, RotateCcw, BadgeCheck, Users, ShoppingBag, CheckCircle2, XCircle,
-  Wallet, Clock, Ban, ShieldCheck, Search, ChevronRight, Banknote,
+  Wallet, Clock, Ban, ShieldCheck, Search, ChevronRight, Banknote, Activity,
 } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
 import StatusPill from '../components/StatusPill';
 import AdminKyc from '../components/AdminKyc';
 import AdminPayouts from '../components/AdminPayouts';
+import AdminMonitor from '../components/AdminMonitor'; // KV-MONITOR
 import { EarningsChart, StatusDonut } from '../components/charts';
 import { api, assetUrl } from '../lib/api';
 import RefundProofs from '../components/RefundProofs';
@@ -30,6 +31,7 @@ const TITLES = {
   users: ['Users', 'Search accounts and suspend anyone who breaks the rules.'],
   orders: ['Orders', 'The 50 most recent orders across the marketplace.'],
   payouts: ['Payouts', 'Pay sellers by bank transfer, mark them as paid, and handle refunds that need attention.'],
+  monitor: ['Monitor', 'Is the site working, how much space is left, and where the money is.'],
 };
 
 function Empty({ children }) {
@@ -121,6 +123,7 @@ export default function AdminDashboard() {
     ['users', 'Users', Users, 0],
     ['orders', 'Orders', ShoppingBag, 0],
     ['payouts', 'Payouts', Banknote, 0],
+    ['monitor', 'Monitor', Activity, 0],
   ];
 
   const navBtn = (active) =>
@@ -319,6 +322,7 @@ export default function AdminDashboard() {
 
               {view === 'kyc' && <AdminKyc />}
               {view === 'payouts' && <AdminPayouts />}
+              {view === 'monitor' && <AdminMonitor />}
 
               {view === 'users' && (
                 <div className="space-y-4">

@@ -7,6 +7,7 @@ import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { sweepExpired } from './purchases.js';
 import AuditLog from '../models/AuditLog.js';
 import { decryptJson } from '../lib/crypto.js';
+import { monitorSnapshot } from '../lib/monitor.js'; // KV-MONITOR
 
 const router = Router();
 router.use(requireAuth, requireAdmin);
@@ -21,6 +22,14 @@ async function total(status) {
   ]);
   return r[0]?.sum || 0;
 }
+
+// KV-MONITOR: health, storage and money numbers for the Monitor tab (read only)
+router.get('/monitor', async (_req, res, next) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await monitorSnapshot());
+  } catch (e) { next(e); }
+});
 
 // Platform numbers for the overview
 router.get('/stats', async (_req, res, next) => {

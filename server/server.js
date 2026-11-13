@@ -26,6 +26,7 @@ import { sweepWithdrawals } from './lib/withdrawals.js'; // KV-WD-SIMP
 import topupRoutes, { sweepTopups } from './routes/topups.js'; // KV-TOPUP-IMP
 import orderChatRoutes from './routes/orderChat.js'; // KV-ORDERCHAT
 import twofaRoutes from './routes/twofa.js'; // KV-TWOFA
+import { trackRequests, noteError } from './lib/monitor.js'; // KV-MONITOR
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) {
@@ -38,6 +39,7 @@ app.set('trust proxy', 1); // KV-TRUST-PROXY: Render sits behind one proxy, so r
 app.use(helmet());
 app.use(cors({ origin: (CLIENT_ORIGIN || 'http://localhost:5173').split(',') }));
 app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { req.rawBody = buf; } }));
+app.use(trackRequests); // KV-MONITOR: counts requests, errors and slow pages for the admin Monitor tab
 
 // KV-P17-NOAUTHLIMIT: the old blanket /api/auth limit was removed (it counted /auth/me on every page load)
 // KV-RATE-LIMITS: tighter limits on the sensitive routes
@@ -74,7 +76,8 @@ app.use('/api/order-chat', orderChatRoutes); // KV-ORDERCHAT
 app.use('/api/twofa', twofaRoutes); // KV-TWOFA
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
-app.use((err, _req, res, _next) => {
+app.use((err, req, res, _next) => {
+  noteError(req, err); // KV-MONITOR
   console.error(err);
   res.status(500).json({ error: 'Server error' });
 });

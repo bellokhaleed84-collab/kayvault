@@ -62,7 +62,7 @@ export default function Signup() {
     <button
       type="button"
       onClick={() => setRole(value)}
-      className={`flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-colors ${
+      className={`flex items-center justify-center gap-2 rounded-lg py-3 sm:py-2.5 text-sm font-semibold transition-colors ${
         role === value ? 'bg-[#D4A94B] text-[#0B1120]' : 'text-slate-400 hover:text-slate-200'
       }`}
     >
@@ -76,7 +76,7 @@ export default function Signup() {
       title={<>Real Gamers.<br />Real Accounts.<br />Trusted.</>}
       subtitle="Join KayVault and start buying or selling gaming accounts today."
     >
-      <h1 className="font-display text-3xl font-semibold text-slate-100 mb-1">Create Your Account</h1>
+      <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-1">Create Your Account</h1>
       <p className="text-slate-500 text-sm mb-6">Join KayVault and start buying or selling gaming accounts today.</p>
 
       <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#0D1524] border border-slate-800 mb-6">
@@ -141,9 +141,9 @@ export default function Signup() {
             ].map(([title, file, setFile, hint]) => (
               <div key={title}>
                 <label className="block text-xs font-mono text-slate-500 mb-2">{title}</label>
-                <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] bg-[#0D1524] px-4 py-3 transition-colors">
+                <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] bg-[#0D1524] px-4 py-3.5 transition-colors">
                   {file ? <Check size={16} className="text-[#34D399] shrink-0" /> : <Upload size={16} className="text-slate-500 shrink-0" />}
-                  <span className="text-sm text-slate-300 truncate">{file ? file.name : hint}</span>
+                  <span className="text-sm text-slate-300 truncate min-w-0">{file ? file.name : hint}</span>
                   <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
                     onChange={(e) => setFile(e.target.files?.[0] || null)} />
                 </label>
@@ -152,8 +152,8 @@ export default function Signup() {
           </div>
         )}
         {/* KV-P17B-BOX */}
-        <label className="flex items-start gap-2.5 text-xs text-slate-400 cursor-pointer select-none">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="accent-[#D4A94B] w-4 h-4 mt-0.5 shrink-0" />
+        <label className="flex items-start gap-3 text-xs text-slate-400 cursor-pointer select-none">
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="accent-[#D4A94B] w-5 h-5 mt-0 shrink-0" />
           <span>
             I am 18 or older and I agree to the{' '}
             <Link to="/terms" target="_blank" className="text-[#D4A94B] hover:underline">Terms of Service</Link>

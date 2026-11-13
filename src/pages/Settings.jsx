@@ -23,9 +23,9 @@ const ngPhoneOk = (v) => {
 const input =
   'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
-const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-5';
+const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-5';
 const gold =
-  'bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors';
+  'w-full sm:w-auto bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors';
 
 function Msg({ m }) {
   if (!m) return null;
@@ -114,7 +114,7 @@ export default function Settings() {
   };
 
   const tabBtn = (active) =>
-    `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
+    `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap shrink-0 transition-colors ${
       active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
@@ -122,14 +122,14 @@ export default function Settings() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="font-display text-3xl font-semibold text-slate-100 mb-1">Settings</h1>
-        <p className="text-slate-500 text-sm mb-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-1">Settings</h1>
+        <p className="text-slate-500 text-sm mb-6 sm:mb-8">
           {isSeller ? 'Manage your seller profile, security and payout details.' : 'Manage your profile, security and notifications.'}
         </p>
 
-        <div className="grid lg:grid-cols-[200px_1fr] gap-8">
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto self-start">
+        <div className="grid lg:grid-cols-[200px_1fr] gap-4 lg:gap-8">
+          <nav className="flex lg:flex-col gap-1 overflow-x-auto self-start min-w-0 -mx-4 px-4 pb-1 sm:mx-0 sm:px-0">
             {tabs.map(([v, l, Icon]) => (
               <button key={v} onClick={() => { setTab(v); setMsg(null); }} className={tabBtn(tab === v)}>
                 <Icon size={16} /> {l}
@@ -137,7 +137,7 @@ export default function Settings() {
             ))}
           </nav>
 
-          <div className="max-w-xl">
+          <div className="max-w-xl min-w-0">
             {tab === 'profile' && (
               <form onSubmit={saveProfile} className={card}>
                 <div>
@@ -187,8 +187,8 @@ export default function Settings() {
 
             {tab === 'notifications' && (
               <div className={card}>
-                <div className="flex items-center justify-between gap-6">
-                  <div>
+                <div className="flex items-center justify-between gap-4 sm:gap-6">
+                  <div className="min-w-0">
                     <p className="text-sm text-slate-200">Email me about order updates</p>
                     <p className="text-xs text-slate-500 mt-1">
                       Order updates are also sent to your email. Security emails are always sent.

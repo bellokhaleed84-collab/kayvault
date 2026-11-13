@@ -9,7 +9,7 @@ const ID_TYPES = [
   ['passport', 'International passport'],
 ];
 
-const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-5';
+const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-5';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 // Shrinks a photo to a JPEG data URL under the server limit
@@ -41,7 +41,7 @@ function FilePick({ title, hint, file, onPick }) {
       <label className={label}>{title}</label>
       <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] bg-[#0D1524] px-4 py-3.5 transition-colors">
         {file ? <Check size={16} className="text-[#34D399] shrink-0" /> : <Upload size={16} className="text-slate-500 shrink-0" />}
-        <span className="text-sm text-slate-300 truncate">{file ? file.name : hint}</span>
+        <span className="text-sm text-slate-300 truncate min-w-0">{file ? file.name : hint}</span>
         <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
           onChange={(e) => onPick(e.target.files?.[0] || null)} />
       </label>
@@ -114,7 +114,7 @@ export default function KycPanel() {
       {info.status === 'rejected' && (
         <div className="flex gap-3 rounded-lg border border-[#F87171]/30 bg-[#F87171]/10 p-4">
           <XCircle size={18} className="text-[#F87171] shrink-0 mt-0.5" />
-          <div>
+          <div className="min-w-0">
             <p className="text-sm text-slate-100 font-medium">Your last submission was not approved</p>
             <p className="text-sm text-slate-400 mt-1">{info.reject_reason || 'Please check your photos and try again.'}</p>
           </div>
@@ -141,7 +141,7 @@ export default function KycPanel() {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button type="submit" disabled={busy}
-        className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+        className="w-full sm:w-auto bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors">
         {busy ? 'Submitting...' : 'Submit for review'}
       </button>
     </form>

@@ -3,6 +3,7 @@ import { User, KeyRound, Bell, Building2, Globe, BadgeCheck, LifeBuoy, ChevronDo
 import KycPanel from '../components/KycPanel';
 import DashHeader from '../components/DashHeader';
 import SupportChat from '../components/SupportChat'; // KV-SUPPORT
+import PushToggle from '../components/PushToggle'; // KV-PUSH
 import { PasswordField } from '../components/AuthFields';
 import { api, setToken } from '../lib/api'; // KV-SEC-SESSION
 import { useAuth } from '../lib/AuthContext';
@@ -216,6 +217,9 @@ export default function Settings() {
                     className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${notifyEmail ? 'bg-[#8B5CF6]' : 'bg-slate-700'}`}>
                     <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${notifyEmail ? 'translate-x-5' : 'translate-x-0.5'}`} />
                   </button>
+                </div>
+                <div className="border-t border-slate-800 pt-5">
+                  <PushToggle />
                 </div>
                 <div className="border-t border-slate-800 pt-5">
                   <p className="text-sm text-slate-200">In-app notifications</p>

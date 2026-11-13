@@ -1,6 +1,7 @@
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';
 import { sendMail, emailTemplate, mailConfigured } from './mailer.js';
+import { sendPush } from './push.js'; // KV-PUSH
 
 const EMAIL_TYPES = new Set(['order', 'listing']); // bell-only types: review, info
 const origin = () => (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')[0];
@@ -24,6 +25,7 @@ export function notify(user, { type = 'info', title, body = '', link = '' }) {
       if (EMAIL_TYPES.has(type) && mailConfigured()) {
         emailIt(user, { title, body, link }).catch((e) => console.error('[email] notify failed:', e.message));
       }
+      sendPush(user, { title, body, link }); // KV-PUSH: same message as the bell, to the phone
       return n;
     })
     .catch((e) => console.error('notify failed:', e.message));

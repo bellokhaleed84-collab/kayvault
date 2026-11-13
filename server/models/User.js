@@ -15,12 +15,13 @@ const userSchema = new mongoose.Schema(
     bank_name: { type: String, default: '' },
     bank_account_number: { type: String, default: '' },
     bank_account_name: { type: String, default: '' },
+    bank_changed_at: { type: Date }, // KV-SEC-BANK: set when EXISTING bank details are changed; withdrawals pause for 24 hours
     kyc_status: { type: String, enum: ['none', 'pending', 'verified', 'rejected'], default: 'none' },
     kyc_id_type: { type: String, default: '' },
     kyc_reject_reason: { type: String, default: '', maxlength: 300 },
     reset_token_hash: { type: String, select: false },
     reset_expires: { type: Date, select: false },
-    // KV-SEC-VERIFY: only NEW sign-ups are set to true. Old users have no value here, so they count as verified.
+    // KV-SEC-VERIFY: only NEW sign-ups are set to true (and only when EMAIL_VERIFY_REQUIRED=true). Old users have no value, so they count as verified.
     email_unverified: { type: Boolean },
     verify_token_hash: { type: String, select: false },
     verify_expires: { type: Date, select: false },
@@ -42,7 +43,9 @@ const userSchema = new mongoose.Schema(
         delete ret.verify_expires;
         delete ret.verify_sent_at;
         delete ret.password_changed_at;
-        ret.email_unverified = ret.email_unverified === true;
+        delete ret.bank_changed_at;
+        // The site only treats someone as unverified while the switch is on
+        ret.email_unverified = ret.email_unverified === true && process.env.EMAIL_VERIFY_REQUIRED === 'true';
         return ret;
       },
     },

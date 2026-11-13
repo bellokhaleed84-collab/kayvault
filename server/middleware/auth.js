@@ -28,8 +28,23 @@ export const requireRole = (role) => (req, res, next) =>
 export const requireAdmin = (req, res, next) =>
   req.user.is_admin ? next() : res.status(403).json({ error: 'Admins only' });
 
-// KV-SEC-VERIFY: use after requireAuth on routes that buy, list or move money
+// KV-SEC-VERIFY: blocks buying, listing and withdrawing until the email is confirmed.
+// Does nothing unless EMAIL_VERIFY_REQUIRED=true on the server.
 export const requireVerified = (req, res, next) =>
-  req.user.email_unverified === true
-    ? res.status(403).json({ error: 'Please verify your email first. Check your inbox for the link.', code: 'EMAIL_NOT_VERIFIED' })
+  process.env.EMAIL_VERIFY_REQUIRED === 'true' && req.user.email_unverified === true
+    ? res.status(403).json({ error: 'Please confirm your email first. Check your inbox for the link.', code: 'EMAIL_NOT_VERIFIED' })
     : next();
+
+// KV-SEC-BANK: after existing bank details are changed, withdrawals wait 24 hours
+const BANK_HOLD_MS = 24 * 60 * 60 * 1000;
+export function requireBankSettled(req, res, next) {
+  const at = req.user.bank_changed_at;
+  const left = at ? BANK_HOLD_MS - (Date.now() - at.getTime()) : 0;
+  if (left > 0) {
+    const hours = Math.ceil(left / 3600000);
+    return res.status(403).json({
+      error: `You changed your bank details recently. For your safety, withdrawals open again in about ${hours} ${hours === 1 ? 'hour' : 'hours'}.`,
+    });
+  }
+  next();
+}

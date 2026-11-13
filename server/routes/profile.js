@@ -1,4 +1,4 @@
-// KV-PROFILE v3
+// KV-PROFILE v4
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { requireAuth } from '../middleware/auth.js';
@@ -35,6 +35,8 @@ router.patch('/', async (req, res, next) => {
   try {
     const b = req.body || {};
     const u = req.user;
+    const hadBank = Boolean(u.bank_account_number); // KV-SEC-BANK
+    const bankBefore = [u.bank_name, u.bank_account_number, u.bank_account_name].join('|');
     if (b.full_name !== undefined) {
       const n = cleanName(b.full_name);
       if (!n) return res.status(400).json({ error: 'Enter your full name (2 to 80 characters)' });
@@ -77,6 +79,10 @@ router.patch('/', async (req, res, next) => {
         u.bank_account_number = digits;
       }
       if (b.bank_account_name !== undefined) u.bank_account_name = cleanLine(b.bank_account_name, 100);
+      // KV-SEC-BANK: changing EXISTING bank details pauses withdrawals for 24 hours (adding them the first time does not)
+      if (hadBank && [u.bank_name, u.bank_account_number, u.bank_account_name].join('|') !== bankBefore) {
+        u.bank_changed_at = new Date();
+      }
     }
     await u.save();
     res.json({ user: u });

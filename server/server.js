@@ -27,6 +27,7 @@ import topupRoutes, { sweepTopups } from './routes/topups.js'; // KV-TOPUP-IMP
 import orderChatRoutes from './routes/orderChat.js'; // KV-ORDERCHAT
 import twofaRoutes from './routes/twofa.js'; // KV-TWOFA
 import { trackRequests, noteError } from './lib/monitor.js'; // KV-MONITOR
+import { requireAuth, requireVerified, requireBankSettled } from './middleware/auth.js'; // KV-SEC-GATE
 
 const { MONGODB_URI, JWT_SECRET, CLIENT_ORIGIN, PORT = 5000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) {
@@ -58,6 +59,15 @@ app.use('/api/profile/password', limit(FIVE_MIN, 5, 'Too many password attempts.
 app.use('/api/listings', limit(60 * 60 * 1000, 40, 'Too many listing changes. Try again later.', {
   skip: (req) => !(req.method === 'PATCH' || (req.method === 'POST' && req.path === '/')),
 }));
+
+// KV-SEC-GATE: checks that run BEFORE the money routes.
+// 1) Email must be confirmed (only when EMAIL_VERIFY_REQUIRED=true).  2) Withdrawals pause for 24 hours after a bank change.
+const gate = [requireAuth, requireVerified];
+app.post('/api/payments/initialize', ...gate); // pay for an account
+app.use('/api/topups/checkout', ...gate); // pay for a top-up (both providers)
+app.post('/api/listings', ...gate); // create a listing
+app.patch('/api/listings/:id', ...gate); // edit a listing
+app.post('/api/withdrawals', ...gate, requireBankSettled); // withdraw money
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);

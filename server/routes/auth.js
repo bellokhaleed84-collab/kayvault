@@ -1,4 +1,4 @@
-// KV-AUTH v3
+// KV-AUTH v4
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -18,11 +18,13 @@ const sign = (user, remember) =>
 
 const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const origin = () => (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')[0];
+// KV-SEC-VERIFY: email confirmation only applies when this is switched on (needs a verified sending domain in Resend)
+const verifyOn = () => process.env.EMAIL_VERIFY_REQUIRED === 'true';
 
 // Compared against when the email is unknown, so a wrong email takes as long as a wrong password
 const DUMMY_HASH = bcrypt.hashSync('kv-dummy-password', 12);
 
-// KV-SEC-VERIFY: makes a new verification token, returns the plain token (only its hash is stored)
+// Makes a new verification token, returns the plain token (only its hash is stored)
 function newVerifyToken() {
   const token = crypto.randomBytes(32).toString('hex');
   return {
@@ -60,7 +62,8 @@ router.post('/signup', async (req, res, next) => {
 
     if (await User.findOne({ email })) return res.status(409).json({ error: 'Email already in use' });
 
-    const v = newVerifyToken();
+    const need = verifyOn();
+    const v = need ? newVerifyToken() : null;
     const user = await User.create({
       full_name: name,
       email,
@@ -68,10 +71,10 @@ router.post('/signup', async (req, res, next) => {
       role: b.role,
       password_hash: await bcrypt.hash(b.password, 12),
       terms_accepted_at: new Date(), // KV-P17B-USER
-      email_unverified: true, // KV-SEC-VERIFY
-      ...v.fields,
+      ...(need ? { email_unverified: true, ...v.fields } : {}), // KV-SEC-VERIFY
     });
-    mailVerify(user, v.token);
+    if (need) mailVerify(user, v.token);
+    else sendWelcome(user.email, user.full_name, user.role);
     res.status(201).json({ token: sign(user, true), user });
   } catch (e) {
     if (e && e.code === 11000) return res.status(409).json({ error: 'Email already in use' });
@@ -119,6 +122,7 @@ router.post('/verify-email', async (req, res, next) => {
 // KV-SEC-VERIFY: logged-in user asks for a new link. One per minute.
 router.post('/resend-verification', requireAuth, async (req, res, next) => {
   try {
+    if (!verifyOn()) return res.json({ ok: true, already: true });
     const user = await User.findById(req.user._id).select('+verify_sent_at');
     if (!user || user.email_unverified !== true) return res.json({ ok: true, already: true });
     if (user.verify_sent_at && Date.now() - user.verify_sent_at.getTime() < 60 * 1000) {

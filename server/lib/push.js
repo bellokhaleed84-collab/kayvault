@@ -1,7 +1,9 @@
 // KV-PUSH v1: sends a push to every phone the user turned notifications on for.
 // Does nothing until VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and VAPID_SUBJECT are set on the server.
-import webpush from 'web-push';
+import * as wp from 'web-push';
 import PushSubscription from '../models/PushSubscription.js';
+
+const webpush = wp.default || wp; // works whichever way the package exports itself
 
 const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT } = process.env;
 const ready = Boolean(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY && VAPID_SUBJECT);

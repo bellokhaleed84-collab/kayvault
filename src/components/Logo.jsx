@@ -1,17 +1,15 @@
-export default function Logo({ size = 28, text = true, className = '' }) {
+import iconSrc from '../assets/kayvault-icon.png';
+
+// KV-LOGO v2: the neon K-V icon plus the name. Used by every header, the footer and the login pages.
+// size = icon height in pixels. text={false} shows only the icon.
+export default function Logo({ size = 34, text = true, className = '' }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="kvLogoGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#F2D48A" />
-            <stop offset="1" stopColor="#C9A15A" />
-          </linearGradient>
-        </defs>
-        <path d="M5 3h6v10l9-10h8L16 16l13 13h-8.5L11 19v10H5z" fill="url(#kvLogoGrad)" />
-      </svg>
+      <img src={iconSrc} alt={text ? '' : 'KayVault'} style={{ height: size, width: 'auto' }} className="shrink-0 select-none" draggable="false" />
       {text && (
-        <span className="font-display font-bold text-slate-100 text-lg tracking-tight">KayVault</span>
+        <span className="font-display font-bold text-slate-100 text-lg tracking-tight">
+          Kay<span className="bg-gradient-to-r from-[#B026FF] to-[#22D3EE] bg-clip-text text-transparent">Vault</span>
+        </span>
       )}
     </span>
   );

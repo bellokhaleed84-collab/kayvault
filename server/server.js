@@ -25,6 +25,7 @@ import withdrawalRoutes from './routes/withdrawals.js';
 import { sweepWithdrawals } from './lib/withdrawals.js'; // KV-WD-SIMP
 import topupRoutes, { sweepTopups } from './routes/topups.js'; // KV-TOPUP-IMP
 import orderChatRoutes from './routes/orderChat.js'; // KV-ORDERCHAT
+import supportRoutes from './routes/support.js'; // KV-SUPPORT
 import twofaRoutes from './routes/twofa.js'; // KV-TWOFA
 import { trackRequests, noteError } from './lib/monitor.js'; // KV-MONITOR
 import { requireAuth, requireVerified, requireBankSettled } from './middleware/auth.js'; // KV-SEC-GATE
@@ -91,6 +92,7 @@ app.use('/api/cases', caseRoutes);
 app.use('/api/withdrawals', withdrawalRoutes); // KV-WD-SROUTE
 app.use('/api/topups', topupRoutes); // KV-TOPUP-ROUTE
 app.use('/api/order-chat', orderChatRoutes); // KV-ORDERCHAT
+app.use('/api/support', supportRoutes); // KV-SUPPORT
 app.use('/api/twofa', twofaRoutes); // KV-TWOFA
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

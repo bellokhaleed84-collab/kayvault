@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { User, KeyRound, Bell, Building2, Globe, BadgeCheck } from 'lucide-react';
+import { User, KeyRound, Bell, Building2, Globe, BadgeCheck, LifeBuoy, ChevronDown } from 'lucide-react';
 import KycPanel from '../components/KycPanel';
 import DashHeader from '../components/DashHeader';
+import SupportChat from '../components/SupportChat'; // KV-SUPPORT
 import { PasswordField } from '../components/AuthFields';
 import { api, setToken } from '../lib/api'; // KV-SEC-SESSION
 import { useAuth } from '../lib/AuthContext';
@@ -11,6 +12,19 @@ const BANKS = [
   'Access Bank', 'Fidelity Bank', 'First Bank', 'FCMB', 'GTBank', 'Kuda', 'Moniepoint',
   'Opay', 'PalmPay', 'Polaris Bank', 'Stanbic IBTC', 'Sterling Bank', 'UBA', 'Union Bank',
   'Wema Bank', 'Zenith Bank',
+];
+
+// KV-SUPPORT: common questions. Seller-only ones are marked.
+const FAQ = [
+  ['How does payment protection (escrow) work?', 'When you pay, KayVault holds the money. The seller only gets paid after you confirm the account works, or after the confirm window ends with no complaint.'],
+  ['How long do I have to confirm an order?', 'You have 24 hours after delivery to check the account. If it does not work, ask for a refund before the time runs out.'],
+  ['The account does not work. What do I do?', 'Open the order and request a refund with proof, such as a screenshot or short video. The KayVault team reviews it and either refunds you or releases the money to the seller.'],
+  ['The account asks for a login code. What do I do?', 'Open your order and use the chat there to ask the seller for the code. If it uses an authenticator app, the order page shows how to get the code.'],
+  ['How do game top-ups work?', 'Choose the game and pack, enter your player ID and pay. You can follow the order under Top-ups in your dashboard. If it takes too long, contact us below.'],
+  ['I forgot my password.', 'Use "Forgot password" on the login page. When you change your password, your other devices are logged out for your safety.'],
+  ['How do I withdraw my earnings?', 'Sellers can withdraw released money from the seller dashboard to the bank account saved in Settings.', 'seller'],
+  ['Why are my withdrawals paused?', 'If you change bank details that were already saved, withdrawals pause for 24 hours to protect your money.', 'seller'],
+  ['How do I get the Verified badge?', 'Open the Verification tab in Settings and send your ID and selfie. The team will review them.', 'seller'],
 ];
 
 // KV-PHONE: 08031234567, +2348031234567 and 2348031234567 are all fine
@@ -35,7 +49,8 @@ function Msg({ m }) {
 export default function Settings() {
   const { user, profile, refreshProfile } = useAuth();
   const isSeller = profile?.role === 'seller';
-  const [tab, setTab] = useState(new URLSearchParams(window.location.search).get('tab') === 'verification' ? 'verification' : 'profile'); // KV-P17C-TAB
+  const urlTab = new URLSearchParams(window.location.search).get('tab');
+  const [tab, setTab] = useState(urlTab === 'verification' ? 'verification' : urlTab === 'help' ? 'help' : 'profile'); // KV-P17C-TAB
 
   const [name, setName] = useState(profile?.full_name || '');
   const [country, setCountry] = useState(profile?.country || '');
@@ -63,6 +78,7 @@ export default function Settings() {
     ['security', 'Security', KeyRound],
     ['notifications', 'Notifications', Bell],
     ...(isSeller ? [['bank', 'Bank details', Building2], ['verification', 'Verification', BadgeCheck]] : []),
+    ['help', 'Help & contact', LifeBuoy],
   ];
 
   async function save(fn, okText) {
@@ -234,6 +250,26 @@ export default function Settings() {
                 <Msg m={msg} />
                 <button type="submit" disabled={busy} className={gold}>{busy ? 'Saving...' : 'Save bank details'}</button>
               </form>
+            )}
+
+            {tab === 'help' && (
+              <div className="space-y-4">
+                <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6">
+                  <h2 className="font-display text-slate-100 font-semibold mb-4">Frequently asked questions</h2>
+                  <div className="divide-y divide-slate-800">
+                    {FAQ.filter(([, , only]) => !only || (only === 'seller' && isSeller)).map(([q, a]) => (
+                      <details key={q} className="group py-3">
+                        <summary className="flex items-center justify-between gap-3 cursor-pointer list-none text-sm text-slate-200 min-h-[28px]">
+                          <span>{q}</span>
+                          <ChevronDown size={16} className="shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <p className="text-sm text-slate-400 mt-2 leading-relaxed">{a}</p>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+                <SupportChat />
+              </div>
             )}
           </div>
         </div>

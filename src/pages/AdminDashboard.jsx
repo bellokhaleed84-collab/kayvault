@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutDashboard, Package, RotateCcw, BadgeCheck, Users, ShoppingBag, CheckCircle2, XCircle,
-  Wallet, Clock, Ban, ShieldCheck, Search, ChevronRight, Banknote, Activity,
+  Wallet, Clock, Ban, ShieldCheck, Search, ChevronRight, Banknote, Activity, LifeBuoy,
 } from 'lucide-react';
 import DashHeader from '../components/DashHeader';
 import GameArt from '../components/GameArt';
@@ -9,6 +9,7 @@ import StatusPill from '../components/StatusPill';
 import AdminKyc from '../components/AdminKyc';
 import AdminPayouts from '../components/AdminPayouts';
 import AdminMonitor from '../components/AdminMonitor'; // KV-MONITOR
+import AdminSupport from '../components/AdminSupport'; // KV-SUPPORT
 import { EarningsChart, StatusDonut } from '../components/charts';
 import { api, assetUrl } from '../lib/api';
 import RefundProofs from '../components/RefundProofs';
@@ -31,6 +32,7 @@ const TITLES = {
   users: ['Users', 'Search accounts and suspend anyone who breaks the rules.'],
   orders: ['Orders', 'The 50 most recent orders across the marketplace.'],
   payouts: ['Payouts', 'Pay sellers by bank transfer, mark them as paid, and handle refunds that need attention.'],
+  support: ['Support chats', 'Users who need help. Reply, then close the chat when the problem is fixed.'],
   monitor: ['Monitor', 'Is the site working, how much space is left, and where the money is.'],
 };
 
@@ -55,6 +57,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tick, setTick] = useState(0);
+  const [supportN, setSupportN] = useState(0); // KV-SUPPORT: chats waiting for a reply
 
   const loadCore = useCallback(async () => {
     try {
@@ -73,6 +76,14 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => { loadCore(); }, [loadCore, view, tick]);
+
+  // KV-SUPPORT: badge on the Support chats tab
+  useEffect(() => {
+    const get = () => api.get('/support/admin/count').then((r) => setSupportN(r.unread || 0)).catch(() => {});
+    get();
+    const t = setInterval(() => { if (document.visibilityState === 'visible') get(); }, 15000);
+    return () => clearInterval(t);
+  }, [view, tick]);
 
   useEffect(() => {
     if (view !== 'orders') return;
@@ -120,6 +131,7 @@ export default function AdminDashboard() {
     ['listings', 'Pending listings', Package, stats?.pending_listings || 0],
     ['refunds', 'Refund requests', RotateCcw, stats?.refund_requests || 0],
     ['kyc', 'Verification', BadgeCheck, stats?.kyc_pending || 0],
+    ['support', 'Support chats', LifeBuoy, supportN],
     ['users', 'Users', Users, 0],
     ['orders', 'Orders', ShoppingBag, 0],
     ['payouts', 'Payouts', Banknote, 0],
@@ -322,6 +334,7 @@ export default function AdminDashboard() {
 
               {view === 'kyc' && <AdminKyc />}
               {view === 'payouts' && <AdminPayouts />}
+              {view === 'support' && <AdminSupport />}
               {view === 'monitor' && <AdminMonitor />}
 
               {view === 'users' && (

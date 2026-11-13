@@ -112,7 +112,7 @@ export default function AccountDelivery() {
     return (
       <div className="min-h-screen bg-[#0B1120] text-slate-200">
         <DashHeader />
-        <div className="max-w-3xl mx-auto px-6 py-24 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
           <p className="text-slate-400 mb-4">{error}</p>
           <Link to="/dashboard/buyer" className="text-[#D4A94B] hover:underline">Back to My Purchases</Link>
         </div>
@@ -124,7 +124,7 @@ export default function AccountDelivery() {
     return (
       <div className="min-h-screen bg-[#0B1120] text-slate-200">
         <DashHeader />
-        <div className="max-w-6xl mx-auto px-6 py-10 space-y-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-6">
           <Skel className="h-5 w-40" />
           <Skel className="h-9 w-64" />
           <div className="grid lg:grid-cols-3 gap-8">
@@ -154,28 +154,28 @@ export default function AccountDelivery() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <Link to="/dashboard/buyer" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 mb-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <Link to="/dashboard/buyer" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 mb-5 sm:mb-6">
           <ArrowLeft size={14} /> Back to My Purchases
         </Link>
 
-        <div className="flex flex-wrap items-center gap-3 mb-8">
-          <h1 className="font-display text-3xl font-semibold text-slate-100">Account Delivery</h1>
+        <div className="flex flex-wrap items-center gap-3 mb-6 sm:mb-8">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">Account Delivery</h1>
           <StatusPill status={status} />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            {/* order summary */}
-            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5 flex gap-5">
-              <GameArt game={p.game} image={image} className="w-32 h-28 rounded-lg shrink-0" />
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="lg:col-span-2 space-y-6 min-w-0">
+            {/* order summary: stacked on phone (picture on top), side by side on bigger screens */}
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-5">
+              <GameArt game={p.game} image={image} className="w-full h-40 sm:w-32 sm:h-28 rounded-lg shrink-0" />
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-lg font-semibold text-slate-100">{p.game}</h2>
                 <p className="text-sm text-slate-500 mb-3">{p.tier}</p>
                 <p className="font-mono text-xl text-[#D4A94B] mb-3">{money(p.price)}</p>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                   {facts.map(([k, v]) => (
-                    <div key={k}>
+                    <div key={k} className="min-w-0">
                       <p className="text-[11px] font-mono text-slate-600">{k.toUpperCase()}</p>
                       <p className="text-sm text-slate-300 truncate">{v}</p>
                     </div>
@@ -185,7 +185,7 @@ export default function AccountDelivery() {
             </div>
 
             {/* credentials */}
-            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <KeyRound size={16} className="text-[#D4A94B]" />
@@ -217,7 +217,7 @@ export default function AccountDelivery() {
                     Your payment is held in escrow. The login details are hidden until you choose to reveal them.
                   </p>
                   <button onClick={reveal} disabled={credsLoading}
-                    className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
                     <Eye size={15} /> {credsLoading ? 'Decrypting...' : 'Reveal login details'}
                   </button>
                   {credsError && <p className="text-red-400 text-xs mt-3">{credsError}</p>}
@@ -231,7 +231,7 @@ export default function AccountDelivery() {
             {(status === 'held' || status === 'refund_requested') && <SellerContact purchaseId={p.id} />}
 
             {/* safety tips */}
-            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldAlert size={16} className="text-[#D4A94B]" />
                 <h2 className="font-display text-slate-100 font-semibold">Before you confirm</h2>
@@ -245,8 +245,8 @@ export default function AccountDelivery() {
           </div>
 
           {/* right column: escrow status + actions */}
-          <aside className="space-y-5 lg:sticky lg:top-24 self-start">
-            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
+          <aside className="space-y-5 lg:sticky lg:top-24 self-start min-w-0">
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-5">
               <p className="text-[11px] font-mono text-slate-500 mb-3">ESCROW</p>
 
               {status === 'held' && (
@@ -349,9 +349,9 @@ export default function AccountDelivery() {
 
             {status === 'released' && <ReviewBox purchaseId={p.id} existing={data.review} onDone={load} />}
 
-            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5 text-xs text-slate-500 space-y-1.5">
+            <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-5 text-xs text-slate-500 space-y-1.5">
               <p>Order placed {shortDate(p.created_at)}</p>
-              <p className="font-mono">Order ID {p.id}</p>
+              <p className="font-mono break-all">Order ID {p.id}</p>
               <div className="flex items-center gap-2 pt-2">
                 <ShieldCheck size={14} className="text-[#D4A94B]" /> Protected by KayVault Escrow
               </div>

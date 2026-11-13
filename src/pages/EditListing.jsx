@@ -1,4 +1,4 @@
-// KV-EDITLISTING v2
+// KV-EDITLISTING v3
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ImagePlus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
@@ -56,7 +56,7 @@ export default function EditListing() {
   if (loadError) {
     return (
       <Shell>
-        <div className="max-w-3xl mx-auto px-6 py-24 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
           <p className="text-slate-400 mb-4">{loadError}</p>
           <Link to="/dashboard/seller" className="text-[#D4A94B] hover:underline">Back to dashboard</Link>
         </div>
@@ -66,7 +66,7 @@ export default function EditListing() {
   if (!data || !form) {
     return (
       <Shell>
-        <div className="max-w-3xl mx-auto px-6 py-10 space-y-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-4">
           <Skel className="h-5 w-40" />
           <Skel className="h-9 w-56" />
           <Skel className="h-96 w-full" />
@@ -132,6 +132,7 @@ export default function EditListing() {
       setVer(Date.now());
       setForm((f) => ({ ...f, account_login: '', account_password: '', account_notes: '', twofa_secret: '', twofa_confirmed: false }));
       setDone(res.needs_review ? 'review' : 'saved');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError(err.message);
     }
@@ -140,12 +141,12 @@ export default function EditListing() {
 
   return (
     <Shell>
-      <div className="max-w-3xl mx-auto px-6 py-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-32 sm:pb-12">
         <Link to="/dashboard/seller" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 mb-6">
           <ArrowLeft size={14} /> Back to dashboard
         </Link>
-        <h1 className="font-display text-3xl font-semibold text-slate-100 mb-2">Edit listing</h1>
-        <p className="text-sm text-slate-500 mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-2">Edit listing</h1>
+        <p className="text-sm text-slate-500 mb-6 sm:mb-8">
           {data.status === 'live'
             ? 'This listing is live. Changing the price, details or pictures sends it back to our team for review. Changing only the login details or 2FA does not.'
             : 'This listing is waiting for review. Your changes are saved right away.'}
@@ -161,12 +162,12 @@ export default function EditListing() {
         )}
         {done && (
           <div className="flex items-center gap-2.5 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399] text-sm px-4 py-3 mb-6">
-            <CheckCircle2 size={16} />
+            <CheckCircle2 size={16} className="shrink-0" />
             {done === 'review' ? 'Saved. The listing is back in review and goes live again once our team approves it.' : 'Saved.'}
           </div>
         )}
 
-        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-5">
+        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={label}>GAME</label>
@@ -266,12 +267,13 @@ export default function EditListing() {
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          {/* buttons: stuck to the bottom on phone, normal on computer */}
+          <div className="fixed bottom-0 inset-x-0 z-30 flex items-center justify-end gap-3 bg-[#0B1120]/95 backdrop-blur border-t border-slate-800 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:z-auto sm:bg-transparent sm:backdrop-blur-none sm:border-0 sm:p-0 sm:pt-2">
             <Link to="/dashboard/seller" className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
               Back
             </Link>
             <button type="button" onClick={submit} disabled={saving || blocked}
-              className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+              className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
               {saving ? 'Saving...' : 'Save changes'}
             </button>
           </div>

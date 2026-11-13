@@ -61,6 +61,13 @@ export default function CreateListing() {
     if (msg) return setError(msg);
     setError('');
     setStep(step + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function back() {
+    setError('');
+    setStep(step - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function pick(e) {
@@ -102,11 +109,11 @@ export default function CreateListing() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-3xl mx-auto px-6 py-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-32 sm:pb-12">
         <Link to="/dashboard/seller" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 mb-6">
           <ArrowLeft size={14} /> Back to dashboard
         </Link>
-        <h1 className="font-display text-3xl font-semibold text-slate-100 mb-8">Create a listing</h1>
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-6 sm:mb-8">Create a listing</h1>
         {/* KV-P17C-CREATEBANNER */}
         {needsId && (
           <div className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -133,7 +140,7 @@ export default function CreateListing() {
           ))}
         </ol>
 
-        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-5">
+        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-5">
           {step === 0 && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -236,9 +243,9 @@ export default function CreateListing() {
             <div className="space-y-5">
               <div className="flex gap-4">
                 {images[0] ? (
-                  <img src={images[0]} alt="" className="w-36 h-28 rounded-lg object-cover border border-slate-800 shrink-0" />
+                  <img src={images[0]} alt="" className="w-28 h-24 sm:w-36 sm:h-28 rounded-lg object-cover border border-slate-800 shrink-0" />
                 ) : (
-                  <GameArt game={form.game} className="w-36 h-28 rounded-lg shrink-0" />
+                  <GameArt game={form.game} className="w-28 h-24 sm:w-36 sm:h-28 rounded-lg shrink-0" />
                 )}
                 <div className="min-w-0">
                   <h2 className="font-display text-lg font-semibold text-slate-100">{form.game}</h2>
@@ -272,7 +279,7 @@ export default function CreateListing() {
 
               <div className="rounded-lg border border-slate-800 bg-[#0D1524]/50 p-4 text-sm text-slate-400 space-y-1">
                 <p className="flex items-center gap-2 text-slate-300 mb-1"><Lock size={14} className="text-[#34D399]" /> Delivery details saved</p>
-                <p>Login: <span className="font-mono text-slate-300">{form.account_login}</span> &middot; Password hidden</p>
+                <p className="break-all">Login: <span className="font-mono text-slate-300">{form.account_login}</span> &middot; Password hidden</p>
                 <p>2FA: <span className="text-slate-300">{TWOFA_LABEL[form.twofa_mode] || '-'}</span></p>
               </div>
 
@@ -284,21 +291,22 @@ export default function CreateListing() {
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <div className="flex items-center justify-between pt-2">
+          {/* buttons: stuck to the bottom on phone, normal on computer */}
+          <div className="fixed bottom-0 inset-x-0 z-30 flex items-center justify-between gap-3 bg-[#0B1120]/95 backdrop-blur border-t border-slate-800 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:z-auto sm:bg-transparent sm:backdrop-blur-none sm:border-0 sm:p-0 sm:pt-2">
             {step > 0 ? (
-              <button type="button" onClick={() => { setError(''); setStep(step - 1); }}
+              <button type="button" onClick={back}
                 className="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
                 Back
               </button>
-            ) : <span />}
+            ) : <span className="hidden sm:block" />}
             {step < STEPS.length - 1 ? (
               <button type="button" onClick={next}
-                className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+                className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {step === 1 && images.length === 0 ? 'Skip for now' : 'Continue'}
               </button>
             ) : (
               <button type="button" onClick={submit} disabled={saving}
-                className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+                className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {saving ? 'Submitting...' : 'Submit for review'}
               </button>
             )}

@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema(
     kyc_reject_reason: { type: String, default: '', maxlength: 300 },
     reset_token_hash: { type: String, select: false },
     reset_expires: { type: Date, select: false },
+    // KV-SEC-VERIFY: only NEW sign-ups are set to true. Old users have no value here, so they count as verified.
+    email_unverified: { type: Boolean },
+    verify_token_hash: { type: String, select: false },
+    verify_expires: { type: Date, select: false },
+    verify_sent_at: { type: Date, select: false },
+    // KV-SEC-SESSION: logins issued before this moment stop working (set when the password is reset)
+    password_changed_at: { type: Date },
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
@@ -31,6 +38,11 @@ const userSchema = new mongoose.Schema(
         delete ret.password_hash;
         delete ret.reset_token_hash;
         delete ret.reset_expires;
+        delete ret.verify_token_hash;
+        delete ret.verify_expires;
+        delete ret.verify_sent_at;
+        delete ret.password_changed_at;
+        ret.email_unverified = ret.email_unverified === true;
         return ret;
       },
     },

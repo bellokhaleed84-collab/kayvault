@@ -42,16 +42,19 @@ app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { req.rawBody =
 app.use(trackRequests); // KV-MONITOR: counts requests, errors and slow pages for the admin Monitor tab
 
 // KV-P17-NOAUTHLIMIT: the old blanket /api/auth limit was removed (it counted /auth/me on every page load)
-// KV-RATE-LIMITS: tighter limits on the sensitive routes
+// KV-SEC-LIMITS: sensitive routes allow 5 tries per 5 minutes
 const limit = (windowMs, max, message, extra = {}) =>
   rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false, message: { error: message }, ...extra });
+const FIVE_MIN = 5 * 60 * 1000;
 app.use('/api', limit(60 * 1000, 300, 'Too many requests. Slow down and try again in a minute.'));
-app.use('/api/auth/login', limit(15 * 60 * 1000, 10, /* KV-P17-LOGIN10 */ 'Too many login attempts. Try again in 15 minutes.', { skipSuccessfulRequests: true }));
-app.use('/api/auth/login', limit(15 * 60 * 1000, 8, 'Too many attempts for this account. Try again in 15 minutes.', { skipSuccessfulRequests: true, keyGenerator: (req) => 'e:' + String((req.body && req.body.email) || '').toLowerCase().slice(0, 254) })); // KV-P17-EMAILLIMIT
-app.use('/api/auth/signup', limit(60 * 60 * 1000, 10, 'Too many sign-ups from this network. Try again later.'));
-app.use('/api/auth/forgot-password', limit(60 * 60 * 1000, 5, 'Too many reset requests. Try again later.'));
-app.use('/api/auth/reset-password', limit(60 * 60 * 1000, 10, 'Too many attempts. Try again later.'));
-app.use('/api/profile/password', limit(15 * 60 * 1000, 10, 'Too many password attempts. Try again in 15 minutes.'));
+app.use('/api/auth/login', limit(FIVE_MIN, 5, 'Too many login attempts. Try again in 5 minutes.', { skipSuccessfulRequests: true }));
+app.use('/api/auth/login', limit(FIVE_MIN, 5, 'Too many attempts for this account. Try again in 5 minutes.', { skipSuccessfulRequests: true, keyGenerator: (req) => 'e:' + String((req.body && req.body.email) || '').toLowerCase().slice(0, 254) })); // KV-P17-EMAILLIMIT
+app.use('/api/auth/signup', limit(FIVE_MIN, 5, 'Too many sign-ups from this network. Try again in 5 minutes.'));
+app.use('/api/auth/forgot-password', limit(FIVE_MIN, 5, 'Too many reset requests. Try again in 5 minutes.'));
+app.use('/api/auth/reset-password', limit(FIVE_MIN, 5, 'Too many attempts. Try again in 5 minutes.'));
+app.use('/api/auth/verify-email', limit(FIVE_MIN, 5, 'Too many attempts. Try again in 5 minutes.'));
+app.use('/api/auth/resend-verification', limit(FIVE_MIN, 5, 'Too many requests. Try again in 5 minutes.'));
+app.use('/api/profile/password', limit(FIVE_MIN, 5, 'Too many password attempts. Try again in 5 minutes.'));
 app.use('/api/listings', limit(60 * 60 * 1000, 40, 'Too many listing changes. Try again later.', {
   skip: (req) => !(req.method === 'PATCH' || (req.method === 'POST' && req.path === '/')),
 }));

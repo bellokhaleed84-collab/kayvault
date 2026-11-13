@@ -93,6 +93,21 @@ const SECURITY_FOOTER = 'This is a security email from KayVault, so it is sent e
 
 /* ------------------------------------------------ the emails */
 
+// KV-SEC-VERIFY
+export function sendVerifyEmail(to, name, link) {
+  const { html, text } = emailTemplate({
+    heading: 'Confirm your email',
+    paragraphs: [
+      `Hi ${name || 'there'},`,
+      'Tap the button below to confirm this email address. The link works for 24 hours.',
+      'You need to confirm your email before you can buy, sell or withdraw. If you did not create a KayVault account, you can ignore this email.',
+    ],
+    button: { label: 'Confirm my email', url: link },
+    footer: SECURITY_FOOTER,
+  });
+  return sendMail({ to, subject: 'Confirm your KayVault email', html, text });
+}
+
 export function sendPasswordReset(to, name, link) {
   const { html, text } = emailTemplate({
     heading: 'Reset your password',

@@ -93,45 +93,45 @@ export default function AdminTopupsPage() {
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
-      <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         <div>
-          <Link to="/admin" className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-100 mb-3"><ArrowLeft size={14} /> Admin</Link>
-          <h1 className="font-display text-3xl font-semibold text-slate-100">Top-ups</h1>
+          <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-100 mb-3 py-1"><ArrowLeft size={14} /> Admin</Link>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">Top-ups</h1>
           <p className="text-slate-500 text-sm mt-1">Choose the provider, set your prices and watch orders.</p>
         </div>
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
         {!data ? <p className="text-slate-500 text-sm">Loading...</p> : (
           <>
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className={`${card} p-5`}>
+            <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className={`${card} p-4 sm:p-5 min-w-0`}>
                 <p className="text-xs font-mono text-slate-500 mb-1">EYAD BALANCE</p>
                 <p className="font-display text-2xl font-semibold text-slate-100">
                   {data.eyad.error ? '-' : data.eyad.balance_usd == null ? 'Payment mode' : '$' + data.eyad.balance_usd.toFixed(2)}
                 </p>
-                {data.eyad.error && <p className="text-xs text-red-400 mt-1">{data.eyad.error}</p>}
+                {data.eyad.error && <p className="text-xs text-red-400 mt-1 break-words">{data.eyad.error}</p>}
               </div>
-              <div className={`${card} p-5`}>
+              <div className={`${card} p-4 sm:p-5 min-w-0`}>
                 <p className="text-xs font-mono text-slate-500 mb-1">GAMESDROP BALANCE</p>
                 <p className="font-display text-2xl font-semibold text-slate-100">
                   {data.balance ? `${data.balance.amount} ${data.balance.currency}` : '-'}
                 </p>
-                {data.balance_error && <p className="text-xs text-slate-600 mt-1">{data.balance_error}</p>}
+                {data.balance_error && <p className="text-xs text-slate-600 mt-1 break-words">{data.balance_error}</p>}
               </div>
-              <div className={`${card} p-5`}>
+              <div className={`${card} p-4 sm:p-5 min-w-0`}>
                 <p className="text-xs font-mono text-slate-500 mb-1">NEEDS ATTENTION</p>
                 <p className={`font-display text-2xl font-semibold ${data.needs_attention > 0 ? 'text-[#8B5CF6]' : 'text-slate-100'}`}>{data.needs_attention}</p>
               </div>
             </div>
 
-            <div className={`${card} p-5 space-y-4`}>
+            <div className={`${card} p-4 sm:p-5 space-y-4`}>
               <h2 className="font-display text-slate-100 font-semibold">Settings</h2>
               <div>
                 <label className={lbl}>ACTIVE PROVIDER</label>
                 <div className="flex gap-3">
                   {[['eyad', 'Eyad'], ['gamesdrop', 'GamesDrop']].map(([v, l]) => (
                     <button key={v} onClick={() => { setForm((f) => ({ ...f, provider: v })); setDirty(true); }}
-                      className={`rounded-lg px-4 py-2 text-sm border transition-colors ${
+                      className={`flex-1 sm:flex-none rounded-lg px-4 py-2.5 text-sm border transition-colors ${
                         form.provider === v ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white font-semibold' : 'border-slate-700 text-slate-400 hover:text-slate-200'
                       }`}>
                       {l}
@@ -158,9 +158,9 @@ export default function AdminTopupsPage() {
                 <label className={lbl}>ONLY SELL THESE EYAD GAMES (OPTIONAL)</label>
                 <textarea value={form.games} onChange={set('games')} rows={2} placeholder="genshin, mlbb, pubgm (leave empty to sell every game Eyad offers)" className={box} />
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <button onClick={save} disabled={saving || !dirty}
-                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+                  className="w-full sm:w-auto bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors">
                   {saving ? 'Saving...' : 'Save settings'}
                 </button>
                 {msg && <span className="text-sm text-[#34D399]">{msg}</span>}
@@ -209,15 +209,15 @@ export default function AdminTopupsPage() {
                               <div className="flex flex-col gap-1.5 items-end">
                                 {o.status === 'paid' && (
                                   <button onClick={() => act(o, 'retry', 'Try to place this paid order again?')}
-                                    className="text-xs border border-slate-700 hover:border-[#8B5CF6] text-slate-300 rounded-lg px-3 py-1">Retry</button>
+                                    className="text-xs border border-slate-700 hover:border-[#8B5CF6] text-slate-300 rounded-lg px-3 py-1.5 whitespace-nowrap">Retry</button>
                                 )}
                                 {['paid', 'refund_needed', 'refund_failed', 'check_needed'].includes(o.status) && (
                                   <button onClick={() => act(o, 'refund', `Refund ${money(o.naira_amount)} to the buyer?`)}
-                                    className="text-xs border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3 py-1">Refund</button>
+                                    className="text-xs border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3 py-1.5 whitespace-nowrap">Refund</button>
                                 )}
                                 {o.status === 'check_needed' && (
                                   <button onClick={() => act(o, 'complete', 'Mark this order as delivered? Only do this after checking with the provider.')}
-                                    className="text-xs border border-slate-700 hover:border-[#34D399] hover:text-[#34D399] text-slate-400 rounded-lg px-3 py-1">Mark delivered</button>
+                                    className="text-xs border border-slate-700 hover:border-[#34D399] hover:text-[#34D399] text-slate-400 rounded-lg px-3 py-1.5 whitespace-nowrap">Mark delivered</button>
                                 )}
                               </div>
                             </td>

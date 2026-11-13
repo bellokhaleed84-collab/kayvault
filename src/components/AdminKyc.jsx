@@ -46,41 +46,41 @@ export default function AdminKyc() {
 
   return (
     <section>
-      <h2 className="font-display text-2xl font-semibold text-slate-100 mb-1 flex items-center gap-2">
+      <h2 className="font-display text-xl sm:text-2xl font-semibold text-slate-100 mb-1 flex items-center gap-2">
         <BadgeCheck size={22} className="text-[#34D399]" /> Seller verification
       </h2>
-      <p className="text-slate-500 text-sm mb-8">Check the ID photo and selfie, then approve or reject with a reason.</p>
+      <p className="text-slate-500 text-sm mb-6 sm:mb-8">Check the ID photo and selfie, then approve or reject with a reason.</p>
       {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
       {loading ? (
         <p className="text-slate-500 text-sm">Loading...</p>
       ) : rows.length === 0 ? (
-        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-10 text-center">
+        <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-8 sm:p-10 text-center">
           <p className="text-slate-500 text-sm">No verifications waiting.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {rows.map((r) => (
-            <div key={r.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-6 space-y-4">
+            <div key={r.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-display text-slate-100 font-semibold">{r.full_name}</h3>
-                  <p className="text-sm text-slate-500">{r.email} &middot; {r.country}</p>
+                  <p className="text-sm text-slate-500 break-all">{r.email} &middot; {r.country}</p>
                   <p className="text-xs text-slate-600 mt-1">{ID_LABEL[r.id_type] || r.id_type}</p>
                 </div>
                 <div className="flex gap-2 flex-wrap">
                   {!imgs[r.id] && (
                     <button onClick={() => view(r.id)}
-                      className="flex items-center gap-1.5 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg px-3.5 py-2 text-xs transition-colors">
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg px-3.5 py-2.5 sm:py-2 text-xs transition-colors">
                       <Eye size={14} /> View documents
                     </button>
                   )}
                   <button onClick={() => decide(r.id, 'approve')}
-                    className="flex items-center gap-1.5 bg-[#34D399] hover:bg-[#2bb989] text-[#0B1120] font-semibold rounded-lg px-3.5 py-2 text-xs transition-colors">
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-[#34D399] hover:bg-[#2bb989] text-[#0B1120] font-semibold rounded-lg px-3.5 py-2.5 sm:py-2 text-xs transition-colors">
                     <CheckCircle2 size={14} /> Approve
                   </button>
                   <button onClick={() => { setRejecting(rejecting === r.id ? null : r.id); setReason(''); }}
-                    className="flex items-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3.5 py-2 text-xs transition-colors">
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-3.5 py-2.5 sm:py-2 text-xs transition-colors">
                     <XCircle size={14} /> Reject
                   </button>
                 </div>
@@ -105,7 +105,7 @@ export default function AdminKyc() {
                     placeholder="Reason, e.g. The ID photo is blurry. Please upload a clearer one."
                     className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
                   <button onClick={() => decide(r.id, 'reject')} disabled={reason.trim().length < 5}
-                    className="bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+                    className="w-full sm:w-auto bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors">
                     Send rejection
                   </button>
                 </div>

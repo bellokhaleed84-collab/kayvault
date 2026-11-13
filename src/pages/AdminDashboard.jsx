@@ -34,7 +34,7 @@ const TITLES = {
 
 function Empty({ children }) {
   return (
-    <div className={`${card} p-10 text-center`}>
+    <div className={`${card} p-8 sm:p-10 text-center`}>
       <p className="text-slate-500 text-sm">{children}</p>
     </div>
   );
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
   ];
 
   const navBtn = (active) =>
-    `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
+    `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap shrink-0 transition-colors ${
       active ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
@@ -143,9 +143,9 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <DashHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-8 grid lg:grid-cols-[210px_1fr] gap-8">
-        <aside>
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 grid lg:grid-cols-[210px_1fr] gap-4 lg:gap-8">
+        <aside className="min-w-0">
+          <nav className="flex lg:flex-col gap-1 overflow-x-auto -mx-4 px-4 pb-1 sm:mx-0 sm:px-0">
             {nav.map(([v, l, Icon, n]) => (
               <button key={v} onClick={() => setView(v)} className={navBtn(view === v)}>
                 <Icon size={16} /> {l}
@@ -158,8 +158,8 @@ export default function AdminDashboard() {
         </aside>
 
         <main className="min-w-0">
-          <div className="mb-6">
-            <h1 className="font-display text-3xl font-semibold text-slate-100">{title}</h1>
+          <div className="mb-5 sm:mb-6">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">{title}</h1>
             <p className="text-slate-500 text-sm mt-1">{subtitle}</p>
           </div>
 
@@ -171,25 +171,25 @@ export default function AdminDashboard() {
             <>
               {view === 'overview' && stats && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {cards.map(({ icon: Icon, label, value, sub, color }) => (
-                      <div key={label} className={`${card} p-5`}>
+                      <div key={label} className={`${card} p-4 sm:p-5 min-w-0`}>
                         <Icon size={18} style={{ color }} className="mb-3" />
                         <p className="text-slate-500 text-xs font-mono mb-1">{label.toUpperCase()}</p>
-                        <p className="font-display text-2xl font-semibold text-slate-100">{value}</p>
+                        <p className="font-display text-xl sm:text-2xl font-semibold text-slate-100 break-words">{value}</p>
                         <p className="text-xs text-slate-600 mt-1">{sub}</p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
                     {[
                       ['listings', 'Listings to review', stats.pending_listings],
                       ['refunds', 'Refund requests', stats.refund_requests],
                       ['kyc', 'Verifications waiting', stats.kyc_pending],
                     ].map(([v, l, n]) => (
                       <button key={v} onClick={() => setView(v)}
-                        className={`${card} p-5 text-left flex items-center justify-between hover:border-[#8B5CF6]/50 transition-colors`}>
+                        className={`${card} p-4 sm:p-5 text-left flex items-center justify-between hover:border-[#8B5CF6]/50 transition-colors`}>
                         <div>
                           <p className="text-xs font-mono text-slate-500 mb-1">{l.toUpperCase()}</p>
                           <p className={`font-display text-2xl font-semibold ${n > 0 ? 'text-[#8B5CF6]' : 'text-slate-100'}`}>{n}</p>
@@ -199,13 +199,13 @@ export default function AdminDashboard() {
                     ))}
                   </div>
 
-                  <div className="grid lg:grid-cols-3 gap-6">
-                    <div className={`${card} p-5 lg:col-span-2`}>
+                  <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className={`${card} p-4 sm:p-5 lg:col-span-2 min-w-0`}>
                       <h2 className="font-display text-slate-100 font-semibold mb-1">Released volume</h2>
                       <p className="text-xs text-slate-500 mb-4">Money released to sellers, last 6 months.</p>
                       <EarningsChart data={stats.monthly} format={money} />
                     </div>
-                    <div className={`${card} p-5`}>
+                    <div className={`${card} p-4 sm:p-5 min-w-0`}>
                       <h2 className="font-display text-slate-100 font-semibold mb-4">Listing status</h2>
                       <StatusDonut parts={[
                         { label: 'Live', value: stats.live, color: '#34D399' },
@@ -223,14 +223,14 @@ export default function AdminDashboard() {
                     {pending.map((l) => {
                       const imgs = (l.image_urls || []).map(assetUrl);
                       return (
-                        <div key={l.id} className={`${card} p-5`}>
-                          <div className="flex flex-col sm:flex-row gap-5">
+                        <div key={l.id} className={`${card} p-4 sm:p-5`}>
+                          <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
                             <GameArt game={l.game} image={imgs[0]} className="w-full sm:w-48 h-36 rounded-lg shrink-0" />
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-start justify-between gap-3">
-                                <div>
+                                <div className="min-w-0">
                                   <h3 className="font-display text-slate-100 font-semibold">{l.game}</h3>
-                                  <p className="text-sm text-slate-500">{l.tier}</p>
+                                  <p className="text-sm text-slate-500 break-words">{l.tier}</p>
                                 </div>
                                 <p className="font-mono text-[#8B5CF6] font-semibold">{money(l.price)}</p>
                               </div>
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
                                 Seller: {l.seller_name} &middot; {l.platform} &middot; {TYPE_LABELS[l.account_type] || l.account_type}
                                 {l.level ? ` \u00b7 ${l.level}` : ''} &middot; {shortDate(l.created_at)}
                               </p>
-                              {l.description && <p className="text-sm text-slate-400 mt-3 line-clamp-3 whitespace-pre-line">{l.description}</p>}
+                              {l.description && <p className="text-sm text-slate-400 mt-3 line-clamp-3 whitespace-pre-line break-words">{l.description}</p>}
                               {l.features?.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-3">
                                   {l.features.map((f) => (
@@ -247,9 +247,9 @@ export default function AdminDashboard() {
                                 </div>
                               )}
                               {imgs.length > 1 && (
-                                <div className="flex gap-2 mt-3">
+                                <div className="flex gap-2 mt-3 overflow-x-auto">
                                   {imgs.slice(1).map((src, i) => (
-                                    <a key={i} href={src} target="_blank" rel="noreferrer">
+                                    <a key={i} href={src} target="_blank" rel="noreferrer" className="shrink-0">
                                       <img src={src} alt="" className="w-16 h-12 object-cover rounded-md border border-slate-800" />
                                     </a>
                                   ))}
@@ -257,13 +257,13 @@ export default function AdminDashboard() {
                               )}
                             </div>
                           </div>
-                          <div className="flex gap-2 mt-5 pt-4 border-t border-slate-800">
+                          <div className="flex flex-wrap gap-2 mt-5 pt-4 border-t border-slate-800">
                             <button onClick={() => approve(l.id)}
-                              className="flex items-center gap-1.5 bg-[#34D399] hover:bg-[#2bb989] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+                              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-[#34D399] hover:bg-[#2bb989] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors">
                               <CheckCircle2 size={14} /> Approve
                             </button>
                             <button onClick={() => reject(l)}
-                              className="flex items-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-4 py-2 text-xs transition-colors">
+                              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border border-slate-700 hover:border-red-500 hover:text-red-400 text-slate-400 rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors">
                               <XCircle size={14} /> Reject
                             </button>
                           </div>
@@ -278,18 +278,18 @@ export default function AdminDashboard() {
                 refunds.length === 0 ? <Empty>No refund requests.</Empty> : (
                   <div className="space-y-4">
                     {refunds.map((p) => (
-                      <div key={p.id} className={`${card} p-5`}>
+                      <div key={p.id} className={`${card} p-4 sm:p-5`}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
+                          <div className="min-w-0">
                             <h3 className="font-display text-slate-100 font-semibold">{p.game}</h3>
-                            <p className="text-sm text-slate-500">{p.tier}</p>
+                            <p className="text-sm text-slate-500 break-words">{p.tier}</p>
                           </div>
                           <p className="font-mono text-[#8B5CF6] font-semibold">{money(p.price)}</p>
                         </div>
                         <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
-                          <div><p className="text-[11px] font-mono text-slate-600">BUYER</p><p className="text-slate-200">{p.buyer_name || '-'}</p><p className="text-xs text-slate-500">{p.buyer_email}</p></div>
-                          <div><p className="text-[11px] font-mono text-slate-600">SELLER</p><p className="text-slate-200">{p.seller_name || '-'}</p></div>
-                          <div><p className="text-[11px] font-mono text-slate-600">REQUESTED</p><p className="text-slate-200">{shortDate(p.refund_requested_at)}</p></div>
+                          <div className="min-w-0"><p className="text-[11px] font-mono text-slate-600">BUYER</p><p className="text-slate-200">{p.buyer_name || '-'}</p><p className="text-xs text-slate-500 break-all">{p.buyer_email}</p></div>
+                          <div className="min-w-0"><p className="text-[11px] font-mono text-slate-600">SELLER</p><p className="text-slate-200">{p.seller_name || '-'}</p></div>
+                          <div className="min-w-0"><p className="text-[11px] font-mono text-slate-600">REQUESTED</p><p className="text-slate-200">{shortDate(p.refund_requested_at)}</p></div>
                         </div>
                         <RefundActivity p={p} />
                         <RefundProofs purchaseId={p.id} />
@@ -299,15 +299,15 @@ export default function AdminDashboard() {
                         <CaseChat purchaseId={p.id} mode="admin" thread="seller" />
                         <div className="mt-4 rounded-lg bg-[#0D1524] border border-slate-800 px-4 py-3">
                           <p className="text-[11px] font-mono text-slate-600 mb-1">BUYER&apos;S REASON</p>
-                          <p className="text-sm text-slate-300 whitespace-pre-line">{p.refund_reason || 'No reason given.'}</p>
+                          <p className="text-sm text-slate-300 whitespace-pre-line break-words">{p.refund_reason || 'No reason given.'}</p>
                         </div>
-                        <div className="flex gap-2 mt-5 pt-4 border-t border-slate-800">
+                        <div className="flex flex-wrap gap-2 mt-5 pt-4 border-t border-slate-800">
                           <button onClick={() => resolve(p, 'refund')}
-                            className="flex items-center gap-1.5 bg-[#F87171] hover:bg-[#ef5b5b] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-[#F87171] hover:bg-[#ef5b5b] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors">
                             <RotateCcw size={14} /> Refund buyer
                           </button>
                           <button onClick={() => resolve(p, 'release')}
-                            className="flex items-center gap-1.5 border border-slate-700 hover:border-slate-500 text-slate-300 rounded-lg px-4 py-2 text-xs transition-colors">
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border border-slate-700 hover:border-slate-500 text-slate-300 rounded-lg px-4 py-2.5 sm:py-2 text-xs transition-colors">
                             <CheckCircle2 size={14} /> Release to seller
                           </button>
                         </div>
@@ -378,7 +378,7 @@ export default function AdminDashboard() {
                                 <td className="px-5 py-3 text-right">
                                   {!u.is_admin && (
                                     <button onClick={() => suspend(u)}
-                                      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs border transition-colors ${
+                                      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs border whitespace-nowrap transition-colors ${
                                         u.suspended
                                           ? 'border-[#34D399]/50 text-[#34D399] hover:bg-[#34D399]/10'
                                           : 'border-slate-700 text-slate-400 hover:border-red-500 hover:text-red-400'
@@ -398,9 +398,9 @@ export default function AdminDashboard() {
                   <div className="flex items-center justify-between text-sm text-slate-500">
                     <span>{users.total} {users.total === 1 ? 'user' : 'users'}</span>
                     <div className="flex items-center gap-3">
-                      <button disabled={upage <= 1} onClick={() => setUpage(upage - 1)} className="hover:text-slate-200 disabled:opacity-40">Previous</button>
+                      <button disabled={upage <= 1} onClick={() => setUpage(upage - 1)} className="hover:text-slate-200 disabled:opacity-40 px-2 py-2">Previous</button>
                       <span className="font-mono text-xs">{users.page} / {users.pages}</span>
-                      <button disabled={upage >= users.pages} onClick={() => setUpage(upage + 1)} className="hover:text-slate-200 disabled:opacity-40">Next</button>
+                      <button disabled={upage >= users.pages} onClick={() => setUpage(upage + 1)} className="hover:text-slate-200 disabled:opacity-40 px-2 py-2">Next</button>
                     </div>
                   </div>
                 </div>

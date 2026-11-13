@@ -3,7 +3,7 @@ import { User, KeyRound, Bell, Building2, Globe, BadgeCheck } from 'lucide-react
 import KycPanel from '../components/KycPanel';
 import DashHeader from '../components/DashHeader';
 import { PasswordField } from '../components/AuthFields';
-import { api } from '../lib/api';
+import { api, setToken } from '../lib/api'; // KV-SEC-SESSION
 import { useAuth } from '../lib/AuthContext';
 import { COUNTRIES, SELLER_COUNTRY, flag } from '../lib/countries';
 
@@ -102,9 +102,11 @@ export default function Settings() {
     if (pw.length < 8) return setMsg({ ok: false, text: 'New password must be at least 8 characters.' });
     if (pw !== pw2) return setMsg({ ok: false, text: 'The new passwords do not match.' });
     save(async () => {
-      await api.post('/profile/password', { current_password: cur, new_password: pw });
+      const remember = Boolean(localStorage.getItem('kv_token')); // KV-SEC-SESSION: keep this device logged in the same way
+      const r = await api.post('/profile/password', { current_password: cur, new_password: pw, remember });
+      if (r && r.token) setToken(r.token, remember); // other devices are logged out by the server
       setCur(''); setPw(''); setPw2('');
-    }, 'Password updated.');
+    }, 'Password updated. Other devices have been logged out.');
   };
 
   const toggleEmail = () => {
@@ -227,7 +229,8 @@ export default function Settings() {
                   <label className={label}>ACCOUNT NAME</label>
                   <input value={acctName} onChange={(e) => setAcctName(e.target.value)} className={input} placeholder="Name on the bank account" />
                 </div>
-                <p className="text-xs text-slate-500">Earnings are paid to this account once live payments launch. Use an account in your own name.</p>
+                <p className="text-xs text-slate-500">Earnings are paid to this account. Use an account in your own name.</p>
+                <p className="text-xs text-slate-500">For your safety, if you change bank details that are already saved, withdrawals pause for 24 hours.</p>
                 <Msg m={msg} />
                 <button type="submit" disabled={busy} className={gold}>{busy ? 'Saving...' : 'Save bank details'}</button>
               </form>

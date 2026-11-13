@@ -1,6 +1,7 @@
-// KV-PROFILE v4
+// KV-PROFILE v5
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { requireAuth } from '../middleware/auth.js';
 import { sendPasswordChanged } from '../lib/mailer.js';
 import { cleanName, cleanLine, passwordError, isStr } from '../lib/validate.js';
@@ -101,9 +102,12 @@ router.post('/password', async (req, res, next) => {
     if (b.new_password === b.current_password)
       return res.status(400).json({ error: 'The new password must be different from the current one' });
     req.user.password_hash = await bcrypt.hash(b.new_password, 12);
+    req.user.password_changed_at = new Date(); // KV-SEC-SESSION: every other device is logged out
     await req.user.save();
     sendPasswordChanged(req.user.email, req.user.full_name);
-    res.json({ ok: true });
+    // A fresh login for THIS device so the person is not thrown out of their own session
+    const token = jwt.sign({ sub: req.user._id.toString() }, process.env.JWT_SECRET, { expiresIn: b.remember === false ? '1d' : '30d' });
+    res.json({ ok: true, token });
   } catch (e) {
     next(e);
   }

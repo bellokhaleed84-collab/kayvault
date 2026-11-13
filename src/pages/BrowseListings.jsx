@@ -13,11 +13,11 @@ const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'
 const SORTS = [['newest', 'Newest'], ['price_asc', 'Price: Low to High'], ['price_desc', 'Price: High to Low']];
 
 const box =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-xl px-3.5 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] focus:ring-2 focus:ring-[#D4A94B]/20 transition-colors';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-xl px-3.5 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-colors';
 const heading = 'text-xs font-mono text-slate-500 mb-3';
 const chip = (on) =>
   `rounded-full px-4 py-2.5 text-sm font-medium border transition-colors ${
-    on ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120]' : 'border-slate-700 text-slate-300 hover:border-slate-500'
+    on ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'
   }`;
 
 export default function BrowseListings() {
@@ -141,7 +141,7 @@ export default function BrowseListings() {
               className={`${box} pl-10 h-12`} />
           </form>
           <button type="button" onClick={openPanel}
-            className="shrink-0 flex items-center gap-2 h-12 rounded-xl border border-slate-700 hover:border-[#D4A94B] text-slate-200 px-4 text-sm font-medium transition-colors">
+            className="shrink-0 flex items-center gap-2 h-12 rounded-xl border border-slate-700 hover:border-[#8B5CF6] text-slate-200 px-4 text-sm font-medium transition-colors">
             <SlidersHorizontal size={16} /> Filter
           </button>
         </div>
@@ -157,7 +157,7 @@ export default function BrowseListings() {
             <p className="text-slate-500 text-sm mb-4">No listings match your search. Try widening it.</p>
             {(hasFilters || params.get('q')) && (
               <button type="button" onClick={() => setParams(new URLSearchParams())}
-                className="border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors">
+                className="border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors">
                 Show all listings
               </button>
             )}
@@ -181,7 +181,7 @@ export default function BrowseListings() {
             {pageNumbers.map((p) => (
               <button key={p} onClick={() => update({ page: p })}
                 className={`w-10 h-10 rounded-lg text-sm border transition-colors ${
-                  p === page ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120] font-semibold' : 'border-slate-800 text-slate-400 hover:text-slate-200'
+                  p === page ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white font-semibold' : 'border-slate-800 text-slate-400 hover:text-slate-200'
                 }`}>
                 {p}
               </button>
@@ -225,9 +225,9 @@ export default function BrowseListings() {
                     const on = dGame.toLowerCase() === g.game.toLowerCase();
                     return (
                       <button key={g.game || 'all'} type="button" onClick={() => setDGame(g.game)}
-                        className={`w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm transition-colors ${on ? 'text-[#D4A94B]' : 'text-slate-300 hover:bg-slate-800/40'}`}>
-                        <span className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${on ? 'border-[#D4A94B]' : 'border-slate-600'}`}>
-                          {on && <span className="w-2 h-2 rounded-full bg-[#D4A94B]" />}
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm transition-colors ${on ? 'text-[#8B5CF6]' : 'text-slate-300 hover:bg-slate-800/40'}`}>
+                        <span className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${on ? 'border-[#8B5CF6]' : 'border-slate-600'}`}>
+                          {on && <span className="w-2 h-2 rounded-full bg-[#8B5CF6]" />}
                         </span>
                         <span className="flex-1 truncate">{g.game || 'All Games'}</span>
                         {g.count != null && <span className="text-xs text-slate-600">{g.count}</span>}
@@ -274,7 +274,7 @@ export default function BrowseListings() {
                 Clear all
               </button>
               <button type="button" onClick={apply}
-                className="flex-[2] bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-xl py-3.5 text-sm transition-colors">
+                className="flex-[2] bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-xl py-3.5 text-sm transition-colors">
                 Show results
               </button>
             </div>

@@ -61,7 +61,7 @@ export default function TopupCallback() {
           <>
             {tone === 'good' && <CheckCircle2 size={44} className="text-[#34D399] mx-auto mb-5" />}
             {tone === 'bad' && <XCircle size={44} className="text-[#F87171] mx-auto mb-5" />}
-            {tone === 'wait' && <Loader2 size={44} className="text-[#D4A94B] mx-auto mb-5 animate-spin" />}
+            {tone === 'wait' && <Loader2 size={44} className="text-[#8B5CF6] mx-auto mb-5 animate-spin" />}
             <h1 className="font-display text-2xl font-semibold text-slate-100">
               {t ? t[1] : 'Confirming your payment...'}
             </h1>
@@ -75,7 +75,7 @@ export default function TopupCallback() {
             )}
             {err && !order && <p className="text-xs text-slate-600 mt-4">{err}</p>}
             <div className="flex justify-center gap-4 mt-8 text-sm">
-              <Link to="/topup/orders" className="text-[#D4A94B] hover:underline">My top-ups</Link>
+              <Link to="/topup/orders" className="text-[#8B5CF6] hover:underline">My top-ups</Link>
               <Link to="/topup" className="text-slate-400 hover:text-slate-100">Top up again</Link>
             </div>
           </>

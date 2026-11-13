@@ -43,7 +43,7 @@ export default function RefundProofs({ purchaseId, who = 'buyer' }) { // KV-RP-W
       ) : items === null ? (
         <p className="flex items-center gap-2 text-xs text-slate-500"><Loader2 size={13} className="animate-spin" /> Loading proof...</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-[#D4A94B]">{who === 'seller' ? 'The seller has not uploaded any proof.' : 'No proof attached. This request was sent before proof was required.'}</p>
+        <p className="text-sm text-[#8B5CF6]">{who === 'seller' ? 'The seller has not uploaded any proof.' : 'No proof attached. This request was sent before proof was required.'}</p>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
           {items.map((p) => (

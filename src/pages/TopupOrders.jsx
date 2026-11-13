@@ -8,7 +8,7 @@ import { api } from '../lib/api';
 import { money, shortDate } from '../lib/orders';
 
 const STATUS = {
-  pending: ['Waiting for payment', '#D4A94B'],
+  pending: ['Waiting for payment', '#8B5CF6'],
   paid: ['Payment received', '#5B8DEF'],
   processing: ['Delivering', '#5B8DEF'],
   completed: ['Delivered', '#34D399'],
@@ -16,8 +16,8 @@ const STATUS = {
   refund_needed: ['Refund in progress', '#F87171'],
   refunding: ['Refund in progress', '#F87171'],
   refunded: ['Refunded', '#F87171'],
-  refund_failed: ['Refund being sorted by our team', '#D4A94B'],
-  check_needed: ['Being checked by our team', '#D4A94B'],
+  refund_failed: ['Refund being sorted by our team', '#8B5CF6'],
+  check_needed: ['Being checked by our team', '#8B5CF6'],
   error: ['Needs attention', '#F87171'],
 };
 const ACTIVE = new Set(['paid', 'processing']);
@@ -52,7 +52,7 @@ export default function TopupOrders() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
           <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">My top-ups</h1>
-          <Link to="/topup" className="text-sm text-[#D4A94B] hover:underline py-1">New top-up</Link>
+          <Link to="/topup" className="text-sm text-[#8B5CF6] hover:underline py-1">New top-up</Link>
         </div>
         {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
         {rows === null ? (
@@ -62,7 +62,7 @@ export default function TopupOrders() {
         ) : rows.length === 0 ? (
           <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-8 sm:p-10 text-center">
             <p className="text-slate-500 text-sm mb-4">No top-ups yet.</p>
-            <Link to="/topup" className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
+            <Link to="/topup" className="inline-block bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
               Top up a game
             </Link>
           </div>
@@ -77,7 +77,7 @@ export default function TopupOrders() {
                       <p className="text-slate-100 font-medium break-words">{o.product_name}</p>
                       <p className="text-sm text-slate-500 break-words">{o.offer_name}</p>
                     </div>
-                    <p className="font-mono text-[#D4A94B] font-semibold whitespace-nowrap">{money(o.naira_amount)}</p>
+                    <p className="font-mono text-[#8B5CF6] font-semibold whitespace-nowrap">{money(o.naira_amount)}</p>
                   </div>
                   <p className="text-xs text-slate-500 mt-3 break-words">
                     {o.player_name ? `${o.player_name} - ` : ''}{o.game_user_id} - {shortDate(o.created_at)}

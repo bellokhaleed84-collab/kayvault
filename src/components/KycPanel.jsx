@@ -39,7 +39,7 @@ function FilePick({ title, hint, file, onPick }) {
   return (
     <div>
       <label className={label}>{title}</label>
-      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] bg-[#0D1524] px-4 py-3.5 transition-colors">
+      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] bg-[#0D1524] px-4 py-3.5 transition-colors">
         {file ? <Check size={16} className="text-[#34D399] shrink-0" /> : <Upload size={16} className="text-slate-500 shrink-0" />}
         <span className="text-sm text-slate-300 truncate min-w-0">{file ? file.name : hint}</span>
         <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
@@ -99,7 +99,7 @@ export default function KycPanel() {
     return (
       <div className={card}>
         <div className="flex gap-3">
-          <Clock size={20} className="text-[#D4A94B] shrink-0 mt-0.5" />
+          <Clock size={20} className="text-[#8B5CF6] shrink-0 mt-0.5" />
           <div>
             <p className="text-slate-100 font-medium">Verification under review</p>
             <p className="text-sm text-slate-500 mt-1">Our team is checking your documents. You will get a notification when it is done.</p>
@@ -131,7 +131,7 @@ export default function KycPanel() {
       <div>
         <label className={label}>ID TYPE</label>
         <select value={idType} onChange={(e) => setIdType(e.target.value)}
-          className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors">
+          className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors">
           {ID_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
       </div>
@@ -141,7 +141,7 @@ export default function KycPanel() {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button type="submit" disabled={busy}
-        className="w-full sm:w-auto bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors">
+        className="w-full sm:w-auto bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors">
         {busy ? 'Submitting...' : 'Submit for review'}
       </button>
     </form>

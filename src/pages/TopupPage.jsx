@@ -9,7 +9,7 @@ import Skel from '../components/Skeleton';
 import { api } from '../lib/api';
 import { money } from '../lib/orders';
 
-const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-xl px-3.5 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] focus:ring-2 focus:ring-[#D4A94B]/20 transition-colors';
+const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-xl px-3.5 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-colors';
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 const label = 'block text-xs font-mono text-slate-500 mb-1.5';
 
@@ -131,7 +131,7 @@ export default function TopupPage() {
       </button>
     ) : (
       <button onClick={pay} disabled={!canPay}
-        className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-40 text-[#0B1120] font-semibold rounded-xl px-6 py-3.5 text-sm transition-colors">
+        className="bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 text-white font-semibold rounded-xl px-6 py-3.5 text-sm transition-colors">
         {busy === 'pay' ? 'Starting payment...' : 'Pay with Paystack'}
       </button>
     );
@@ -145,7 +145,7 @@ export default function TopupPage() {
             <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100">Game top-up</h1>
             <p className="text-slate-500 text-sm mt-1">Pay in Naira and the coins are sent straight to your game account.</p>
           </div>
-          <Link to="/topup/orders" className="flex items-center gap-2 text-sm text-[#D4A94B] hover:underline py-1">
+          <Link to="/topup/orders" className="flex items-center gap-2 text-sm text-[#8B5CF6] hover:underline py-1">
             <ListOrdered size={15} /> My top-ups
           </Link>
         </div>
@@ -163,7 +163,7 @@ export default function TopupPage() {
           <>
             {!cat.buy_enabled && (
               <div className={`${card} p-4 mb-6 flex items-center gap-3`}>
-                <Lock size={16} className="text-[#D4A94B] shrink-0" />
+                <Lock size={16} className="text-[#8B5CF6] shrink-0" />
                 <p className="text-sm text-slate-400">Buying is temporarily unavailable. You can still browse the games.</p>
               </div>
             )}
@@ -177,7 +177,7 @@ export default function TopupPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {shown.map((g) => (
                   <button key={g.id} onClick={() => openGame(g)}
-                    className={`${card} overflow-hidden text-left hover:border-[#D4A94B]/50 transition-colors`}>
+                    className={`${card} overflow-hidden text-left hover:border-[#8B5CF6]/50 transition-colors`}>
                     <TopupGameImage key={g.id} game={g} className="h-28 w-full" />
                     <div className="px-3.5 py-3">
                       <p className="text-sm text-slate-100 font-medium leading-snug">{g.name}</p>
@@ -213,10 +213,10 @@ export default function TopupPage() {
                   {packs.map((p) => (
                     <button key={p.pack_id} onClick={() => setPack(p)}
                       className={`rounded-xl border p-4 text-left transition-colors ${
-                        pack && pack.pack_id === p.pack_id ? 'border-[#D4A94B] bg-[#D4A94B]/10' : 'border-slate-800 bg-[#131B2E] hover:border-slate-600'
+                        pack && pack.pack_id === p.pack_id ? 'border-[#8B5CF6] bg-[#8B5CF6]/10' : 'border-slate-800 bg-[#131B2E] hover:border-slate-600'
                       }`}>
                       <p className="text-sm text-slate-100 font-medium">{p.name}</p>
-                      <p className="font-mono text-[#D4A94B] font-semibold mt-2">{money(p.naira)}</p>
+                      <p className="font-mono text-[#8B5CF6] font-semibold mt-2">{money(p.naira)}</p>
                       {p.buyable === false && <p className="text-[11px] text-slate-500 mt-1">Unavailable</p>}
                     </button>
                   ))}
@@ -249,14 +249,14 @@ export default function TopupPage() {
               {game.supports_id_check && (
                 <div className="space-y-3">
                   <button onClick={checkId} disabled={!fieldsReady || busy === 'check'}
-                    className="w-full sm:w-auto border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-40 font-semibold rounded-xl px-5 py-3 text-sm transition-colors">
+                    className="w-full sm:w-auto border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 disabled:opacity-40 font-semibold rounded-xl px-5 py-3 text-sm transition-colors">
                     {busy === 'check' ? 'Checking...' : 'Check player ID'}
                   </button>
                   {check && check.valid === true && (
                     <div className="rounded-lg bg-[#0D1524] border border-slate-800 px-4 py-3">
                       <p className="flex items-center gap-2 text-sm text-[#34D399]"><CheckCircle2 size={15} className="shrink-0" /> <span>Player found: <span className="font-semibold">{check.player_name || 'OK'}</span></span></p>
                       <label className="flex items-start gap-3 text-sm text-slate-400 mt-3 cursor-pointer">
-                        <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="accent-[#D4A94B] w-5 h-5 mt-0.5 shrink-0" />
+                        <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} className="accent-[#8B5CF6] w-5 h-5 mt-0.5 shrink-0" />
                         This is my account. Coins sent to the wrong account cannot be reversed.
                       </label>
                     </div>

@@ -32,14 +32,14 @@ export default function Footer() {
           {/* KV-P17-NOFOLLOW */}
           <div className="flex gap-3 mb-6">
             {[/* KV-P17-NOICONS */].map((Icon, i) => (
-              <a key={i} href="#" className="w-8 h-8 rounded-full border border-slate-800 flex items-center justify-center text-slate-400 hover:text-[#D4A94B] hover:border-[#D4A94B]/50 transition-colors">
+              <a key={i} href="#" className="w-8 h-8 rounded-full border border-slate-800 flex items-center justify-center text-slate-400 hover:text-[#8B5CF6] hover:border-[#8B5CF6]/50 transition-colors">
                 <Icon size={14} />
               </a>
             ))}
           </div>
           <p className={h}>SECURE PAYMENTS</p>
           <div className="flex items-center gap-2 text-sm text-slate-400">
-            <ShieldCheck size={16} className="text-[#D4A94B]" /> Escrow Protection
+            <ShieldCheck size={16} className="text-[#8B5CF6]" /> Escrow Protection
           </div>
         </div>
       </div>

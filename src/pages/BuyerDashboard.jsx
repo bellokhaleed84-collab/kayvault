@@ -11,7 +11,7 @@ import { TABS, inTab, timeLeft, money, shortDate } from '../lib/orders';
 
 // KV-TOPUPLIST v1: what the buyer sees for each top-up status
 const TOPUP_STATUS = {
-  pending: { label: 'Awaiting payment', color: '#D4A94B' },
+  pending: { label: 'Awaiting payment', color: '#8B5CF6' },
   paid: { label: 'Delivering', color: '#5B8DEF' },
   processing: { label: 'Delivering', color: '#5B8DEF' },
   completed: { label: 'Delivered', color: '#34D399' },
@@ -19,9 +19,9 @@ const TOPUP_STATUS = {
   refund_needed: { label: 'Refund on its way', color: '#5B8DEF' },
   refunding: { label: 'Refund on its way', color: '#5B8DEF' },
   refunded: { label: 'Refunded', color: '#F87171' },
-  refund_failed: { label: 'Under review', color: '#D4A94B' },
-  check_needed: { label: 'Under review', color: '#D4A94B' },
-  error: { label: 'Under review', color: '#D4A94B' },
+  refund_failed: { label: 'Under review', color: '#8B5CF6' },
+  check_needed: { label: 'Under review', color: '#8B5CF6' },
+  error: { label: 'Under review', color: '#8B5CF6' },
 };
 const TOPUP_SHOW_REASON = ['failed', 'refund_needed', 'refunding', 'refunded'];
 
@@ -91,7 +91,7 @@ export default function BuyerDashboard() {
   const cards = [
     { icon: PackageCheck, label: 'Total orders', value: stats.orders, color: '#34D399' },
     { icon: Clock, label: 'In escrow', value: money(stats.escrow), color: '#5B8DEF' },
-    { icon: Wallet, label: 'Total spent', value: money(stats.spent), color: '#D4A94B' },
+    { icon: Wallet, label: 'Total spent', value: money(stats.spent), color: '#8B5CF6' },
   ];
 
   return (
@@ -124,7 +124,7 @@ export default function BuyerDashboard() {
                 onClick={() => setTab(v)}
                 className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2.5 sm:py-2 text-xs font-medium border transition-colors ${
                   tab === v
-                    ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120]'
+                    ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white'
                     : 'border-slate-800 text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -148,7 +148,7 @@ export default function BuyerDashboard() {
             {purchases.length === 0 && (
               <Link
                 to="/browse"
-                className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
+                className="inline-block bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
               >
                 Browse listings
               </Link>
@@ -164,7 +164,7 @@ export default function BuyerDashboard() {
                 <Link
                   key={p.id}
                   to={`/orders/${p.id}`}
-                  className="group rounded-xl bg-[#131B2E] border border-slate-800 hover:border-[#D4A94B]/50 transition-colors p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+                  className="group rounded-xl bg-[#131B2E] border border-slate-800 hover:border-[#8B5CF6]/50 transition-colors p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
                 >
                   <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                     <GameArt game={p.game} image={image} className="w-20 h-16 sm:w-24 sm:h-20 rounded-lg shrink-0" />
@@ -178,7 +178,7 @@ export default function BuyerDashboard() {
                     </div>
                   </div>
                   <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0">
-                    <p className="font-mono text-[#D4A94B] font-semibold">{money(p.price)}</p>
+                    <p className="font-mono text-[#8B5CF6] font-semibold">{money(p.price)}</p>
                     <StatusPill status={p.escrow_status} />
                     {newMsgs > 0 && (
                       <span className="rounded-full bg-[#F87171] text-[#0B1120] text-[11px] font-bold px-2.5 py-1 whitespace-nowrap">
@@ -189,7 +189,7 @@ export default function BuyerDashboard() {
                       <p className={`text-xs ${t.expired ? 'text-slate-500' : 'text-slate-400'}`}>{t.text}</p>
                     )}
                   </div>
-                  <ChevronRight size={18} className="hidden sm:block text-slate-600 group-hover:text-[#D4A94B] shrink-0" />
+                  <ChevronRight size={18} className="hidden sm:block text-slate-600 group-hover:text-[#8B5CF6] shrink-0" />
                 </Link>
               );
             })}
@@ -200,10 +200,10 @@ export default function BuyerDashboard() {
         <div className="mt-10 sm:mt-12">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Zap size={18} className="text-[#D4A94B]" />
+              <Zap size={18} className="text-[#8B5CF6]" />
               <h2 className="font-display text-xl sm:text-2xl font-semibold text-slate-100">Top-ups</h2>
             </div>
-            <Link to="/topup" className="text-sm text-[#D4A94B] hover:underline py-1">New top-up</Link>
+            <Link to="/topup" className="text-sm text-[#8B5CF6] hover:underline py-1">New top-up</Link>
           </div>
 
           {topupError && <p className="text-red-400 text-sm mb-4">{topupError}</p>}
@@ -217,7 +217,7 @@ export default function BuyerDashboard() {
               <p className="text-slate-500 text-sm mb-4">You have not made a top-up yet.</p>
               <Link
                 to="/topup"
-                className="inline-block bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
+                className="inline-block bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-5 py-3 text-sm transition-colors"
               >
                 Top up a game
               </Link>
@@ -227,8 +227,8 @@ export default function BuyerDashboard() {
               {topupRows.map((tp) => (
                 <div key={tp.id} className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                    <div className="w-12 h-12 rounded-lg bg-[#D4A94B]/10 flex items-center justify-center shrink-0">
-                      <Zap size={20} className="text-[#D4A94B]" />
+                    <div className="w-12 h-12 rounded-lg bg-[#8B5CF6]/10 flex items-center justify-center shrink-0">
+                      <Zap size={20} className="text-[#8B5CF6]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-display text-slate-100 font-semibold truncate">{tp.product_name || 'Game top-up'}</h3>
@@ -243,7 +243,7 @@ export default function BuyerDashboard() {
                     </div>
                   </div>
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0">
-                    <p className="font-mono text-[#D4A94B] font-semibold">{money(tp.naira_amount)}</p>
+                    <p className="font-mono text-[#8B5CF6] font-semibold">{money(tp.naira_amount)}</p>
                     <TopupPill status={tp.status} />
                   </div>
                 </div>

@@ -13,7 +13,7 @@ function Shell({ title, intro, children }) {
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
       <PublicNavbar />
       <main className="max-w-3xl mx-auto px-6 py-12">
-        <p className="text-xs font-mono text-[#D4A94B] mb-3">KAYVAULT</p>
+        <p className="text-xs font-mono text-[#8B5CF6] mb-3">KAYVAULT</p>
         <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-100">{title}</h1>
         {intro && <p className="text-slate-500 text-sm mt-3">{intro}</p>}
         <div className="mt-10 space-y-8">{children}</div>
@@ -37,7 +37,7 @@ function Section({ title, items }) {
 function Contact() {
   return (
     <section className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
-      <p className="text-sm text-slate-400">Questions about this page? Email us at <span className="text-[#D4A94B]">{SUPPORT_EMAIL}</span>.</p>
+      <p className="text-sm text-slate-400">Questions about this page? Email us at <span className="text-[#8B5CF6]">{SUPPORT_EMAIL}</span>.</p>
     </section>
   );
 }
@@ -176,7 +176,7 @@ export function Help() {
     <Shell title="Help Center and FAQ" intro="Quick answers about buying, selling and escrow.">
       {FAQ.map(([group, qs]) => (
         <section key={group}>
-          <h2 className="font-display text-xl font-semibold text-[#D4A94B] mb-4">{group}</h2>
+          <h2 className="font-display text-xl font-semibold text-[#8B5CF6] mb-4">{group}</h2>
           <div className="space-y-3">
             {qs.map(([q, a]) => (
               <div key={q} className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">

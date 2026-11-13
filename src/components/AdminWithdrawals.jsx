@@ -5,10 +5,10 @@ import { api } from '../lib/api';
 import { money, shortDate } from '../lib/orders';
 
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
-const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
+const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
 const ghostBtn = 'flex items-center justify-center gap-1.5 border border-slate-700 hover:border-slate-500 disabled:opacity-60 text-slate-300 rounded-lg px-4 py-2 text-xs transition-colors';
 const redBtn = 'flex items-center justify-center gap-1.5 border border-[#F87171]/50 text-[#F87171] hover:bg-[#F87171]/10 disabled:opacity-60 rounded-lg px-4 py-2 text-xs transition-colors';
-const STATUS = { pending: ['Waiting to be paid', '#D4A94B'], processing: ['Sending via Paystack', '#5B8DEF'], paid: ['Paid', '#34D399'], failed: ['Rejected or failed', '#F87171'] };
+const STATUS = { pending: ['Waiting to be paid', '#8B5CF6'], processing: ['Sending via Paystack', '#5B8DEF'], paid: ['Paid', '#34D399'], failed: ['Rejected or failed', '#F87171'] };
 
 // Admin: seller withdrawal requests. In automatic mode most of these pay themselves.
 export default function AdminWithdrawals({ onChange }) {
@@ -73,7 +73,7 @@ export default function AdminWithdrawals({ onChange }) {
     <section>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-display text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Banknote size={18} className="text-[#D4A94B]" /> Withdrawal requests
+          <Banknote size={18} className="text-[#8B5CF6]" /> Withdrawal requests
         </h2>
         <span className={'text-xs font-mono ' + (data.auto ? 'text-[#34D399]' : 'text-slate-500')}>
           AUTOMATIC PAYOUTS: {data.auto ? 'ON' : 'OFF'}
@@ -105,7 +105,7 @@ export default function AdminWithdrawals({ onChange }) {
                     <p className="text-xs text-slate-500">{w.seller_email} &middot; {w.order_count} {w.order_count === 1 ? 'order' : 'orders'} &middot; {shortDate(w.created_at)}</p>
                     <p className="text-xs mt-1" style={{ color: s[1] }}>{s[0]}</p>
                   </div>
-                  <p className="font-mono text-xl text-[#D4A94B]">{money(w.amount)}</p>
+                  <p className="font-mono text-xl text-[#8B5CF6]">{money(w.amount)}</p>
                 </div>
 
                 <dl className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
@@ -120,7 +120,7 @@ export default function AdminWithdrawals({ onChange }) {
                   <div className="flex flex-col sm:flex-row gap-3 mt-5 pt-4 border-t border-slate-800">
                     <input value={notes[w.id] || ''} onChange={(e) => setNotes({ ...notes, [w.id]: e.target.value })}
                       maxLength={120} placeholder="Transfer reference (optional)"
-                      className="flex-1 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
+                      className="flex-1 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
                     {data.auto && (
                       <button onClick={() => send(w)} disabled={w.suspended || busy === 'send-' + w.id} className={goldBtn}>
                         <Send size={14} /> {busy === 'send-' + w.id ? 'Sending...' : 'Send via Paystack'}

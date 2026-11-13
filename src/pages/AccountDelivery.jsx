@@ -47,7 +47,7 @@ function CopyRow({ label, value, secret }) {
           </button>
         )}
         <button type="button" onClick={copy} aria-label={`Copy ${label}`}
-          className="text-slate-500 hover:text-[#D4A94B] p-1">
+          className="text-slate-500 hover:text-[#8B5CF6] p-1">
           {copied ? <Check size={16} className="text-[#34D399]" /> : <Copy size={16} />}
         </button>
       </div>
@@ -114,7 +114,7 @@ export default function AccountDelivery() {
         <DashHeader />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
           <p className="text-slate-400 mb-4">{error}</p>
-          <Link to="/dashboard/buyer" className="text-[#D4A94B] hover:underline">Back to My Purchases</Link>
+          <Link to="/dashboard/buyer" className="text-[#8B5CF6] hover:underline">Back to My Purchases</Link>
         </div>
       </div>
     );
@@ -172,7 +172,7 @@ export default function AccountDelivery() {
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-lg font-semibold text-slate-100">{p.game}</h2>
                 <p className="text-sm text-slate-500 mb-3">{p.tier}</p>
-                <p className="font-mono text-xl text-[#D4A94B] mb-3">{money(p.price)}</p>
+                <p className="font-mono text-xl text-[#8B5CF6] mb-3">{money(p.price)}</p>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                   {facts.map(([k, v]) => (
                     <div key={k} className="min-w-0">
@@ -188,7 +188,7 @@ export default function AccountDelivery() {
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <KeyRound size={16} className="text-[#D4A94B]" />
+                  <KeyRound size={16} className="text-[#8B5CF6]" />
                   <h2 className="font-display text-slate-100 font-semibold">Login details</h2>
                 </div>
                 <span className="flex items-center gap-1.5 text-xs text-slate-500">
@@ -217,7 +217,7 @@ export default function AccountDelivery() {
                     Your payment is held in escrow. The login details are hidden until you choose to reveal them.
                   </p>
                   <button onClick={reveal} disabled={credsLoading}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-5 py-3 text-sm transition-colors">
                     <Eye size={15} /> {credsLoading ? 'Decrypting...' : 'Reveal login details'}
                   </button>
                   {credsError && <p className="text-red-400 text-xs mt-3">{credsError}</p>}
@@ -233,7 +233,7 @@ export default function AccountDelivery() {
             {/* safety tips */}
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6">
               <div className="flex items-center gap-2 mb-3">
-                <ShieldAlert size={16} className="text-[#D4A94B]" />
+                <ShieldAlert size={16} className="text-[#8B5CF6]" />
                 <h2 className="font-display text-slate-100 font-semibold">Before you confirm</h2>
               </div>
               <ul className="space-y-2 text-sm text-slate-400 list-disc pl-5">
@@ -254,11 +254,11 @@ export default function AccountDelivery() {
                   {t ? (
                     <>
                       <div className="flex items-center gap-2 mb-2">
-                        <Clock size={15} className="text-[#D4A94B]" />
+                        <Clock size={15} className="text-[#8B5CF6]" />
                         <span className="text-sm text-slate-200 font-medium">{t.text}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden mb-3">
-                        <div className="h-full bg-[#D4A94B]" style={{ width: `${t.pct}%` }} />
+                        <div className="h-full bg-[#8B5CF6]" style={{ width: `${t.pct}%` }} />
                       </div>
                       <p className="text-xs text-slate-500 mb-5">
                         {t.expired
@@ -273,7 +273,7 @@ export default function AccountDelivery() {
                   {panel === null && (
                     <div className="space-y-2.5">
                       <button onClick={() => setPanel('confirm')}
-                        className="w-full flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
+                        className="w-full flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg py-3 text-sm transition-colors">
                         <ShieldCheck size={16} /> Confirm account
                       </button>
                       {!t?.expired && (
@@ -289,7 +289,7 @@ export default function AccountDelivery() {
                     <div className="space-y-3">
                       <p className="text-sm text-slate-300">Release {money(p.price)} to the seller? This cannot be undone.</p>
                       <button onClick={() => act(`/purchases/${p.id}/confirm`)} disabled={busy}
-                        className="w-full bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
+                        className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg py-3 text-sm transition-colors">
                         {busy ? 'Releasing...' : 'Yes, release payment'}
                       </button>
                       <button onClick={() => setPanel(null)} className="w-full text-sm text-slate-500 hover:text-slate-300 py-2">Cancel</button>
@@ -301,7 +301,7 @@ export default function AccountDelivery() {
                       <label className="block text-[11px] font-mono text-slate-500">WHAT WENT WRONG?</label>
                       <textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)}
                         placeholder="e.g. The password does not work, or the account has fewer skins than listed."
-                        className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
+                        className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
                       <ProofUploader purchaseId={p.id} onCount={setProofCount} />
                       <button onClick={() => act(`/purchases/${p.id}/refund-request`, { reason })} disabled={busy || reason.trim().length < 5 || proofCount < 1}
                         className="w-full bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
@@ -353,7 +353,7 @@ export default function AccountDelivery() {
               <p>Order placed {shortDate(p.created_at)}</p>
               <p className="font-mono break-all">Order ID {p.id}</p>
               <div className="flex items-center gap-2 pt-2">
-                <ShieldCheck size={14} className="text-[#D4A94B]" /> Protected by KayVault Escrow
+                <ShieldCheck size={14} className="text-[#8B5CF6]" /> Protected by KayVault Escrow
               </div>
             </div>
           </aside>

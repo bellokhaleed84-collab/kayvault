@@ -20,7 +20,7 @@ export function EarningsChart({ data, format }) {
         return (
           <g key={d.label + i}>
             <rect x={x} y={H - padB - h} width={w} height={h} rx="4"
-              fill={d.value ? '#D4A94B' : '#334155'} opacity={d.value ? 1 : 0.6}>
+              fill={d.value ? '#8B5CF6' : '#334155'} opacity={d.value ? 1 : 0.6}>
               <title>{`${d.label}: ${format(d.value)}`}</title>
             </rect>
             <text x={x + w / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="#64748B">{d.label}</text>

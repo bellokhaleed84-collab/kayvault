@@ -66,7 +66,7 @@ export default function CaseChat({ purchaseId, mode = 'user', thread = 'seller' 
     <div className="mt-4 rounded-lg bg-[#0D1524] border border-slate-800">
       <button type="button" onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-2 px-4 py-3 text-left">
-        <MessageSquare size={14} className="text-[#D4A94B]" />
+        <MessageSquare size={14} className="text-[#8B5CF6]" />
         <span className="text-sm text-slate-200 font-medium">{title}</span>
         {count > 0 && <span className="text-[11px] font-mono text-slate-500">{count}</span>}
         <ChevronDown size={14} className={'ml-auto text-slate-500 transition-transform ' + (expanded ? 'rotate-180' : '')} />
@@ -88,9 +88,9 @@ export default function CaseChat({ purchaseId, mode = 'user', thread = 'seller' 
             ) : (
               data.messages.map((m) => (
                 <div key={m.id} className={'flex ' + (m.mine ? 'justify-end' : 'justify-start')}>
-                  <div className={'max-w-[85%] rounded-lg px-3 py-2 border ' + (m.mine ? 'bg-[#D4A94B]/10 border-[#D4A94B]/30' : 'bg-[#131B2E] border-slate-800')}>
+                  <div className={'max-w-[85%] rounded-lg px-3 py-2 border ' + (m.mine ? 'bg-[#8B5CF6]/10 border-[#8B5CF6]/30' : 'bg-[#131B2E] border-slate-800')}>
                     {m.flag && (
-                      <p className="flex items-center gap-1 text-[10px] font-mono text-[#D4A94B] mb-1"><Flag size={10} /> INFORMATION REQUESTED</p>
+                      <p className="flex items-center gap-1 text-[10px] font-mono text-[#8B5CF6] mb-1"><Flag size={10} /> INFORMATION REQUESTED</p>
                     )}
                     <p className="text-sm text-slate-200 whitespace-pre-line break-words">{m.body}</p>
                     <p className="text-[10px] text-slate-600 mt-1">
@@ -108,7 +108,7 @@ export default function CaseChat({ purchaseId, mode = 'user', thread = 'seller' 
             <div className="space-y-2">
               <textarea rows={3} maxLength={1000} value={text} onChange={(e) => setText(e.target.value)}
                 placeholder={admin ? 'Ask for details, e.g. the exact error and a screen recording of the login.' : 'Type your reply to support...'}
-                className="w-full bg-[#0B1120] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
+                className="w-full bg-[#0B1120] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
               <div className="flex flex-wrap items-center justify-between gap-2">
                 {admin ? (
                   <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
@@ -117,7 +117,7 @@ export default function CaseChat({ purchaseId, mode = 'user', thread = 'seller' 
                   </label>
                 ) : <span />}
                 <button type="button" onClick={send} disabled={busy || text.trim().length < 1}
-                  className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+                  className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
                   <Send size={13} /> {busy ? 'Sending...' : 'Send'}
                 </button>
               </div>

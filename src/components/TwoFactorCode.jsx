@@ -72,7 +72,7 @@ export default function TwoFactorCode({ orderId }) {
   return (
     <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">
       <div className="flex items-center gap-2 mb-3">
-        <KeyRound size={16} className="text-[#D4A94B]" />
+        <KeyRound size={16} className="text-[#8B5CF6]" />
         <h2 className="font-display text-slate-100 font-semibold">Login code (2FA)</h2>
       </div>
 
@@ -92,12 +92,12 @@ export default function TwoFactorCode({ orderId }) {
             <div>
               <div className="flex items-center gap-3 bg-[#0D1524] border border-slate-800 rounded-lg px-4 py-4">
                 <span className="flex-1 font-mono text-3xl tracking-widest text-slate-100">{code.slice(0, 3) + ' ' + code.slice(3)}</span>
-                <button type="button" onClick={copy} aria-label="Copy code" className="p-2 text-slate-500 hover:text-[#D4A94B]">
+                <button type="button" onClick={copy} aria-label="Copy code" className="p-2 text-slate-500 hover:text-[#8B5CF6]">
                   {copied ? <Check size={20} className="text-[#34D399]" /> : <Copy size={20} />}
                 </button>
               </div>
               <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden mt-3">
-                <div className={'h-full ' + (left <= 5 ? 'bg-[#F87171]' : 'bg-[#D4A94B]')} style={{ width: Math.max(0, Math.min(100, (left / 30) * 100)) + '%' }} />
+                <div className={'h-full ' + (left <= 5 ? 'bg-[#F87171]' : 'bg-[#8B5CF6]')} style={{ width: Math.max(0, Math.min(100, (left / 30) * 100)) + '%' }} />
               </div>
               <p className="text-xs text-slate-500 mt-2">
                 {left <= 5 ? 'About to change. A new code is coming.' : 'This code changes in ' + Math.max(0, left) + ' seconds.'}
@@ -105,7 +105,7 @@ export default function TwoFactorCode({ orderId }) {
             </div>
           ) : (
             <button type="button" onClick={fetchCode} disabled={busy}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
               <RefreshCw size={15} className={busy ? 'animate-spin' : ''} /> {busy ? 'Getting code...' : 'Get code'}
             </button>
           )}

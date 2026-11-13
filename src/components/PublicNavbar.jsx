@@ -62,15 +62,15 @@ export default function PublicNavbar({ overlay = false, minimal = false }) {
             <Search size={17} />
           </button>
           {profile ? (
-            <Link to={dash} className="text-sm bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 transition-colors">
+            <Link to={dash} className="text-sm bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-4 py-2 transition-colors">
               Dashboard
             </Link>
           ) : (
             <>
-              <Link to="/login" className="text-sm border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 font-semibold rounded-lg px-4 py-2 transition-colors">
+              <Link to="/login" className="text-sm border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 font-semibold rounded-lg px-4 py-2 transition-colors">
                 Login
               </Link>
-              <Link to="/signup" className="text-sm bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 transition-colors">
+              <Link to="/signup" className="text-sm bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-4 py-2 transition-colors">
                 Sign Up
               </Link>
             </>
@@ -101,7 +101,7 @@ export default function PublicNavbar({ overlay = false, minimal = false }) {
                   to={l.to}
                   onClick={() => setOpen(false)}
                   className={`block rounded-lg px-3 py-3.5 text-[15px] transition-colors ${
-                    location.pathname === l.to ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-200 hover:bg-slate-800/60'
+                    location.pathname === l.to ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >
                   {l.label}
@@ -110,11 +110,11 @@ export default function PublicNavbar({ overlay = false, minimal = false }) {
             </nav>
             <div className="flex gap-3 pt-4">
               {profile ? (
-                <Link to={dash} className="flex-1 text-center bg-[#D4A94B] text-[#0B1120] font-semibold rounded-xl py-3.5 text-[15px]">Dashboard</Link>
+                <Link to={dash} className="flex-1 text-center bg-[#8B5CF6] text-white font-semibold rounded-xl py-3.5 text-[15px]">Dashboard</Link>
               ) : (
                 <>
-                  <Link to="/login" className="flex-1 text-center border border-[#D4A94B]/60 text-[#D4A94B] font-semibold rounded-xl py-3.5 text-[15px]">Login</Link>
-                  <Link to="/signup" className="flex-1 text-center bg-[#D4A94B] text-[#0B1120] font-semibold rounded-xl py-3.5 text-[15px]">Sign Up</Link>
+                  <Link to="/login" className="flex-1 text-center border border-[#8B5CF6]/60 text-[#8B5CF6] font-semibold rounded-xl py-3.5 text-[15px]">Login</Link>
+                  <Link to="/signup" className="flex-1 text-center bg-[#8B5CF6] text-white font-semibold rounded-xl py-3.5 text-[15px]">Sign Up</Link>
                 </>
               )}
             </div>

@@ -61,7 +61,7 @@ export default function OrderChat({ purchaseId, who = 'buyer' }) {
   return (
     <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
       <div className="flex items-center gap-2 mb-2">
-        <MessageSquare size={16} className="text-[#D4A94B]" />
+        <MessageSquare size={16} className="text-[#8B5CF6]" />
         <h2 className="font-display text-slate-100 font-semibold">Chat with the {other}</h2>
       </div>
       <p className="text-xs text-slate-500 mb-4">
@@ -82,7 +82,7 @@ export default function OrderChat({ purchaseId, who = 'buyer' }) {
         ) : (
           data.messages.map((m) => (
             <div key={m.id} className={'flex ' + (m.mine ? 'justify-end' : 'justify-start')}>
-              <div className={'max-w-[85%] rounded-lg px-3 py-2 border ' + (m.mine ? 'bg-[#D4A94B]/10 border-[#D4A94B]/30' : 'bg-[#0D1524] border-slate-800')}>
+              <div className={'max-w-[85%] rounded-lg px-3 py-2 border ' + (m.mine ? 'bg-[#8B5CF6]/10 border-[#8B5CF6]/30' : 'bg-[#0D1524] border-slate-800')}>
                 <p className="text-sm text-slate-200 whitespace-pre-line break-words">{m.body}</p>
                 <p className="text-[10px] text-slate-600 mt-1">{m.mine ? 'You' : 'The ' + other} &middot; {stamp(m.created_at)}</p>
               </div>
@@ -96,16 +96,16 @@ export default function OrderChat({ purchaseId, who = 'buyer' }) {
           <div className="flex flex-wrap gap-2">
             {QUICK[who].map((q) => (
               <button key={q} type="button" onClick={() => send(q)} disabled={busy}
-                className="rounded-full border border-slate-700 hover:border-[#D4A94B] text-slate-300 hover:text-[#D4A94B] disabled:opacity-50 px-4 py-2.5 text-xs text-left transition-colors">
+                className="rounded-full border border-slate-700 hover:border-[#8B5CF6] text-slate-300 hover:text-[#8B5CF6] disabled:opacity-50 px-4 py-2.5 text-xs text-left transition-colors">
                 {q}
               </button>
             ))}
           </div>
           <textarea rows={2} maxLength={1000} value={text} onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
+            className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
           <button type="button" onClick={() => send(text)} disabled={busy || text.trim().length < 1}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
             <Send size={14} /> {busy ? 'Sending...' : 'Send'}
           </button>
         </div>

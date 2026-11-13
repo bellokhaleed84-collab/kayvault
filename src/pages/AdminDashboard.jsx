@@ -20,7 +20,7 @@ const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 const th = 'px-5 py-3 font-medium text-xs font-mono text-slate-500';
 const TYPE_LABELS = { standard: 'Standard', modded: 'Modded', smurf: 'Smurf', fresh: 'Fresh', other: 'Other' };
 const KYC_LABEL = { none: 'Not verified', pending: 'Pending', verified: 'Verified', rejected: 'Rejected' };
-const KYC_COLOR = { none: '#64748B', pending: '#D4A94B', verified: '#34D399', rejected: '#F87171' };
+const KYC_COLOR = { none: '#64748B', pending: '#8B5CF6', verified: '#34D399', rejected: '#F87171' };
 
 const TITLES = {
   overview: ['Overview', 'How the marketplace is doing right now.'],
@@ -125,14 +125,14 @@ export default function AdminDashboard() {
 
   const navBtn = (active) =>
     `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
-      active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-400 hover:text-slate-100'
+      active ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
   const cards = useMemo(() => !stats ? [] : [
     { icon: Users, label: 'Users', value: stats.buyers + stats.sellers, sub: `${stats.buyers} buyers, ${stats.sellers} sellers`, color: '#A78BFA' },
     { icon: Package, label: 'Live listings', value: stats.live, sub: `${stats.sold} sold`, color: '#34D399' },
     { icon: ShoppingBag, label: 'Orders', value: stats.orders, sub: 'all time', color: '#5B8DEF' },
-    { icon: Clock, label: 'In escrow', value: money(stats.escrow), sub: 'held or in dispute', color: '#D4A94B' },
+    { icon: Clock, label: 'In escrow', value: money(stats.escrow), sub: 'held or in dispute', color: '#8B5CF6' },
     { icon: Wallet, label: 'Released', value: money(stats.released), sub: `${money(stats.fees || 0)} platform fees`, color: '#34D399' },
     { icon: RotateCcw, label: 'Refunded', value: money(stats.refunded), sub: 'returned to buyers', color: '#F87171' },
   ], [stats]);
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
               <button key={v} onClick={() => setView(v)} className={navBtn(view === v)}>
                 <Icon size={16} /> {l}
                 {n > 0 && (
-                  <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-[#D4A94B] text-[#0B1120] text-[11px] font-semibold flex items-center justify-center">{n}</span>
+                  <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-[#8B5CF6] text-white text-[11px] font-semibold flex items-center justify-center">{n}</span>
                 )}
               </button>
             ))}
@@ -189,10 +189,10 @@ export default function AdminDashboard() {
                       ['kyc', 'Verifications waiting', stats.kyc_pending],
                     ].map(([v, l, n]) => (
                       <button key={v} onClick={() => setView(v)}
-                        className={`${card} p-5 text-left flex items-center justify-between hover:border-[#D4A94B]/50 transition-colors`}>
+                        className={`${card} p-5 text-left flex items-center justify-between hover:border-[#8B5CF6]/50 transition-colors`}>
                         <div>
                           <p className="text-xs font-mono text-slate-500 mb-1">{l.toUpperCase()}</p>
-                          <p className={`font-display text-2xl font-semibold ${n > 0 ? 'text-[#D4A94B]' : 'text-slate-100'}`}>{n}</p>
+                          <p className={`font-display text-2xl font-semibold ${n > 0 ? 'text-[#8B5CF6]' : 'text-slate-100'}`}>{n}</p>
                         </div>
                         <ChevronRight size={18} className="text-slate-600" />
                       </button>
@@ -209,7 +209,7 @@ export default function AdminDashboard() {
                       <h2 className="font-display text-slate-100 font-semibold mb-4">Listing status</h2>
                       <StatusDonut parts={[
                         { label: 'Live', value: stats.live, color: '#34D399' },
-                        { label: 'Pending review', value: stats.pending_listings, color: '#D4A94B' },
+                        { label: 'Pending review', value: stats.pending_listings, color: '#8B5CF6' },
                         { label: 'Sold', value: stats.sold, color: '#5B8DEF' },
                       ]} />
                     </div>
@@ -232,7 +232,7 @@ export default function AdminDashboard() {
                                   <h3 className="font-display text-slate-100 font-semibold">{l.game}</h3>
                                   <p className="text-sm text-slate-500">{l.tier}</p>
                                 </div>
-                                <p className="font-mono text-[#D4A94B] font-semibold">{money(l.price)}</p>
+                                <p className="font-mono text-[#8B5CF6] font-semibold">{money(l.price)}</p>
                               </div>
                               <p className="text-xs text-slate-500 mt-2">
                                 Seller: {l.seller_name} &middot; {l.platform} &middot; {TYPE_LABELS[l.account_type] || l.account_type}
@@ -284,7 +284,7 @@ export default function AdminDashboard() {
                             <h3 className="font-display text-slate-100 font-semibold">{p.game}</h3>
                             <p className="text-sm text-slate-500">{p.tier}</p>
                           </div>
-                          <p className="font-mono text-[#D4A94B] font-semibold">{money(p.price)}</p>
+                          <p className="font-mono text-[#8B5CF6] font-semibold">{money(p.price)}</p>
                         </div>
                         <div className="grid sm:grid-cols-3 gap-4 mt-4 text-sm">
                           <div><p className="text-[11px] font-mono text-slate-600">BUYER</p><p className="text-slate-200">{p.buyer_name || '-'}</p><p className="text-xs text-slate-500">{p.buyer_email}</p></div>
@@ -326,10 +326,10 @@ export default function AdminDashboard() {
                     <div className="relative flex-1">
                       <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" />
                       <input value={uq} onChange={(e) => { setUq(e.target.value); setUpage(1); }} placeholder="Search by name or email"
-                        className="w-full bg-[#0D1524] border border-slate-800 rounded-lg pl-10 pr-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors" />
+                        className="w-full bg-[#0D1524] border border-slate-800 rounded-lg pl-10 pr-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors" />
                     </div>
                     <select value={urole} onChange={(e) => { setUrole(e.target.value); setUpage(1); }}
-                      className="bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]">
+                      className="bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]">
                       <option value="">All roles</option>
                       <option value="buyer">Buyers</option>
                       <option value="seller">Sellers</option>
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
                                 <td className="px-5 py-3">
                                   <p className="text-slate-200 font-medium">
                                     {u.full_name}
-                                    {u.is_admin && <span className="ml-2 text-[11px] text-[#D4A94B]">Admin</span>}
+                                    {u.is_admin && <span className="ml-2 text-[11px] text-[#8B5CF6]">Admin</span>}
                                     {u.suspended && <span className="ml-2 text-[11px] text-[#F87171]">Suspended</span>}
                                   </p>
                                   <p className="text-xs text-slate-500">{u.email}</p>
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
                               </td>
                               <td className="px-5 py-3 text-slate-400">{o.buyer_name || '-'}</td>
                               <td className="px-5 py-3 text-slate-400">{o.seller_name || '-'}</td>
-                              <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(o.price)}</td>
+                              <td className="px-5 py-3 font-mono text-[#8B5CF6] whitespace-nowrap">{money(o.price)}</td>
                               <td className="px-5 py-3"><StatusPill status={o.escrow_status} /></td>
                               <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(o.created_at)}</td>
                             </tr>

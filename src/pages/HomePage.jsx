@@ -22,7 +22,7 @@ const ROW =
   'flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ' +
   'sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:gap-4';
 const TILE =
-  'group shrink-0 w-36 snap-start sm:w-auto rounded-xl overflow-hidden border border-slate-800 hover:border-[#D4A94B]/50 transition-colors bg-[#131B2E]';
+  'group shrink-0 w-36 snap-start sm:w-auto rounded-xl overflow-hidden border border-slate-800 hover:border-[#8B5CF6]/50 transition-colors bg-[#131B2E]';
 
 function SectionTitle({ children, sub, to, toLabel = 'View all' }) {
   return (
@@ -31,7 +31,7 @@ function SectionTitle({ children, sub, to, toLabel = 'View all' }) {
         <h2 className="font-display text-xl sm:text-2xl font-semibold text-slate-100">{children}</h2>
         {sub && <p className="text-slate-500 text-sm mt-1">{sub}</p>}
       </div>
-      {to && <Link to={to} className="text-sm text-[#D4A94B] hover:underline whitespace-nowrap py-1">{toLabel}</Link>}
+      {to && <Link to={to} className="text-sm text-[#8B5CF6] hover:underline whitespace-nowrap py-1">{toLabel}</Link>}
     </div>
   );
 }
@@ -115,18 +115,18 @@ export default function HomePage() {
         />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-6 pt-28 md:pt-36 pb-14 md:pb-28 min-h-[420px] md:min-h-[480px] flex flex-col justify-center">
-          <p className="text-xs font-mono text-[#D4A94B] mb-3">WELCOME BACK</p>
+          <p className="text-xs font-mono text-[#8B5CF6] mb-3">WELCOME BACK</p>
           <h1 className="font-display text-3xl md:text-5xl font-bold text-slate-100 leading-tight max-w-xl">
             {first ? `Hi ${first}, ` : ''}find your next<br />
-            <span className="text-[#D4A94B]">gaming account</span>
+            <span className="text-[#8B5CF6]">gaming account</span>
           </h1>
 
           <form onSubmit={search} className="relative mt-7 sm:mt-8 max-w-xl w-full">
             <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search games, ranks, accounts..."
-              className="w-full bg-[#0D1524]/90 border border-slate-700 rounded-xl pl-11 pr-24 sm:pr-28 py-3.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors" />
+              className="w-full bg-[#0D1524]/90 border border-slate-700 rounded-xl pl-11 pr-24 sm:pr-28 py-3.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors" />
             <button type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 text-sm transition-colors">
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-4 py-2.5 text-sm transition-colors">
               Search
             </button>
           </form>
@@ -136,8 +136,8 @@ export default function HomePage() {
               <Link key={to} to={to}
                 className={`flex items-center gap-2 rounded-xl sm:rounded-lg px-4 py-3 sm:py-2.5 text-sm font-semibold transition-colors ${
                   primary
-                    ? 'bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120]'
-                    : 'border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 bg-[#0B1120]/50'
+                    ? 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white'
+                    : 'border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 bg-[#0B1120]/50'
                 }`}>
                 <Icon size={15} /> {label}
               </Link>
@@ -201,12 +201,12 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-5 sm:px-6 pb-14 sm:pb-16">
         <div className="rounded-2xl bg-[#131B2E] border border-slate-800 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3">
-            <ShieldCheck size={22} className="text-[#D4A94B] shrink-0" />
+            <ShieldCheck size={22} className="text-[#8B5CF6] shrink-0" />
             <p className="text-sm text-slate-400">
               Every purchase is protected by KayVault Escrow. Your money is only released when you confirm the account works.
             </p>
           </div>
-          <Link to="/browse" className="flex items-center gap-2 text-sm text-[#D4A94B] hover:underline whitespace-nowrap py-1">
+          <Link to="/browse" className="flex items-center gap-2 text-sm text-[#8B5CF6] hover:underline whitespace-nowrap py-1">
             Start browsing <ArrowRight size={15} />
           </Link>
         </div>

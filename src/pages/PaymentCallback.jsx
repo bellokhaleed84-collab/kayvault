@@ -43,17 +43,17 @@ export default function PaymentCallback() {
       <div className="max-w-md mx-auto px-6 py-24 text-center">
         {error ? (
           <>
-            <AlertTriangle size={32} className="text-[#D4A94B] mx-auto mb-4" />
+            <AlertTriangle size={32} className="text-[#8B5CF6] mx-auto mb-4" />
             <h1 className="font-display text-2xl font-semibold text-slate-100 mb-2">Payment not completed</h1>
             <p className="text-sm text-slate-400 mb-6">{error}</p>
             <div className="flex justify-center gap-3">
-              <Link to="/dashboard/buyer" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">My purchases</Link>
-              <Link to="/browse" className="border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">Browse</Link>
+              <Link to="/dashboard/buyer" className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">My purchases</Link>
+              <Link to="/browse" className="border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">Browse</Link>
             </div>
           </>
         ) : (
           <>
-            <Loader2 size={32} className="text-[#D4A94B] mx-auto mb-4 animate-spin" />
+            <Loader2 size={32} className="text-[#8B5CF6] mx-auto mb-4 animate-spin" />
             <h1 className="font-display text-2xl font-semibold text-slate-100 mb-2">Confirming your payment</h1>
             <p className="text-sm text-slate-500">Please wait. Do not close this page.</p>
           </>

@@ -13,7 +13,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(201,161,90,0.10), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(139,92,246,0.10), transparent 45%),
     radial-gradient(circle at 80% 70%, rgba(63,167,150,0.10), transparent 45%),
     linear-gradient(180deg, #12141B 0%, #1B1E28 100%);
   animation: kvDrift 22s ease-in-out infinite alternate;
@@ -40,7 +40,7 @@
 }
 
 .kv-orb-gold {
-  background: #C9A15A;
+  background: #8B5CF6;
   top: -120px;
   left: -100px;
   animation: kvFloatA 26s ease-in-out infinite alternate;
@@ -62,9 +62,9 @@
   background: linear-gradient(
     100deg,
     transparent 0%,
-    rgba(201,161,90,0.05) 45%,
-    rgba(201,161,90,0.08) 50%,
-    rgba(201,161,90,0.05) 55%,
+    rgba(139,92,246,0.05) 45%,
+    rgba(139,92,246,0.08) 50%,
+    rgba(139,92,246,0.05) 55%,
     transparent 100%
   );
   animation: kvScan 14s ease-in-out infinite;

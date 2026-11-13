@@ -5,7 +5,7 @@ import { money, shortDate } from '../lib/orders';
 import AdminWithdrawals from './AdminWithdrawals'; // KV-WD-ADMINIMP
 
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
-const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
+const goldBtn = 'flex items-center justify-center gap-1.5 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
 const redBtn = 'flex items-center justify-center gap-1.5 bg-[#F87171] hover:bg-[#ef5b5b] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors';
 const ghostBtn = 'flex items-center justify-center gap-1.5 border border-slate-700 hover:border-slate-500 disabled:opacity-60 text-slate-300 rounded-lg px-4 py-2 text-xs transition-colors';
 
@@ -86,7 +86,7 @@ export default function AdminPayouts() {
 
   const t = data.totals;
   const cards = [
-    [Clock, 'Owed to sellers', money(t.owed), '#D4A94B', `${data.sellers.length} ${data.sellers.length === 1 ? 'seller' : 'sellers'} waiting`],
+    [Clock, 'Owed to sellers', money(t.owed), '#8B5CF6', `${data.sellers.length} ${data.sellers.length === 1 ? 'seller' : 'sellers'} waiting`],
     [CheckCircle2, 'Paid out', money(t.paid_out), '#34D399', 'sent to sellers'],
     [Wallet, 'Platform fees', money(t.fees), '#5B8DEF', `${t.fee_percent}% of released sales`],
     [RotateCcw, 'Refunded', money(t.refunded), '#F87171', 'returned to buyers'],
@@ -125,7 +125,7 @@ export default function AdminPayouts() {
                     </h3>
                     <p className="text-xs text-slate-500">{s.email} &middot; {s.count} {s.count === 1 ? 'order' : 'orders'}</p>
                   </div>
-                  <p className="font-mono text-xl text-[#D4A94B]">{money(s.total)}</p>
+                  <p className="font-mono text-xl text-[#8B5CF6]">{money(s.total)}</p>
                 </div>
 
                 {s.bank_account_number && s.bank_name ? (
@@ -135,7 +135,7 @@ export default function AdminPayouts() {
                     <div><dt className="text-[11px] font-mono text-slate-600">ACCOUNT NAME</dt><dd className="text-slate-200">{s.bank_account_name || '-'}</dd></div>
                   </dl>
                 ) : (
-                  <p className="flex items-center gap-2 text-sm text-[#D4A94B] mt-4">
+                  <p className="flex items-center gap-2 text-sm text-[#8B5CF6] mt-4">
                     <AlertTriangle size={15} /> This seller has not added bank details yet. Ask them to add them in Settings.
                   </p>
                 )}
@@ -146,7 +146,7 @@ export default function AdminPayouts() {
                     onChange={(e) => setNotes({ ...notes, [s.seller_id]: e.target.value })}
                     maxLength={120}
                     placeholder="Transfer reference (optional)"
-                    className="flex-1 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]"
+                    className="flex-1 bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]"
                   />
                   <button onClick={() => markPaid(s)} disabled={s.suspended || busy === `pay-${s.seller_id}`} className={goldBtn}>
                     <CheckCircle2 size={14} /> {busy === `pay-${s.seller_id}` ? 'Saving...' : 'Mark as paid'}
@@ -171,7 +171,7 @@ export default function AdminPayouts() {
                     <p className="text-xs text-slate-500">{p.buyer_name} &middot; {p.buyer_email} &middot; {shortDate(p.created_at)}</p>
                     <p className="text-[11px] font-mono text-slate-600 mt-1">{p.reference}</p>
                   </div>
-                  <p className="font-mono text-xl text-[#D4A94B]">{money(p.amount)}</p>
+                  <p className="font-mono text-xl text-[#8B5CF6]">{money(p.amount)}</p>
                 </div>
                 {p.refund_error && <p className="text-xs text-red-400 mt-3">Last attempt failed: {p.refund_error}</p>}
                 <div className="flex gap-2 mt-5 pt-4 border-t border-slate-800">
@@ -200,7 +200,7 @@ export default function AdminPayouts() {
                     <h3 className="font-display text-slate-100 font-semibold">{o.game}</h3>
                     <p className="text-xs text-slate-500">{o.buyer_name} &middot; {o.buyer_email}</p>
                   </div>
-                  <p className="font-mono text-xl text-[#D4A94B]">{money(o.price)}</p>
+                  <p className="font-mono text-xl text-[#8B5CF6]">{money(o.price)}</p>
                 </div>
                 {o.refund_error && <p className="text-xs text-red-400 mt-3">Paystack said: {o.refund_error}</p>}
                 <div className="flex gap-2 mt-5 pt-4 border-t border-slate-800">

@@ -8,7 +8,7 @@ const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'], ['fresh', 'Fresh'], ['other', 'Other']];
 
 const input =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 export default function ListingFormModal({ onClose, onCreated }) {
@@ -120,7 +120,7 @@ export default function ListingFormModal({ onClose, onCreated }) {
                 </div>
               ))}
               {images.length < 4 && (
-                <label className="w-20 h-20 rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#D4A94B] cursor-pointer transition-colors">
+                <label className="w-20 h-20 rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#8B5CF6] cursor-pointer transition-colors">
                   <ImagePlus size={18} />
                   <span className="text-[10px]">Add</span>
                   <input type="file" accept="image/*" multiple onChange={pick} className="hidden" />
@@ -155,7 +155,7 @@ export default function ListingFormModal({ onClose, onCreated }) {
           {error && <p className="text-red-400 text-xs">{error}</p>}
 
           <button type="submit" disabled={saving}
-            className="w-full bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
+            className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg py-3 text-sm transition-colors">
             {saving ? 'Submitting...' : 'Submit for review'}
           </button>
         </form>

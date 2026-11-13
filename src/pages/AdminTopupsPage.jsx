@@ -8,12 +8,12 @@ import { money, shortDate } from '../lib/orders';
 
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800';
 const th = 'px-4 py-3 font-medium text-xs font-mono text-slate-500';
-const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+const box = 'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors';
 const lbl = 'block text-xs font-mono text-slate-500 mb-1.5';
 const COLOR = {
-  completed: '#34D399', processing: '#5B8DEF', paid: '#D4A94B', pending: '#64748B', failed: '#64748B',
+  completed: '#34D399', processing: '#5B8DEF', paid: '#8B5CF6', pending: '#64748B', failed: '#64748B',
   refunded: '#F87171', refund_needed: '#F87171', refunding: '#F87171', refund_failed: '#F87171',
-  check_needed: '#D4A94B', error: '#F87171',
+  check_needed: '#8B5CF6', error: '#F87171',
 };
 
 export default function AdminTopupsPage() {
@@ -120,7 +120,7 @@ export default function AdminTopupsPage() {
               </div>
               <div className={`${card} p-5`}>
                 <p className="text-xs font-mono text-slate-500 mb-1">NEEDS ATTENTION</p>
-                <p className={`font-display text-2xl font-semibold ${data.needs_attention > 0 ? 'text-[#D4A94B]' : 'text-slate-100'}`}>{data.needs_attention}</p>
+                <p className={`font-display text-2xl font-semibold ${data.needs_attention > 0 ? 'text-[#8B5CF6]' : 'text-slate-100'}`}>{data.needs_attention}</p>
               </div>
             </div>
 
@@ -132,7 +132,7 @@ export default function AdminTopupsPage() {
                   {[['eyad', 'Eyad'], ['gamesdrop', 'GamesDrop']].map(([v, l]) => (
                     <button key={v} onClick={() => { setForm((f) => ({ ...f, provider: v })); setDirty(true); }}
                       className={`rounded-lg px-4 py-2 text-sm border transition-colors ${
-                        form.provider === v ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120] font-semibold' : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                        form.provider === v ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white font-semibold' : 'border-slate-700 text-slate-400 hover:text-slate-200'
                       }`}>
                       {l}
                     </button>
@@ -160,7 +160,7 @@ export default function AdminTopupsPage() {
               </div>
               <div className="flex items-center gap-4">
                 <button onClick={save} disabled={saving || !dirty}
-                  className="bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-40 text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
                   {saving ? 'Saving...' : 'Save settings'}
                 </button>
                 {msg && <span className="text-sm text-[#34D399]">{msg}</span>}
@@ -199,7 +199,7 @@ export default function AdminTopupsPage() {
                               {o.player_name && <>{o.player_name}<br /></>}
                               {o.game_user_id}{o.game_server_id ? ` / ${o.game_server_id}` : ''}{o.zone_id ? ` / ${o.zone_id}` : ''}
                             </td>
-                            <td className="px-4 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(o.naira_amount)}</td>
+                            <td className="px-4 py-3 font-mono text-[#8B5CF6] whitespace-nowrap">{money(o.naira_amount)}</td>
                             <td className="px-4 py-3">
                               <span className="text-xs font-medium" style={{ color: COLOR[o.status] || '#64748B' }}>{o.status.replace('_', ' ')}</span>
                               {note && <p className="text-[11px] text-slate-600 max-w-[220px] mt-1">{String(note).slice(0, 140)}</p>}
@@ -209,7 +209,7 @@ export default function AdminTopupsPage() {
                               <div className="flex flex-col gap-1.5 items-end">
                                 {o.status === 'paid' && (
                                   <button onClick={() => act(o, 'retry', 'Try to place this paid order again?')}
-                                    className="text-xs border border-slate-700 hover:border-[#D4A94B] text-slate-300 rounded-lg px-3 py-1">Retry</button>
+                                    className="text-xs border border-slate-700 hover:border-[#8B5CF6] text-slate-300 rounded-lg px-3 py-1">Retry</button>
                                 )}
                                 {['paid', 'refund_needed', 'refund_failed', 'check_needed'].includes(o.status) && (
                                   <button onClick={() => act(o, 'refund', `Refund ${money(o.naira_amount)} to the buyer?`)}

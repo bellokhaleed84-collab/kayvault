@@ -58,11 +58,11 @@ export default function Login() {
           <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer select-none">
             <input
               type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}
-              className="accent-[#D4A94B] w-4 h-4"
+              className="accent-[#8B5CF6] w-4 h-4"
             />
             Remember me
           </label>
-          <Link to="/forgot-password" className="text-sm text-[#D4A94B] hover:underline">
+          <Link to="/forgot-password" className="text-sm text-[#8B5CF6] hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -74,7 +74,7 @@ export default function Login() {
 
       <p className="text-center text-sm text-slate-500 mt-8">
         Don't have an account?{' '}
-        <Link to="/signup" className="text-[#D4A94B] hover:underline">Sign up</Link>
+        <Link to="/signup" className="text-[#8B5CF6] hover:underline">Sign up</Link>
       </p>
     </AuthShell>
   );

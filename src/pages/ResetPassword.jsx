@@ -39,7 +39,7 @@ export default function ResetPassword() {
         <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6 text-center">
           <CheckCircle2 size={30} className="text-[#34D399] mx-auto mb-3" />
           <p className="text-slate-200 font-medium">Password updated</p>
-          <Link to="/login" className="inline-block mt-4 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
+          <Link to="/login" className="inline-block mt-4 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors">
             Go to login
           </Link>
         </div>

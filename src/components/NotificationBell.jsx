@@ -60,7 +60,7 @@ export default function NotificationBell() {
         className="relative w-11 h-11 md:w-10 md:h-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 transition-colors">
         <Bell size={18} />
         {data.unread > 0 && (
-          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-[#D4A94B] text-[#0B1120] text-[10px] font-semibold flex items-center justify-center">
+          <span className="absolute top-1 right-1 min-w-4 h-4 px-1 rounded-full bg-[#8B5CF6] text-white text-[10px] font-semibold flex items-center justify-center">
             {data.unread > 9 ? '9+' : data.unread}
           </span>
         )}
@@ -71,7 +71,7 @@ export default function NotificationBell() {
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <p className="text-sm font-medium text-slate-100">Notifications</p>
             {data.unread > 0 && (
-              <button onClick={readAll} className="text-xs text-[#D4A94B] hover:underline py-1">Mark all read</button>
+              <button onClick={readAll} className="text-xs text-[#8B5CF6] hover:underline py-1">Mark all read</button>
             )}
           </div>
           {data.items.length === 0 ? (
@@ -81,9 +81,9 @@ export default function NotificationBell() {
               {data.items.map((n) => (
                 <li key={n.id}>
                   <button onClick={() => openItem(n)}
-                    className={`w-full text-left px-4 py-3.5 border-b border-slate-800 last:border-0 hover:bg-[#0D1524] transition-colors ${n.read ? '' : 'bg-[#D4A94B]/5'}`}>
+                    className={`w-full text-left px-4 py-3.5 border-b border-slate-800 last:border-0 hover:bg-[#0D1524] transition-colors ${n.read ? '' : 'bg-[#8B5CF6]/5'}`}>
                     <div className="flex items-start gap-2.5">
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${n.read ? 'bg-transparent' : 'bg-[#D4A94B]'}`} />
+                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${n.read ? 'bg-transparent' : 'bg-[#8B5CF6]'}`} />
                       <div className="min-w-0">
                         <p className="text-sm text-slate-200">{n.title}</p>
                         {n.body && <p className="text-xs text-slate-500 mt-0.5 break-words">{n.body}</p>}

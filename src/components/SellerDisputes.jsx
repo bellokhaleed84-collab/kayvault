@@ -27,9 +27,9 @@ export default function SellerDisputes({ sales, onDone }) {
   }
 
   return (
-    <div className="rounded-xl border border-[#D4A94B]/40 bg-[#D4A94B]/5 p-5 mb-6">
+    <div className="rounded-xl border border-[#8B5CF6]/40 bg-[#8B5CF6]/5 p-5 mb-6">
       <div className="flex items-center gap-2 mb-1">
-        <AlertTriangle size={16} className="text-[#D4A94B]" />
+        <AlertTriangle size={16} className="text-[#8B5CF6]" />
         <h2 className="font-display text-slate-100 font-semibold">Refund requests need your reply</h2>
       </div>
       <p className="text-xs text-slate-500 mb-4">
@@ -46,7 +46,7 @@ export default function SellerDisputes({ sales, onDone }) {
                   <p className="text-slate-100 font-medium">{p.game}</p>
                   <p className="text-xs text-slate-500">{p.tier}</p>
                 </div>
-                <p className="font-mono text-[#D4A94B]">{money(p.price)}</p>
+                <p className="font-mono text-[#8B5CF6]">{money(p.price)}</p>
               </div>
 
               <div className="mt-3 rounded-lg bg-[#0D1524] border border-slate-800 px-3.5 py-2.5">
@@ -75,9 +75,9 @@ export default function SellerDisputes({ sales, onDone }) {
                   <textarea rows={3} maxLength={500} value={notes[p.id] || ''}
                     onChange={(e) => setNotes({ ...notes, [p.id]: e.target.value })}
                     placeholder="e.g. The account was working when I delivered it. The login is correct and the buyer has not tried 2-step verification."
-                    className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B]" />
+                    className="w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6]" />
                   <button onClick={() => send(p)} disabled={busy === p.id || (notes[p.id] || '').trim().length < 5}
-                    className="flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+                    className="flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
                     <Send size={13} /> {busy === p.id ? 'Sending...' : 'Send reply'}
                   </button>
                 </div>

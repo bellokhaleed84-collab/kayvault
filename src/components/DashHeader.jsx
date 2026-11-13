@@ -76,7 +76,7 @@ export default function DashHeader() {
                     key={to}
                     to={to}
                     className={`flex items-center gap-3 rounded-lg px-3 py-3.5 text-[15px] transition-colors ${
-                      active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-200 hover:bg-slate-800/60'
+                      active ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-200 hover:bg-slate-800/60'
                     }`}
                   >
                     <Icon size={18} /> {text}

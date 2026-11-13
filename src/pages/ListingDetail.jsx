@@ -53,7 +53,7 @@ export default function ListingDetail() {
         <PublicNavbar />
         <div className="max-w-6xl mx-auto px-6 py-24 text-center">
           <p className="text-slate-400 mb-4">{error}</p>
-          <Link to="/browse" className="text-[#D4A94B] hover:underline">Back to listings</Link>
+          <Link to="/browse" className="text-[#8B5CF6] hover:underline">Back to listings</Link>
         </div>
       </div>
     );
@@ -115,7 +115,7 @@ export default function ListingDetail() {
                 <div className="flex gap-3 mt-3 overflow-x-auto pb-1">
                   {images.map((src, i) => (
                     <button key={i} onClick={() => setActive(i)}
-                      className={`w-20 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${i === active ? 'border-[#D4A94B]' : 'border-slate-800'}`}>
+                      className={`w-20 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${i === active ? 'border-[#8B5CF6]' : 'border-slate-800'}`}>
                       <img src={src} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
@@ -130,7 +130,7 @@ export default function ListingDetail() {
                   {sold ? 'Sold' : 'Live'}
                 </span>
               </div>
-              <p className="font-mono text-2xl sm:text-3xl text-[#D4A94B]">&#8358;{Number(l.price).toLocaleString()}</p>
+              <p className="font-mono text-2xl sm:text-3xl text-[#8B5CF6]">&#8358;{Number(l.price).toLocaleString()}</p>
             </div>
 
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5 sm:p-6">
@@ -155,7 +155,7 @@ export default function ListingDetail() {
               <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5 space-y-3.5">
                 {facts.map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex items-center gap-3">
-                    <Icon size={16} className="text-[#D4A94B]" />
+                    <Icon size={16} className="text-[#8B5CF6]" />
                     <div className="leading-tight">
                       <p className="text-[11px] font-mono text-slate-500">{label.toUpperCase()}</p>
                       <p className="text-sm text-slate-200">{value}</p>
@@ -168,7 +168,7 @@ export default function ListingDetail() {
             <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
               <p className="text-[11px] font-mono text-slate-500 mb-3">SOLD BY</p>
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 shrink-0 rounded-full bg-[#0D1524] border border-slate-800 flex items-center justify-center text-[#D4A94B]">
+                <div className="w-11 h-11 shrink-0 rounded-full bg-[#0D1524] border border-slate-800 flex items-center justify-center text-[#8B5CF6]">
                   <User size={18} />
                 </div>
                 <div className="leading-tight min-w-0">
@@ -199,12 +199,12 @@ export default function ListingDetail() {
                 <span className="font-mono text-xl text-slate-100">&#8358;{Number(l.price).toLocaleString()}</span>
               </div>
               <button onClick={buy} disabled={buying || sold}
-                className="w-full bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg py-3 text-sm transition-colors">
+                className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg py-3 text-sm transition-colors">
                 {buyLabel}
               </button>
               {buyError && <p className="text-red-400 text-xs mt-3">{buyError}</p>}
               <div className="flex items-center gap-2 mt-4 text-xs text-slate-500">
-                <ShieldCheck size={14} className="text-[#D4A94B]" /> Protected by KayVault Escrow
+                <ShieldCheck size={14} className="text-[#8B5CF6]" /> Protected by KayVault Escrow
               </div>
             </div>
           </aside>
@@ -235,11 +235,11 @@ export default function ListingDetail() {
         {buyError && <p className="text-red-400 text-xs mb-2">{buyError}</p>}
         <div className="flex items-center gap-4">
           <div className="leading-tight">
-            <p className="font-mono text-lg text-[#D4A94B]">&#8358;{Number(l.price).toLocaleString()}</p>
-            <p className="flex items-center gap-1 text-[11px] text-slate-500"><ShieldCheck size={12} className="text-[#D4A94B]" /> Escrow protected</p>
+            <p className="font-mono text-lg text-[#8B5CF6]">&#8358;{Number(l.price).toLocaleString()}</p>
+            <p className="flex items-center gap-1 text-[11px] text-slate-500"><ShieldCheck size={12} className="text-[#8B5CF6]" /> Escrow protected</p>
           </div>
           <button onClick={buy} disabled={buying || sold}
-            className="flex-1 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-xl py-3.5 text-base transition-colors">
+            className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-xl py-3.5 text-base transition-colors">
             {buyLabel}
           </button>
         </div>

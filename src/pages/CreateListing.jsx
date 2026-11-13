@@ -16,7 +16,7 @@ const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'
 const TWOFA_LABEL = { authenticator: 'Authenticator app (buyer gets the code instantly)', message: 'Codes go to email or phone (buyer asks in the chat)', none: 'No 2FA' };
 
 const input =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 export default function CreateListing() {
@@ -116,9 +116,9 @@ export default function CreateListing() {
         <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-100 mb-6 sm:mb-8">Create a listing</h1>
         {/* KV-P17C-CREATEBANNER */}
         {needsId && (
-          <div className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-lg border border-[#8B5CF6]/40 bg-[#8B5CF6]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-300">{profile && profile.kyc_status === 'pending' ? 'Your ID is being reviewed. You can create listings once you are verified.' : 'Only verified sellers can create listings. Verify your identity first.'}</p>
-            <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2 text-xs transition-colors">Verify now</Link>
+            <Link to="/settings?tab=verification" className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-4 py-2 text-xs transition-colors">Verify now</Link>
           </div>
         )}
 
@@ -127,8 +127,8 @@ export default function CreateListing() {
             <li key={name} className="flex items-center flex-1 last:flex-none">
               <div className="flex items-center gap-2.5">
                 <span className={`w-7 h-7 rounded-full text-xs font-mono flex items-center justify-center border ${
-                  i < step ? 'bg-[#D4A94B] border-[#D4A94B] text-[#0B1120]'
-                  : i === step ? 'border-[#D4A94B] text-[#D4A94B]'
+                  i < step ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white'
+                  : i === step ? 'border-[#8B5CF6] text-[#8B5CF6]'
                   : 'border-slate-700 text-slate-600'
                 }`}>
                   {i < step ? <Check size={14} /> : i + 1}
@@ -202,7 +202,7 @@ export default function CreateListing() {
                   </div>
                 ))}
                 {images.length < 4 && (
-                  <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#D4A94B] cursor-pointer transition-colors">
+                  <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#8B5CF6] cursor-pointer transition-colors">
                     <ImagePlus size={20} />
                     <span className="text-xs">Add image</span>
                     <input type="file" accept="image/*" multiple onChange={pick} className="hidden" />
@@ -250,7 +250,7 @@ export default function CreateListing() {
                 <div className="min-w-0">
                   <h2 className="font-display text-lg font-semibold text-slate-100">{form.game}</h2>
                   <p className="text-sm text-slate-500 mb-2">{form.tier}</p>
-                  <p className="font-mono text-xl text-[#D4A94B]">{money(form.price)}</p>
+                  <p className="font-mono text-xl text-[#8B5CF6]">{money(form.price)}</p>
                 </div>
               </div>
 
@@ -301,12 +301,12 @@ export default function CreateListing() {
             ) : <span className="hidden sm:block" />}
             {step < STEPS.length - 1 ? (
               <button type="button" onClick={next}
-                className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+                className="flex-1 sm:flex-none bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {step === 1 && images.length === 0 ? 'Skip for now' : 'Continue'}
               </button>
             ) : (
               <button type="button" onClick={submit} disabled={saving}
-                className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+                className="flex-1 sm:flex-none bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
                 {saving ? 'Submitting...' : 'Submit for review'}
               </button>
             )}

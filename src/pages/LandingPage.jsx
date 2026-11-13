@@ -57,10 +57,10 @@ function Hero() {
 
       <div className="relative max-w-6xl mx-auto px-5 sm:px-6 min-h-[540px] md:min-h-[660px] flex flex-col justify-center pt-24 md:pt-28 pb-8 md:pb-10">
         <div className="max-w-xl">
-          <p className="font-mono text-[11px] sm:text-xs text-[#D4A94B] mb-4 sm:mb-5">ESCROW-PROTECTED GAMING MARKETPLACE</p>
+          <p className="font-mono text-[11px] sm:text-xs text-[#8B5CF6] mb-4 sm:mb-5">ESCROW-PROTECTED GAMING MARKETPLACE</p>
           <h1 className="font-display text-[2.5rem] md:text-6xl font-bold text-slate-100 leading-[1.1]">
             Buy &amp; Sell<br />Gaming Accounts<br />
-            <span className="text-[#D4A94B] inline-flex items-center gap-2 md:gap-3">
+            <span className="text-[#8B5CF6] inline-flex items-center gap-2 md:gap-3">
               Safely <ShieldCheck className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.75} />
             </span>
           </h1>
@@ -71,7 +71,7 @@ function Hero() {
           <div className="mt-8 sm:mt-9">
             <Link
               to="/signup"
-              className="flex sm:inline-flex w-full sm:w-auto items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-xl sm:rounded-lg px-8 py-4 sm:py-3.5 text-base transition-colors"
+              className="flex sm:inline-flex w-full sm:w-auto items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-xl sm:rounded-lg px-8 py-4 sm:py-3.5 text-base transition-colors"
             >
               Get started <ArrowRight size={18} />
             </Link>
@@ -82,7 +82,7 @@ function Hero() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-6 mt-12 md:mt-16">
           {TRUST.map(({ icon: Icon, title, sub }) => (
             <div key={title} className="flex items-center gap-3">
-              <Icon size={20} className="text-[#D4A94B] shrink-0" strokeWidth={1.75} />
+              <Icon size={20} className="text-[#8B5CF6] shrink-0" strokeWidth={1.75} />
               <div className="leading-tight">
                 <p className="text-sm text-slate-200 font-medium">{title}</p>
                 <p className="text-xs text-slate-500">{sub}</p>
@@ -123,9 +123,9 @@ function Newsletter() {
           <input
             required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email address"
-            className="flex-1 bg-[#0D1524] border border-slate-800 rounded-xl sm:rounded-lg px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors"
+            className="flex-1 bg-[#0D1524] border border-slate-800 rounded-xl sm:rounded-lg px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors"
           />
-          <button type="submit" className="flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-xl sm:rounded-lg px-5 py-3.5 sm:py-3 text-sm transition-colors">
+          <button type="submit" className="flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-xl sm:rounded-lg px-5 py-3.5 sm:py-3 text-sm transition-colors">
             <Send size={15} /> Subscribe
           </button>
         </form>
@@ -152,7 +152,7 @@ export default function LandingPage() {
           {WHY.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="rounded-xl bg-[#131B2E] border border-slate-800 p-5 flex gap-4">
               <div className="w-10 h-10 rounded-lg bg-[#0D1524] border border-slate-800 flex items-center justify-center shrink-0">
-                <Icon size={18} className="text-[#D4A94B]" strokeWidth={1.75} />
+                <Icon size={18} className="text-[#8B5CF6]" strokeWidth={1.75} />
               </div>
               <div>
                 <h3 className="font-display text-slate-100 font-semibold text-sm mb-1">{title}</h3>
@@ -171,10 +171,10 @@ export default function LandingPage() {
           {STEPS.map(({ icon: Icon, title, desc }, i) => (
             <div key={title} className="rounded-xl bg-[#131B2E] border border-slate-800 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <span className="w-7 h-7 rounded-full border border-[#D4A94B]/60 text-[#D4A94B] font-mono text-xs flex items-center justify-center">
+                <span className="w-7 h-7 rounded-full border border-[#8B5CF6]/60 text-[#8B5CF6] font-mono text-xs flex items-center justify-center">
                   {i + 1}
                 </span>
-                <Icon size={20} className="text-[#D4A94B]" strokeWidth={1.75} />
+                <Icon size={20} className="text-[#8B5CF6]" strokeWidth={1.75} />
               </div>
               <h3 className="font-display text-slate-100 font-semibold mb-1.5">{title}</h3>
               <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
@@ -186,7 +186,7 @@ export default function LandingPage() {
       <section id="about" className="max-w-6xl mx-auto px-5 sm:px-6 py-10 md:py-14 grid lg:grid-cols-2 gap-5 sm:gap-6">
         <div
           className="rounded-2xl border border-slate-800 p-6 sm:p-8 flex flex-col justify-between"
-          style={{ background: 'linear-gradient(135deg, #131B2E 0%, #1B1A2E 60%, rgba(201,161,90,0.18) 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #131B2E 0%, #1B1A2E 60%, rgba(139,92,246,0.18) 100%)' }}
         >
           <div>
             <h3 className="font-display text-2xl font-semibold text-slate-100">Become a Seller</h3>
@@ -195,7 +195,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="mt-8">
-            <Link to="/signup" className="block sm:inline-block text-center bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-xl sm:rounded-lg px-6 py-3.5 sm:py-3 text-sm transition-colors">
+            <Link to="/signup" className="block sm:inline-block text-center bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-xl sm:rounded-lg px-6 py-3.5 sm:py-3 text-sm transition-colors">
               Start Selling
             </Link>
           </div>
@@ -206,7 +206,7 @@ export default function LandingPage() {
             <p className="text-slate-500 text-sm mt-1">Read how escrow, refunds and payouts work before you buy or sell.</p>
           </div>
           <div className="mt-6">
-            <Link to="/help" className="block sm:inline-block text-center border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 font-semibold rounded-xl sm:rounded-lg px-6 py-3.5 sm:py-3 text-sm transition-colors">Visit the Help Center</Link>
+            <Link to="/help" className="block sm:inline-block text-center border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 font-semibold rounded-xl sm:rounded-lg px-6 py-3.5 sm:py-3 text-sm transition-colors">Visit the Help Center</Link>
           </div>
         </div>
       </section>

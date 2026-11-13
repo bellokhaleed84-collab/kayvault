@@ -28,7 +28,7 @@ export default function SellerContact({ purchaseId }) {
   return (
     <div className="rounded-xl bg-[#131B2E] border border-slate-800 p-6">
       <div className="flex items-center gap-2 mb-2">
-        <Phone size={16} className="text-[#D4A94B]" />
+        <Phone size={16} className="text-[#8B5CF6]" />
         <h2 className="font-display text-slate-100 font-semibold">Seller offline?</h2>
       </div>
       <p className="text-sm text-slate-400 mb-4">
@@ -37,7 +37,7 @@ export default function SellerContact({ purchaseId }) {
 
       {!info && (
         <button type="button" onClick={show} disabled={busy}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
           <Phone size={15} /> {busy ? 'Loading...' : "Show seller's number"}
         </button>
       )}
@@ -47,7 +47,7 @@ export default function SellerContact({ purchaseId }) {
           <p className="font-mono text-2xl tracking-wide text-slate-100">{pretty}</p>
           <div className="flex flex-wrap gap-3">
             <a href={'tel:' + phone}
-              className="flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+              className="flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
               <Phone size={15} /> Call
             </a>
             <a href={wa} target="_blank" rel="noopener noreferrer"

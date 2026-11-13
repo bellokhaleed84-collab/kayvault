@@ -5,7 +5,7 @@ export function Stars({ value = 0, size = 14 }) {
   return (
     <span className="inline-flex gap-0.5" role="img" aria-label={`${value} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <Star key={n} size={size} className={n <= full ? 'text-[#D4A94B]' : 'text-slate-700'}
+        <Star key={n} size={size} className={n <= full ? 'text-[#8B5CF6]' : 'text-slate-700'}
           fill={n <= full ? 'currentColor' : 'none'} />
       ))}
     </span>
@@ -18,7 +18,7 @@ export function StarInput({ value, onChange }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <button key={n} type="button" onClick={() => onChange(n)} aria-label={`${n} star${n === 1 ? '' : 's'}`}
           className="p-0.5">
-          <Star size={26} className={n <= value ? 'text-[#D4A94B]' : 'text-slate-600 hover:text-slate-400'}
+          <Star size={26} className={n <= value ? 'text-[#8B5CF6]' : 'text-slate-600 hover:text-slate-400'}
             fill={n <= value ? 'currentColor' : 'none'} />
         </button>
       ))}

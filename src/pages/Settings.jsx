@@ -21,11 +21,11 @@ const ngPhoneOk = (v) => {
 };
 
 const input =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 const card = 'rounded-xl bg-[#131B2E] border border-slate-800 p-4 sm:p-6 space-y-5';
 const gold =
-  'w-full sm:w-auto bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors';
+  'w-full sm:w-auto bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-5 py-3 sm:py-2.5 text-sm transition-colors';
 
 function Msg({ m }) {
   if (!m) return null;
@@ -115,7 +115,7 @@ export default function Settings() {
 
   const tabBtn = (active) =>
     `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap shrink-0 transition-colors ${
-      active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-400 hover:text-slate-100'
+      active ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
   return (
@@ -195,7 +195,7 @@ export default function Settings() {
                     </p>
                   </div>
                   <button type="button" onClick={toggleEmail} aria-pressed={notifyEmail} aria-label="Email notifications"
-                    className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${notifyEmail ? 'bg-[#D4A94B]' : 'bg-slate-700'}`}>
+                    className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${notifyEmail ? 'bg-[#8B5CF6]' : 'bg-slate-700'}`}>
                     <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${notifyEmail ? 'translate-x-5' : 'translate-x-0.5'}`} />
                   </button>
                 </div>

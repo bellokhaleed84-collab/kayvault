@@ -1,5 +1,5 @@
 export const ORDER_STATUS = {
-  held: { label: 'Awaiting confirmation', color: '#D4A94B', bg: 'bg-[#D4A94B]/10' },
+  held: { label: 'Awaiting confirmation', color: '#8B5CF6', bg: 'bg-[#8B5CF6]/10' },
   released: { label: 'Completed', color: '#34D399', bg: 'bg-[#34D399]/10' },
   refund_requested: { label: 'Refund requested', color: '#5B8DEF', bg: 'bg-[#5B8DEF]/10' },
   refunded: { label: 'Refunded', color: '#F87171', bg: 'bg-[#F87171]/10' },

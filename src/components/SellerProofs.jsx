@@ -67,7 +67,7 @@ export default function SellerProofs({ purchaseId }) {
       <input ref={input} type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
         multiple onChange={pick} className="hidden" />
       <button type="button" onClick={() => input.current?.click()} disabled={busy || proofs.length >= MAX_FILES}
-        className="flex items-center gap-2 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-50 font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
+        className="flex items-center gap-2 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 disabled:opacity-50 font-semibold rounded-lg px-4 py-2 text-xs transition-colors">
         {busy ? <><Loader2 size={13} className="animate-spin" /> Uploading...</> : <><Upload size={13} /> {proofs.length === 0 ? 'Add screenshot or recording' : 'Add another file'}</>}
       </button>
       <p className="text-[11px] text-slate-600 mt-1.5">Up to {MAX_FILES} files, 14 MB each. PNG, JPG, MP4, MOV or WebM.</p>

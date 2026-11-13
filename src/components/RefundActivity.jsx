@@ -35,7 +35,7 @@ export default function RefundActivity({ p }) {
     const text = first
       ? `${when(p.refund_requested_at)} (${gap(Math.max(0, asked - first))} after first opening the details)`
       : when(p.refund_requested_at);
-    rows.push(['REFUND ASKED', text, quick ? '#D4A94B' : '#E2E8F0']);
+    rows.push(['REFUND ASKED', text, quick ? '#8B5CF6' : '#E2E8F0']);
   }
 
   return (

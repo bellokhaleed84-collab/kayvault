@@ -12,7 +12,7 @@ import { resizeToDataUrl } from '../lib/images';
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Mobile', 'Other'];
 const TYPES = [['standard', 'Standard'], ['modded', 'Modded'], ['smurf', 'Smurf'], ['fresh', 'Fresh'], ['other', 'Other']];
 const input =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 function Shell({ children }) {
@@ -58,7 +58,7 @@ export default function EditListing() {
       <Shell>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
           <p className="text-slate-400 mb-4">{loadError}</p>
-          <Link to="/dashboard/seller" className="text-[#D4A94B] hover:underline">Back to dashboard</Link>
+          <Link to="/dashboard/seller" className="text-[#8B5CF6] hover:underline">Back to dashboard</Link>
         </div>
       </Shell>
     );
@@ -156,7 +156,7 @@ export default function EditListing() {
           <p className="rounded-lg border border-slate-800 bg-[#131B2E] text-sm text-slate-400 px-4 py-3 mb-6">A sold listing cannot be edited.</p>
         )}
         {data.locked && data.status !== 'sold' && (
-          <p className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 text-sm text-[#D4A94B] px-4 py-3 mb-6">
+          <p className="rounded-lg border border-[#8B5CF6]/40 bg-[#8B5CF6]/5 text-sm text-[#8B5CF6] px-4 py-3 mb-6">
             A buyer is paying for this account right now. You can edit again in a few minutes.
           </p>
         )}
@@ -222,7 +222,7 @@ export default function EditListing() {
                 </div>
               ))}
               {added.map((s, i) => (
-                <div key={'a' + i} className="relative w-28 h-24 rounded-lg overflow-hidden border border-[#D4A94B]/50">
+                <div key={'a' + i} className="relative w-28 h-24 rounded-lg overflow-hidden border border-[#8B5CF6]/50">
                   <img src={s} alt="" className="w-full h-full object-cover" />
                   <button type="button" aria-label="Remove image" onClick={() => setAdded(added.filter((_, j) => j !== i))}
                     className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center">
@@ -231,7 +231,7 @@ export default function EditListing() {
                 </div>
               ))}
               {total < 4 && (
-                <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#D4A94B] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#D4A94B] cursor-pointer transition-colors">
+                <label className="w-28 h-24 rounded-lg border border-dashed border-slate-700 hover:border-[#8B5CF6] flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#8B5CF6] cursor-pointer transition-colors">
                   <ImagePlus size={20} />
                   <span className="text-xs">Add image</span>
                   <input type="file" accept="image/*" multiple onChange={pick} className="hidden" />
@@ -273,7 +273,7 @@ export default function EditListing() {
               Back
             </Link>
             <button type="button" onClick={submit} disabled={saving || blocked}
-              className="flex-1 sm:flex-none bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-60 text-[#0B1120] font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+              className="flex-1 sm:flex-none bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-60 text-white font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
               {saving ? 'Saving...' : 'Save changes'}
             </button>
           </div>

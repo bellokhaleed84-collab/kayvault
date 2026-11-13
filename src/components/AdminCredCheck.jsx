@@ -41,7 +41,7 @@ export default function AdminCredCheck({ purchaseId }) {
         <p className="text-[11px] font-mono text-slate-600">ACCOUNT CHECK</p>
         {!creds ? (
           <button type="button" onClick={check} disabled={busy}
-            className="flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-60 font-semibold rounded-lg px-3 py-1.5 text-xs transition-colors">
+            className="flex items-center gap-1.5 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 disabled:opacity-60 font-semibold rounded-lg px-3 py-1.5 text-xs transition-colors">
             <KeyRound size={13} /> {busy ? 'Opening...' : 'Check login details'}
           </button>
         ) : (
@@ -50,7 +50,7 @@ export default function AdminCredCheck({ purchaseId }) {
       </div>
 
       <p className="flex items-center gap-1.5 text-[11px] text-slate-600 mb-2">
-        <ShieldAlert size={12} className="text-[#D4A94B]" /> Every check is recorded in the audit log.
+        <ShieldAlert size={12} className="text-[#8B5CF6]" /> Every check is recorded in the audit log.
       </p>
 
       {creds && (

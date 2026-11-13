@@ -10,7 +10,7 @@ const MODES = [
 ];
 
 const input =
-  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#D4A94B] transition-colors';
+  'w-full bg-[#0D1524] border border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-[#8B5CF6] transition-colors';
 const label = 'block text-xs font-mono text-slate-500 mb-2';
 
 // value: { twofa_mode, twofa_secret, twofa_confirmed }. onChange(patch) updates the form. hasSaved: a key is already saved (edit page).
@@ -67,8 +67,8 @@ export default function TwoFactorSetup({ value, onChange, hasSaved = false }) {
         {MODES.map(([m, title, sub, Icon]) => (
           <button key={m} type="button" onClick={() => pickMode(m)}
             className={'w-full flex items-start gap-3 rounded-lg border px-4 py-3.5 text-left transition-colors ' +
-              (mode === m ? 'border-[#D4A94B] bg-[#D4A94B]/10' : 'border-slate-800 bg-[#131B2E] hover:border-slate-600')}>
-            <Icon size={18} className={'mt-0.5 shrink-0 ' + (mode === m ? 'text-[#D4A94B]' : 'text-slate-500')} />
+              (mode === m ? 'border-[#8B5CF6] bg-[#8B5CF6]/10' : 'border-slate-800 bg-[#131B2E] hover:border-slate-600')}>
+            <Icon size={18} className={'mt-0.5 shrink-0 ' + (mode === m ? 'text-[#8B5CF6]' : 'text-slate-500')} />
             <span>
               <span className="block text-sm text-slate-100 font-medium">{title}</span>
               <span className="block text-xs text-slate-500 mt-0.5">{sub}</span>
@@ -80,7 +80,7 @@ export default function TwoFactorSetup({ value, onChange, hasSaved = false }) {
       {mode === 'authenticator' && (
         <div className="space-y-4">
           <div className="rounded-lg bg-[#131B2E] border border-slate-800 p-4">
-            <p className="text-xs font-mono text-[#D4A94B] mb-2">HOW TO GET THE KEY ON YOUR PHONE</p>
+            <p className="text-xs font-mono text-[#8B5CF6] mb-2">HOW TO GET THE KEY ON YOUR PHONE</p>
             <ol className="space-y-2 text-sm text-slate-400 list-decimal pl-5">
               <li>Open the game, go to Account or Security settings and turn on 2-step verification. Choose "Authenticator app".</li>
               <li>The game shows a QR code. Under it, tap "Can't scan?" or "Enter key manually" and copy the long key of letters and numbers.</li>
@@ -98,7 +98,7 @@ export default function TwoFactorSetup({ value, onChange, hasSaved = false }) {
           </div>
 
           <button type="button" onClick={check} disabled={busy || !value.twofa_secret.trim()}
-            className="w-full sm:w-auto border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 disabled:opacity-40 font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
+            className="w-full sm:w-auto border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 disabled:opacity-40 font-semibold rounded-lg px-6 py-3 text-sm transition-colors">
             {busy ? 'Checking...' : preview ? 'Check again' : 'Check key'}
           </button>
 
@@ -111,7 +111,7 @@ export default function TwoFactorSetup({ value, onChange, hasSaved = false }) {
               </p>
               <label className="flex items-start gap-3 text-sm text-slate-300 cursor-pointer pt-1">
                 <input type="checkbox" checked={Boolean(value.twofa_confirmed)} onChange={(e) => onChange({ twofa_confirmed: e.target.checked })}
-                  className="accent-[#D4A94B] w-5 h-5 mt-0.5 shrink-0" />
+                  className="accent-[#8B5CF6] w-5 h-5 mt-0.5 shrink-0" />
                 The code matches the one in my authenticator app.
               </label>
               {value.twofa_confirmed && <p className="flex items-center gap-1.5 text-xs text-[#34D399]"><CheckCircle2 size={14} /> Key confirmed</p>}

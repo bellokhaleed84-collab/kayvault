@@ -8,7 +8,7 @@ import Skel from './Skeleton';
 
 const th = 'px-5 py-3 font-medium text-xs font-mono text-slate-500';
 const STATUS = {
-  pending: ['Requested', '#D4A94B'],
+  pending: ['Requested', '#8B5CF6'],
   processing: ['Sending', '#5B8DEF'],
   paid: ['Paid', '#34D399'],
   failed: ['Not completed', '#F87171'],
@@ -17,7 +17,7 @@ const STATUS = {
 function Payout({ o }) {
   if (o.paid) return <span className="text-xs text-[#34D399]">Paid {shortDate(o.payout_paid_at)}</span>;
   if (o.requested) return <span className="text-xs text-[#5B8DEF]">Withdrawal in progress</span>;
-  return <span className="text-xs text-[#D4A94B]">Available</span>;
+  return <span className="text-xs text-[#8B5CF6]">Available</span>;
 }
 
 // Seller wallet: money available to withdraw, withdrawals in progress, and the fee on every sale
@@ -87,7 +87,7 @@ export default function SellerWallet() {
           : '';
 
   const stats = [
-    ['AVAILABLE TO WITHDRAW', wd.available, '#D4A94B'],
+    ['AVAILABLE TO WITHDRAW', wd.available, '#8B5CF6'],
     ['WITHDRAWAL IN PROGRESS', wd.pending, '#5B8DEF'],
     ['PAID OUT', wd.paid_out, '#34D399'],
     ['PLATFORM FEES', data.fees_paid, '#94A3B8'],
@@ -112,10 +112,10 @@ export default function SellerWallet() {
           <p className="text-xs text-slate-500 mt-1">
             {why || (wd.auto ? 'Sent to your bank automatically, usually within a few minutes.' : 'Our team sends it to your bank account after you request it.')}
           </p>
-          {(!wd.bank || !wd.verified) && <Link to="/settings" className="text-xs text-[#D4A94B] hover:underline">Open Settings</Link>}
+          {(!wd.bank || !wd.verified) && <Link to="/settings" className="text-xs text-[#8B5CF6] hover:underline">Open Settings</Link>}
         </div>
         <button type="button" onClick={withdraw} disabled={busy || Boolean(why)}
-          className="flex items-center justify-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] disabled:opacity-50 text-[#0B1120] font-semibold rounded-xl sm:rounded-lg px-5 py-3.5 sm:py-2.5 text-sm transition-colors sm:shrink-0 w-full sm:w-auto">
+          className="flex items-center justify-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-50 text-white font-semibold rounded-xl sm:rounded-lg px-5 py-3.5 sm:py-2.5 text-sm transition-colors sm:shrink-0 w-full sm:w-auto">
           {busy ? <><Loader2 size={15} className="animate-spin" /> Working...</> : <><Banknote size={15} /> Withdraw</>}
         </button>
       </div>
@@ -161,7 +161,7 @@ export default function SellerWallet() {
                     <p className="text-xs text-slate-500 truncate">{o.tier}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-[#D4A94B] whitespace-nowrap">{money(o.seller_amount)}</p>
+                    <p className="font-mono text-[#8B5CF6] whitespace-nowrap">{money(o.seller_amount)}</p>
                     <p className="text-[10px] font-mono text-slate-600">YOU RECEIVE</p>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export default function SellerWallet() {
                     </td>
                     <td className="px-5 py-3 font-mono text-slate-300 whitespace-nowrap">{money(o.price)}</td>
                     <td className="px-5 py-3 font-mono text-slate-500 whitespace-nowrap">-{money(o.platform_fee)}</td>
-                    <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(o.seller_amount)}</td>
+                    <td className="px-5 py-3 font-mono text-[#8B5CF6] whitespace-nowrap">{money(o.seller_amount)}</td>
                     <td className="px-5 py-3 whitespace-nowrap"><Payout o={o} /></td>
                   </tr>
                 ))}

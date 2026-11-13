@@ -19,7 +19,7 @@ import { money, shortDate, timeLeft } from '../lib/orders';
 
 const LISTING_STATUS = {
   live: { color: '#34D399', bg: 'bg-[#34D399]/10', label: 'Live' },
-  pending: { color: '#D4A94B', bg: 'bg-[#D4A94B]/10', label: 'Pending review' },
+  pending: { color: '#8B5CF6', bg: 'bg-[#8B5CF6]/10', label: 'Pending review' },
   sold: { color: '#5B8DEF', bg: 'bg-[#5B8DEF]/10', label: 'Sold' },
 };
 
@@ -68,7 +68,7 @@ function ListingsTable({ rows, empty, onDelete }) {
     l.status !== 'sold' && (
       <span className="inline-flex items-center gap-2">
         <Link to={`/dashboard/seller/edit/${l.id}`}
-          className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-3 py-2 sm:py-1.5 text-xs transition-colors">
+          className="inline-flex items-center gap-1.5 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg px-3 py-2 sm:py-1.5 text-xs transition-colors">
           <Pencil size={13} /> Edit
         </Link>
         {onDelete && (
@@ -91,10 +91,10 @@ function ListingsTable({ rows, empty, onDelete }) {
                 {l.status === 'pending' ? (
                   <p className="text-slate-200 font-medium truncate">{l.game}</p>
                 ) : (
-                  <Link to={`/listing/${l.id}`} className="block text-slate-200 font-medium truncate hover:text-[#D4A94B]">{l.game}</Link>
+                  <Link to={`/listing/${l.id}`} className="block text-slate-200 font-medium truncate hover:text-[#8B5CF6]">{l.game}</Link>
                 )}
                 <p className="text-xs text-slate-500 truncate">{l.tier}</p>
-                <p className="font-mono text-[#D4A94B] text-sm mt-1">{money(l.price)}</p>
+                <p className="font-mono text-[#8B5CF6] text-sm mt-1">{money(l.price)}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
@@ -132,13 +132,13 @@ function ListingsTable({ rows, empty, onDelete }) {
                     {l.status === 'pending' ? (
                       <p className="text-slate-200 font-medium truncate">{l.game}</p>
                     ) : (
-                      <Link to={`/listing/${l.id}`} className="text-slate-200 font-medium truncate hover:text-[#D4A94B]">{l.game}</Link>
+                      <Link to={`/listing/${l.id}`} className="text-slate-200 font-medium truncate hover:text-[#8B5CF6]">{l.game}</Link>
                     )}
                     <p className="text-xs text-slate-500 truncate max-w-[220px]">{l.tier}</p>
                   </div>
                 </div>
               </td>
-              <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(l.price)}</td>
+              <td className="px-5 py-3 font-mono text-[#8B5CF6] whitespace-nowrap">{money(l.price)}</td>
               <td className="px-5 py-3"><ListingPill status={l.status} /></td>
               <td className="px-5 py-3 text-slate-500 whitespace-nowrap">{shortDate(l.created_at)}</td>
               <td className="px-5 py-3 text-right whitespace-nowrap kv-actions-td">{actions(l)}</td>
@@ -168,7 +168,7 @@ function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
     const n = unread[p.id] || 0;
     return (
       <button type="button" onClick={() => toggle(p.id)}
-        className="inline-flex items-center gap-1.5 border border-[#D4A94B]/60 text-[#D4A94B] hover:bg-[#D4A94B]/10 rounded-lg px-4 py-2.5 text-xs transition-colors">
+        className="inline-flex items-center gap-1.5 border border-[#8B5CF6]/60 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg px-4 py-2.5 text-xs transition-colors">
         <MessageSquare size={14} /> Chat
         {n > 0 && open !== p.id && (
           <span className="ml-1 min-w-[18px] h-[18px] rounded-full bg-[#F87171] text-[#0B1120] text-[10px] font-bold flex items-center justify-center px-1">{n}</span>
@@ -189,7 +189,7 @@ function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
                   <p className="text-slate-200 font-medium truncate">{p.game}</p>
                   <p className="text-xs text-slate-500 truncate">{p.tier}</p>
                 </div>
-                <p className="font-mono text-[#D4A94B] whitespace-nowrap">{money(p.price)}</p>
+                <p className="font-mono text-[#8B5CF6] whitespace-nowrap">{money(p.price)}</p>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
                 <div>
@@ -229,7 +229,7 @@ function OrdersTable({ rows, empty, now, unread = {}, onOpened }) {
                     <p className="text-slate-200 font-medium">{p.game}</p>
                     <p className="text-xs text-slate-500 truncate max-w-[220px]">{p.tier}</p>
                   </td>
-                  <td className="px-5 py-3 font-mono text-[#D4A94B] whitespace-nowrap">{money(p.price)}</td>
+                  <td className="px-5 py-3 font-mono text-[#8B5CF6] whitespace-nowrap">{money(p.price)}</td>
                   <td className="px-5 py-3">
                     <StatusPill status={p.escrow_status} />
                     {t && <p className="text-xs text-slate-500 mt-1">{t.text}</p>}
@@ -327,12 +327,12 @@ export default function SellerDashboard() {
 
   const parts = [
     { label: 'Live', value: listings.filter((l) => l.status === 'live').length, color: '#34D399' },
-    { label: 'Pending review', value: listings.filter((l) => l.status === 'pending').length, color: '#D4A94B' },
+    { label: 'Pending review', value: listings.filter((l) => l.status === 'pending').length, color: '#8B5CF6' },
     { label: 'Sold', value: listings.filter((l) => l.status === 'sold').length, color: '#5B8DEF' },
   ];
 
   const cards = [
-    { icon: Wallet, label: 'Total earnings', value: money(stats.earnings), color: '#D4A94B' },
+    { icon: Wallet, label: 'Total earnings', value: money(stats.earnings), color: '#8B5CF6' },
     { icon: Clock, label: 'In escrow', value: money(stats.escrow), color: '#5B8DEF' },
     { icon: PackageCheck, label: 'Active listings', value: stats.active, color: '#34D399' },
     { icon: ShoppingBag, label: 'Orders', value: stats.orders, color: '#A78BFA' },
@@ -341,7 +341,7 @@ export default function SellerDashboard() {
   const title = { overview: 'Overview', listings: 'My listings', orders: 'Orders', payouts: 'Payouts', reviews: 'Reviews' }[view];
   const navBtn = (active) =>
     `flex items-center gap-2.5 shrink-0 rounded-lg px-3.5 py-2.5 text-sm whitespace-nowrap transition-colors ${
-      active ? 'bg-[#D4A94B]/15 text-[#D4A94B]' : 'text-slate-400 hover:text-slate-100'
+      active ? 'bg-[#8B5CF6]/15 text-[#8B5CF6]' : 'text-slate-400 hover:text-slate-100'
     }`;
 
   return (
@@ -372,7 +372,7 @@ export default function SellerDashboard() {
               </p>
             </div>
             <Link to="/dashboard/seller/new"
-              className="shrink-0 flex items-center gap-2 bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm transition-colors">
+              className="shrink-0 flex items-center gap-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm transition-colors">
               <Plus size={16} /> <span className="hidden sm:inline">New listing</span><span className="sm:hidden">New</span>
             </Link>
           </div>
@@ -384,14 +384,14 @@ export default function SellerDashboard() {
           )}
           {/* KV-P17C-BANNER */}
           {profile && profile.kyc_status !== 'verified' && (
-            <div className="rounded-lg border border-[#D4A94B]/40 bg-[#D4A94B]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-lg border border-[#8B5CF6]/40 bg-[#8B5CF6]/5 px-4 py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-slate-300">
                 {profile.kyc_status === 'pending'
                   ? 'Your ID is being reviewed. Your listings and payouts are released once you are verified.'
                   : "Verify your identity (National ID, driver's licence or passport) before your listings can go live and you can be paid."}
               </p>
               {profile.kyc_status !== 'pending' && (
-                <Link to="/settings?tab=verification" className="bg-[#D4A94B] hover:bg-[#c49a3f] text-[#0B1120] font-semibold rounded-lg px-4 py-2.5 text-xs transition-colors">Verify now</Link>
+                <Link to="/settings?tab=verification" className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-lg px-4 py-2.5 text-xs transition-colors">Verify now</Link>
               )}
             </div>
           )}
@@ -437,7 +437,7 @@ export default function SellerDashboard() {
                   <div className={card}>
                     <div className="flex items-center justify-between px-4 sm:px-5 pt-5">
                       <h2 className="font-display text-slate-100 font-semibold">Recent listings</h2>
-                      <button onClick={() => setView('listings')} className="text-sm text-[#D4A94B] hover:underline py-1">View all</button>
+                      <button onClick={() => setView('listings')} className="text-sm text-[#8B5CF6] hover:underline py-1">View all</button>
                     </div>
                     <ListingsTable rows={listings.slice(0, 5)} onDelete={deleteListing} empty="No listings yet. Create your first one." />
                   </div>
@@ -445,7 +445,7 @@ export default function SellerDashboard() {
                   <div className={card}>
                     <div className="flex items-center justify-between px-4 sm:px-5 pt-5">
                       <h2 className="font-display text-slate-100 font-semibold">Recent orders</h2>
-                      <button onClick={() => setView('orders')} className="text-sm text-[#D4A94B] hover:underline py-1">View all</button>
+                      <button onClick={() => setView('orders')} className="text-sm text-[#8B5CF6] hover:underline py-1">View all</button>
                     </div>
                     <OrdersTable rows={sales.slice(0, 5)} now={now} unread={unread.counts} onOpened={clearUnread} empty="No orders yet. They show up here when a buyer purchases." />
                   </div>
@@ -462,7 +462,7 @@ export default function SellerDashboard() {
                 <div className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className={`${card} p-5`}>
-                      <Wallet size={18} className="text-[#D4A94B] mb-3" />
+                      <Wallet size={18} className="text-[#8B5CF6] mb-3" />
                       <p className="text-slate-500 text-xs font-mono mb-1">RELEASED EARNINGS</p>
                       <p className="font-display text-2xl font-semibold text-slate-100">{money(stats.earnings)}</p>
                       <p className="text-xs text-slate-500 mt-1">Confirmed by buyers, after the platform fee.</p>
@@ -478,7 +478,7 @@ export default function SellerDashboard() {
                   <div className={`${card} p-5`}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="font-display text-slate-100 font-semibold">Payout account</h2>
-                      <Link to="/settings" className="text-sm text-[#D4A94B] hover:underline py-1">
+                      <Link to="/settings" className="text-sm text-[#8B5CF6] hover:underline py-1">
                         {profile?.bank_account_number ? 'Edit' : 'Add bank details'}
                       </Link>
                     </div>
